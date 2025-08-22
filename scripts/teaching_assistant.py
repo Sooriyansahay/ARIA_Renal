@@ -21,25 +21,24 @@ class StaticsMechanicsTA:
         
         # Teaching philosophy prompts
         self.system_prompt = """
-You are a Teaching Assistant for Statics & Mechanics of Materials. Your role is to GUIDE students through problem-solving steps, NOT to give direct answers.
+You are ARIA, a Teaching Assistant for Statics & Mechanics of Materials. Your role is to GUIDE students through problem-solving steps with CONCISE, focused responses.
 
 CORE PRINCIPLES:
 1. NEVER provide direct numerical answers
-2. ALWAYS break down problems into logical steps
-3. Ask guiding questions to help students think
-4. Provide relevant formulas and concepts when needed
-5. Use analogies and examples to clarify concepts
-6. Encourage students to attempt each step themselves
-7. Point out common mistakes and how to avoid them
+2. Keep responses to 3-5 sentences maximum
+3. Focus on ONE key concept at a time
+4. Ask ONE guiding question per response
+5. Provide relevant formulas when needed
+6. Always include source references
+7. Use clear, direct language
 
-When a student asks a question:
-1. Identify the key concepts involved
-2. Break the problem into manageable steps
-3. Guide them through the approach without solving
-4. Provide hints and ask questions to check understanding
-5. Reference relevant course material when helpful
+RESPONSE FORMAT:
+- Start with the key concept identification
+- Provide 2-3 step approach
+- End with one guiding question
+- Keep it concise and actionable
 
-Remember: Your goal is to help students LEARN, not to do their work for them.
+Remember: Your goal is to help students LEARN efficiently with focused guidance.
 """
     
     def generate_response(
@@ -69,13 +68,18 @@ Remember: Your goal is to help students LEARN, not to do their work for them.
             response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=messages,
-                max_tokens=800,
+                max_tokens=400,
                 temperature=0.7,
                 presence_penalty=0.1,
                 frequency_penalty=0.1
             )
             
             assistant_response = response.choices[0].message.content
+            
+            # Add source references to the response
+            source_references = self._format_source_references(relevant_content)
+            if source_references:
+                assistant_response += f"\n\n📚 **Sources:** {source_references}"
             
             # Calculate response time
             response_time = (datetime.now() - start_time).total_seconds()
@@ -172,12 +176,12 @@ Student Question: {question}
 Relevant Course Material:
 {context}
 
-Please provide step-by-step guidance to help the student solve this problem. Do NOT give direct answers. Focus on:
-1. Breaking down the problem
-2. Identifying key concepts
-3. Suggesting the approach
-4. Asking guiding questions
-5. Providing hints when needed
+Provide CONCISE guidance (3-5 sentences max). Focus on:
+1. Identify ONE key concept
+2. Suggest a 2-3 step approach
+3. Ask ONE guiding question
+
+Do NOT give direct answers. Keep it brief and focused.
 """
         
         messages.append({"role": "user", "content": user_message})
@@ -197,6 +201,27 @@ Please provide step-by-step guidance to help the student solve this problem. Do 
                 unique_content.append(content)
         
         return unique_content
+    
+    def _format_source_references(self, content_list: List[Dict]) -> str:
+        """Format source references from retrieved content"""
+        sources = set()
+        for content in content_list:
+            source_file = content["metadata"].get("source_file", "")
+            if source_file:
+                # Clean up the source file name for better readability
+                clean_source = source_file.replace(".pdf", "").replace("_", " ").replace("-", " ")
+                # Capitalize words
+                clean_source = " ".join(word.capitalize() for word in clean_source.split())
+                # Handle specific naming patterns
+                if "beams" in clean_source.lower():
+                    clean_source = clean_source.replace("Beams", "Beams")
+                elif "axial" in clean_source.lower():
+                    clean_source = clean_source.replace("Axial", "Axial Force Members")
+                elif "torsion" in clean_source.lower():
+                    clean_source = clean_source.replace("Torsion", "Torsion Members")
+                sources.add(clean_source)
+        
+        return ", ".join(sorted(sources)) if sources else ""
     
     def _extract_concepts_from_content(self, content_list: List[Dict]) -> List[str]:
         """Extract unique concepts from retrieved content"""
