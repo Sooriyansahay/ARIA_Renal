@@ -1,0 +1,65 @@
+# Environment variables and secrets
+.env
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Large model files (if any)
+*.bin
+*.safetensors
+
+# ChromaDB large files
+embeddings/chroma_db/chroma.sqlite3
+embeddings/chroma_db/*.sqlite3
+embeddings/chroma_db/**/*.bin
+embeddings/chroma_db/**/*.dat
+
+# Temporary files
+*.tmp
+*.temp
