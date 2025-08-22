@@ -75,11 +75,16 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             )
             
             assistant_response = response.choices[0].message.content
+            logger.info(f"Generated answer length: {len(assistant_response)}")
             
             # Add source references to the response
             source_references = self._format_source_references(relevant_content)
+            logger.info(f"Source references: {source_references}")
+            
+            # Always append source references to the response
             if source_references:
-                assistant_response += f"\n\n📚 **Sources:** {source_references}"
+                assistant_response += f"\n\n📚 Sources: {source_references}"
+                logger.info(f"Final answer with sources: {assistant_response[-100:]}...")
             
             # Calculate response time
             response_time = (datetime.now() - start_time).total_seconds()
@@ -205,23 +210,46 @@ Do NOT give direct answers. Keep it brief and focused.
     def _format_source_references(self, content_list: List[Dict]) -> str:
         """Format source references from retrieved content"""
         sources = set()
-        for content in content_list:
-            source_file = content["metadata"].get("source_file", "")
+        
+        # Debug logging
+        logger.info(f"Formatting sources for {len(content_list)} content items")
+        
+        for i, content in enumerate(content_list):
+            metadata = content.get("metadata", {})
+            logger.info(f"Content {i} metadata keys: {list(metadata.keys())}")
+            
+            # Try multiple possible source field names
+            source_file = (
+                metadata.get("source_file") or 
+                metadata.get("source") or 
+                metadata.get("filename") or 
+                metadata.get("file_name") or
+                content.get("source", "")
+            )
+            
+            logger.info(f"Content {i} source_file: {source_file}")
+            
             if source_file:
                 # Clean up the source file name for better readability
-                clean_source = source_file.replace(".pdf", "").replace("_", " ").replace("-", " ")
-                # Capitalize words
-                clean_source = " ".join(word.capitalize() for word in clean_source.split())
-                # Handle specific naming patterns
-                if "beams" in clean_source.lower():
-                    clean_source = clean_source.replace("Beams", "Beams")
-                elif "axial" in clean_source.lower():
-                    clean_source = clean_source.replace("Axial", "Axial Force Members")
-                elif "torsion" in clean_source.lower():
-                    clean_source = clean_source.replace("Torsion", "Torsion Members")
+                clean_source = source_file.replace(".pdf", "").replace("_", " ").title()
+                # Remove common prefixes and make more readable
+                if clean_source.startswith("Beams Bending Members"):
+                    clean_source = clean_source.replace("Beams Bending Members ", "Beams: ")
+                elif clean_source.startswith("Axial Force Members"):
+                    clean_source = clean_source.replace("Axial Force Members ", "Axial Loading: ")
+                elif clean_source.startswith("Torsion Members"):
+                    clean_source = clean_source.replace("Torsion Members ", "Torsion: ")
                 sources.add(clean_source)
+            else:
+                # Fallback: try to extract from topic or content_type
+                topic = metadata.get("topic", "")
+                content_type = metadata.get("content_type", "")
+                if topic:
+                    sources.add(f"{content_type.title()}: {topic}")
         
-        return ", ".join(sorted(sources)) if sources else ""
+        result = ", ".join(sorted(sources)) if sources else "Course Materials"
+        logger.info(f"Final formatted sources: {result}")
+        return result
     
     def _extract_concepts_from_content(self, content_list: List[Dict]) -> List[str]:
         """Extract unique concepts from retrieved content"""
