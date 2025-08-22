@@ -230,15 +230,27 @@ Do NOT give direct answers. Keep it brief and focused.
             logger.info(f"Content {i} source_file: {source_file}")
             
             if source_file:
+                # Extract just the filename from the full path
+                import os
+                filename = os.path.basename(source_file)
+                
                 # Clean up the source file name for better readability
-                clean_source = source_file.replace(".pdf", "").replace("_", " ").title()
-                # Remove common prefixes and make more readable
-                if clean_source.startswith("Beams Bending Members"):
-                    clean_source = clean_source.replace("Beams Bending Members ", "Beams: ")
-                elif clean_source.startswith("Axial Force Members"):
-                    clean_source = clean_source.replace("Axial Force Members ", "Axial Loading: ")
-                elif clean_source.startswith("Torsion Members"):
-                    clean_source = clean_source.replace("Torsion Members ", "Torsion: ")
+                clean_source = filename.replace(".json", "").replace(".pdf", "").replace("_", " ").replace("-", " ")
+                
+                # Convert to title case and clean up specific patterns
+                clean_source = clean_source.title()
+                
+                # Handle specific course material patterns
+                if "Beams Bending Members" in clean_source:
+                    clean_source = "Beams: Flexural Stresses and Strains"
+                elif "Axial Force Members" in clean_source:
+                    clean_source = "Axial Loading: Stress and Strain"
+                elif "Torsion Members" in clean_source:
+                    clean_source = "Torsion: Shear Stress and Angle of Twist"
+                elif "Extracted" in clean_source:
+                    # Remove "Extracted" suffix and clean up
+                    clean_source = clean_source.replace(" Extracted", "")
+                    
                 sources.add(clean_source)
             else:
                 # Fallback: try to extract from topic or content_type
