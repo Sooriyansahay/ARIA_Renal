@@ -35,7 +35,7 @@ st.markdown("""
 /* Main header styling */
 .main-header {
     font-size: 2.5rem;
-    color: #ffffff;
+    color: #ffffff !important;
     text-align: center;
     margin-bottom: 2rem;
     font-weight: bold;
