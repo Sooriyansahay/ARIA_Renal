@@ -1,9 +1,12 @@
 import streamlit as st
 import sys
-import os
 from pathlib import Path
+import os
+import json
+from datetime import datetime
+import time
 
-# Add the parent directory to the path to import scripts
+# Add parent directory to path
 sys.path.append(str(Path(__file__).parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -209,93 +212,151 @@ def main():
         </div>
         """, unsafe_allow_html=True)
     
-    # Main content area
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        # Chat interface
-        st.subheader("💬 Chat with ARIA")
+    # Sidebar for configuration
+    with st.sidebar:
+        st.header("Configuration")
         
-        # Display conversation history
-        for i, (question, response) in enumerate(st.session_state.conversation_history):
-            # Student question
-            st.markdown(f"""
-            <div class="chat-message student-message">
-                <strong>🎓 You:</strong> {question}
-            </div>
-            """, unsafe_allow_html=True)
+        # System status
+        if st.session_state.system_initialized:
+            st.success("✅ TA System Ready")
+        else:
+            st.error("❌ System Not Ready")
             
-            # TA response
-            st.markdown(f"""
-            <div class="chat-message ta-message">
-                <strong>🤖 ARIA:</strong> {response}
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Question input
-        question = st.text_area(
-            "Ask ARIA a question about Statics & Mechanics:",
-            height=100,
-            placeholder="e.g., How do I calculate the moment about point A in this truss problem?"
+        # Topic filter
+        st.subheader("Focus Area")
+        topics = get_course_topics()
+        selected_topic = st.selectbox(
+            "Select a topic to focus on (optional)",
+            ["All Topics"] + topics
         )
         
-        col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
+        # Conversation controls
+        st.subheader("Conversation")
+        if st.button("Clear Conversation"):
+            st.session_state.conversation_history = []
+            st.rerun()
         
-        with col_btn1:
-            if st.button("Ask ARIA", type="primary"):
-                if question and st.session_state.system_initialized:
-                    with st.spinner("ARIA is thinking..."):
-                        try:
-                            response = st.session_state.ta_system.get_response(question)
-                            st.session_state.conversation_history.append((question, response))
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Error getting response: {e}")
-                elif not question:
-                    st.warning("Please enter a question first.")
-        
-        with col_btn2:
-            if st.button("Clear Chat"):
-                st.session_state.conversation_history = []
-                st.rerun()
-    
-    with col2:
-        # Sidebar content
-        st.subheader("📚 Course Topics")
-        topics = get_course_topics()
-        
-        st.markdown("**Available Topics:**")
-        for topic in topics:
-            st.markdown(f"• {topic}")
-        
-        st.markdown("---")
-        
+        # Usage tips
         st.subheader("💡 Tips for Better Learning")
         st.markdown("""
-        • Ask specific questions about problems
-        • Request step-by-step explanations
-        • Ask for concept clarifications
-        • Request practice problems
-        • Ask about real-world applications
+        <div style="color: white !important;">
+        • Ask specific questions about concepts<br>
+        • Describe your problem step by step<br>
+        • Ask for guidance, not direct answers<br>
+        • Request examples or analogies<br>
+        • Ask about common mistakes to avoid
+        </div>
+        """, unsafe_allow_html=True)
+        
+
+    
+    # Main chat interface
+    if st.session_state.system_initialized and st.session_state.ta_system:
+        # Display conversation history
+        for i, msg in enumerate(st.session_state.conversation_history):
+            if msg["role"] == "user":
+                st.markdown(
+                    f'<div class="chat-message student-message"><strong>You:</strong> {msg["content"]}</div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f'<div class="chat-message ta-message"><strong>ARIA:</strong> {msg["content"]}</div>',
+                    unsafe_allow_html=True
+                )
+                
+
+        
+        # Chat input
+        with st.form(key="chat_form", clear_on_submit=True):
+            user_input = st.text_area(
+                "Ask your question:",
+                placeholder="e.g., How do I approach calculating the moment about point A in this beam problem?",
+                height=100
+            )
+            
+            col1, col2 = st.columns([1, 4])
+            with col1:
+                submit_button = st.form_submit_button("Ask ARIA", use_container_width=True)
+            
+            if submit_button and user_input:
+                # Add user message to history
+                st.session_state.conversation_history.append({
+                    "role": "user",
+                    "content": user_input
+                })
+                
+                # Generate TA response
+                with st.spinner("ARIA is thinking..."):
+                    try:
+                        start_time = time.time()
+                        
+                        response_data = st.session_state.ta_system.generate_response(
+                            user_input,
+                            st.session_state.conversation_history[-10:]  # Last 10 messages
+                        )
+                        
+                        response_time = time.time() - start_time
+                        
+                        # Add TA response to history
+                        ta_message = {
+                            "role": "assistant",
+                            "content": response_data["response"],
+                            "concepts": response_data.get("concepts_covered", []),
+                            "response_time": response_time
+                        }
+                        
+                        st.session_state.conversation_history.append(ta_message)
+                        
+                        # Show performance metrics in sidebar
+                        with st.sidebar:
+                            st.metric("Response Time", f"{response_time:.2f}s")
+                        
+                        st.rerun()
+                        
+                    except Exception as e:
+                        st.error(f"Error generating response: {e}")
+    
+    else:
+        # Welcome message
+        st.markdown("""
+        ## Welcome to your Statics & Mechanics Teaching Assistant! 🎓
+        
+        This AI-powered TA is designed to help you learn by:
+        - **Guiding** you through problem-solving steps
+        - **Explaining** key concepts and formulas
+        - **Providing** hints and examples
+        - **Asking** questions to check your understanding
+        
+        **Important:** This TA will NOT give you direct answers. Instead, it will help you develop problem-solving skills!
+        
+        The system is initializing automatically...
         """)
         
-        st.markdown("---")
+        # Example questions
+        st.subheader("Example Questions You Can Ask:")
+        examples = [
+            "How do I start analyzing a truss structure?",
+            "What's the difference between stress and strain?",
+            "Can you guide me through setting up equilibrium equations?",
+            "What are the key steps for calculating beam deflections?",
+            "How do I determine if a structure is statically determinate?"
+        ]
         
-        st.subheader("🔧 System Status")
-        if st.session_state.system_initialized:
-            st.success("✅ ARIA is ready")
-            st.info(f"💬 {len(st.session_state.conversation_history)} conversations")
-        else:
-            st.error("❌ System not initialized")
+        for example in examples:
+            st.markdown(f"• {example}")
     
-    # Footer with attribution
+    # Attribution footer
     st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center; color: #666; font-size: 0.9rem; padding: 1rem;">
-        <p><strong>ARIA Teaching Assistant</strong> | Developed by <strong>Dibakar Roy Sarkar</strong> and <strong>Yue Luo</strong></p>
-        <p>Centrum IntelliPhysics Lab | Powered by Advanced AI & RAG Technology</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style="text-align: center; color: #7f8c8d; font-size: 0.8rem; margin-top: 2rem;">
+            Built by <strong>Dibakar Roy Sarkar</strong> and <strong>Yue Luo</strong><br>
+            <em>Centrum IntelliPhysics Lab</em>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 if __name__ == "__main__":
     main()
