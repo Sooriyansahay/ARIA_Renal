@@ -199,6 +199,29 @@ h3{font-size:1.4rem !important}
 .student-message{ background:#11151c; border-left:4px solid var(--accent); }
 .ta-message{ background:#17121a; border-left:4px solid #a47aff; }
 
+/* Feedback buttons */
+.feedback-container{
+  display:flex; align-items:center; gap:0.5rem; margin-top:0.75rem; padding-top:0.75rem;
+  border-top:1px solid var(--border); opacity:0.8;
+}
+.feedback-text{
+  font-size:0.9rem; color:var(--muted); margin-right:0.5rem;
+}
+.feedback-button{
+  background:transparent; border:1px solid var(--border); border-radius:8px;
+  padding:0.4rem 0.6rem; cursor:pointer; transition:all 0.15s ease;
+  color:var(--muted); font-size:0.85rem; display:flex; align-items:center; gap:0.3rem;
+}
+.feedback-button:hover{
+  background:var(--panel-2); border-color:var(--accent); color:var(--text);
+}
+.feedback-button.selected{
+  background:var(--accent); border-color:var(--accent); color:white;
+}
+.feedback-button.selected.negative{
+  background:#dc3545; border-color:#dc3545;
+}
+
 /* Footer centered */
 .app-footer{
   text-align:center;
@@ -259,6 +282,10 @@ if "conversation_history" not in st.session_state:
     st.session_state.conversation_history = []
 if "system_initialized" not in st.session_state:
     st.session_state.system_initialized = False
+if "feedback_data" not in st.session_state:
+    st.session_state.feedback_data = []
+if "message_feedback" not in st.session_state:
+    st.session_state.message_feedback = {}
 
 def initialize_ta_system():
     try:
@@ -277,6 +304,39 @@ def get_course_topics():
         "Torsion", "Bending", "Shear", "Deflections", "Centroids",
         "Moment of Inertia", "Stress Transformation", "Principal Stresses"
     ]
+
+def save_feedback_to_file(feedback_data):
+    """Save feedback data to a local JSON file"""
+    try:
+        feedback_file = Path(__file__).parent / "feedback_data.json"
+        with open(feedback_file, "w") as f:
+            json.dump(feedback_data, f, indent=2, default=str)
+    except Exception as e:
+        st.error(f"Error saving feedback: {e}")
+
+def handle_feedback(message_index, feedback_type):
+    """Handle user feedback for a specific message"""
+    if message_index < len(st.session_state.conversation_history):
+        message = st.session_state.conversation_history[message_index]
+        if message["role"] == "assistant":
+            feedback_entry = {
+                "timestamp": datetime.now().isoformat(),
+                "message_index": message_index,
+                "user_question": st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else "",
+                "ta_response": message["content"],
+                "feedback": feedback_type,
+                "concepts_covered": message.get("concepts", []),
+                "response_time": message.get("response_time", 0)
+            }
+            
+            # Add to session state
+            st.session_state.feedback_data.append(feedback_entry)
+            st.session_state.message_feedback[message_index] = feedback_type
+            
+            # Save to file
+            save_feedback_to_file(st.session_state.feedback_data)
+            
+            st.rerun()
 
 def main():
     if not st.session_state.system_initialized:
@@ -334,17 +394,59 @@ def main():
         """)
     
     if st.session_state.system_initialized and st.session_state.ta_system:
-        for msg in st.session_state.conversation_history:
+        for i, msg in enumerate(st.session_state.conversation_history):
             if msg["role"] == "user":
                 st.markdown(
                     f'<div class="chat-message student-message"><strong>You</strong><br>{msg["content"]}</div>',
                     unsafe_allow_html=True
                 )
             else:
+                # Display TA message
                 st.markdown(
                     f'<div class="chat-message ta-message"><strong>ARIA</strong><br>{msg["content"]}</div>',
                     unsafe_allow_html=True
                 )
+                
+                # Add feedback buttons
+                current_feedback = st.session_state.message_feedback.get(i, None)
+                
+                feedback_html = f"""
+                <div class="feedback-container">
+                    <span class="feedback-text">Was this response helpful?</span>
+                </div>
+                """
+                st.markdown(feedback_html, unsafe_allow_html=True)
+                
+                col1, col2, col3, col4 = st.columns([1, 1, 1, 8])
+                
+                with col1:
+                    if st.button("👍 Helpful", key=f"helpful_{i}", 
+                               help="This response was helpful",
+                               disabled=current_feedback is not None):
+                        handle_feedback(i, "helpful")
+                
+                with col2:
+                    if st.button("👎 Not Helpful", key=f"not_helpful_{i}", 
+                               help="This response was not helpful",
+                               disabled=current_feedback is not None):
+                        handle_feedback(i, "not_helpful")
+                
+                with col3:
+                    if st.button("🤔 Partially", key=f"partial_{i}", 
+                               help="This response was partially helpful",
+                               disabled=current_feedback is not None):
+                        handle_feedback(i, "partially_helpful")
+                
+                # Show feedback status if already given
+                if current_feedback:
+                    feedback_text = {
+                        "helpful": "✅ Marked as helpful",
+                        "not_helpful": "❌ Marked as not helpful", 
+                        "partially_helpful": "🤔 Marked as partially helpful"
+                    }
+                    st.markdown(f"<small style='color: var(--muted);'>{feedback_text[current_feedback]}</small>", 
+                              unsafe_allow_html=True)
+                
                 st.divider()
         
         with st.form(key="chat_form", clear_on_submit=True):
