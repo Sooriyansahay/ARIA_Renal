@@ -11,6 +11,7 @@ sys.path.append(str(Path(__file__).parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
 from scripts.teaching_assistant import StaticsMechanicsTA
+from scripts.database.feedback_storage import feedback_storage
 
 # Get API key from environment variables or Streamlit secrets
 try:
@@ -323,58 +324,125 @@ def get_course_topics():
         "Moment of Inertia", "Stress Transformation", "Principal Stresses"
     ]
 
-def save_feedback_to_file(feedback_data):
-    """Save feedback data to a local JSON file"""
+def save_feedback_to_database(session_id, message_index, user_question, ai_response, feedback_type, concepts_covered=None, response_time=None):
+    """Save feedback data to database"""
     try:
-        feedback_file = Path(__file__).parent / "feedback_data.json"
-        with open(feedback_file, "w") as f:
-            json.dump(feedback_data, f, indent=2, default=str)
+        success = feedback_storage.store_feedback(
+            session_id=session_id,
+            conversation_id=None,  # We can link this to conversation later if needed
+            message_index=message_index,
+            user_question=user_question,
+            ai_response=ai_response,
+            feedback_type=feedback_type,
+            concepts_covered=concepts_covered or [],
+            response_time=response_time
+        )
+        if not success:
+            st.error("Failed to save feedback")
+        return success
     except Exception as e:
         st.error(f"Error saving feedback: {e}")
+        return False
+
+def update_feedback_in_database(session_id, message_index, new_feedback_type):
+    """Update existing feedback in database"""
+    try:
+        success = feedback_storage.update_feedback(
+            session_id=session_id,
+            message_index=message_index,
+            new_feedback_type=new_feedback_type
+        )
+        if not success:
+            st.error("Failed to update feedback")
+        return success
+    except Exception as e:
+        st.error(f"Error updating feedback: {e}")
+        return False
+
+def delete_feedback_from_database(session_id, message_index):
+    """Delete feedback from database"""
+    try:
+        success = feedback_storage.delete_feedback(
+            session_id=session_id,
+            message_index=message_index
+        )
+        return success
+    except Exception as e:
+        st.error(f"Error deleting feedback: {e}")
+        return False
 
 def handle_feedback(message_index, feedback_type):
     """Handle user feedback for a specific message"""
     if message_index < len(st.session_state.conversation_history):
         message = st.session_state.conversation_history[message_index]
         if message["role"] == "assistant":
-            # Check if user is changing feedback or giving new feedback
+            # Get session ID (create one if it doesn't exist)
+            if "session_id" not in st.session_state:
+                st.session_state.session_id = str(datetime.now().timestamp()).replace('.', '')
+            
+            session_id = st.session_state.session_id
             current_feedback = st.session_state.message_feedback.get(message_index)
+            
+            # Get user question and response details
+            user_question = st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else ""
+            ai_response = message["content"]
+            concepts_covered = message.get("concepts", [])
+            response_time = message.get("response_time", 0)
             
             # If clicking the same feedback type, remove it (toggle off)
             if current_feedback == feedback_type:
-                # Remove feedback
-                if message_index in st.session_state.message_feedback:
-                    del st.session_state.message_feedback[message_index]
-                
-                # Remove from feedback_data list
-                st.session_state.feedback_data = [
-                    entry for entry in st.session_state.feedback_data 
-                    if entry.get("message_index") != message_index
-                ]
+                # Remove feedback from database
+                success = delete_feedback_from_database(session_id, message_index)
+                if success:
+                    # Remove from session state
+                    if message_index in st.session_state.message_feedback:
+                        del st.session_state.message_feedback[message_index]
+                    
+                    # Remove from feedback_data list (for backward compatibility)
+                    st.session_state.feedback_data = [
+                        entry for entry in st.session_state.feedback_data 
+                        if entry.get("message_index") != message_index
+                    ]
             else:
-                # Update or add new feedback
-                feedback_entry = {
-                    "timestamp": datetime.now().isoformat(),
-                    "message_index": message_index,
-                    "user_question": st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else "",
-                    "ta_response": message["content"],
-                    "feedback": feedback_type,
-                    "concepts_covered": message.get("concepts", []),
-                    "response_time": message.get("response_time", 0)
-                }
+                # Check if feedback already exists for this message
+                if current_feedback:
+                    # Update existing feedback
+                    success = update_feedback_in_database(session_id, message_index, feedback_type)
+                else:
+                    # Add new feedback
+                    success = save_feedback_to_database(
+                        session_id=session_id,
+                        message_index=message_index,
+                        user_question=user_question,
+                        ai_response=ai_response,
+                        feedback_type=feedback_type,
+                        concepts_covered=concepts_covered,
+                        response_time=response_time
+                    )
                 
-                # Remove any existing feedback for this message
-                st.session_state.feedback_data = [
-                    entry for entry in st.session_state.feedback_data 
-                    if entry.get("message_index") != message_index
-                ]
-                
-                # Add new feedback
-                st.session_state.feedback_data.append(feedback_entry)
-                st.session_state.message_feedback[message_index] = feedback_type
-            
-            # Save to file
-            save_feedback_to_file(st.session_state.feedback_data)
+                if success:
+                    # Update session state
+                    st.session_state.message_feedback[message_index] = feedback_type
+                    
+                    # Update feedback_data list (for backward compatibility)
+                    feedback_entry = {
+                        "timestamp": datetime.now().isoformat(),
+                        "message_index": message_index,
+                        "user_question": user_question,
+                        "ta_response": ai_response,
+                        "feedback": feedback_type,
+                        "concepts_covered": concepts_covered,
+                        "response_time": response_time
+                    }
+                    
+                    # Remove any existing feedback for this message
+                    st.session_state.feedback_data = [
+                        entry for entry in st.session_state.feedback_data 
+                        if entry.get("message_index") != message_index
+                    ]
+                    
+                    # Add new feedback
+                    st.session_state.feedback_data.append(feedback_entry)
             
             st.rerun()
 
