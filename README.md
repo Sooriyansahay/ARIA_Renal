@@ -2,13 +2,13 @@
 
 > **Revolutionizing Engineering Education with Intelligent, Interactive Learning**
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-app-url.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://aria-static-mechanics-ta.streamlit.app/)
 
 ---
 
 ## 🌟 What is ARIA?
 
-**ARIA** (AI Reasoning & Interactive Assistant) is a cutting-edge AI teaching assistant specifically designed to transform how students learn **Statics & Mechanics of Materials**. Built with advanced RAG (Retrieval-Augmented Generation) technology, ARIA provides personalized, step-by-step guidance that adapts to each student's learning pace and style.
+**ARIA** (AI Reasoning & Interactive Assistant) is a cutting-edge AI teaching assistant specifically designed to transform how students learn **Statics & Mechanics of Materials**. Built with advanced RAG (Retrieval-Augmented Generation) technology, and powerful embedding tools, ARIA provides personalized, step-by-step guidance that adapts to each student's learning pace and style.
 
 ### 🎯 Why ARIA Was Built
 
@@ -143,11 +143,11 @@ ARIA bridges these gaps by providing an intelligent, always-available teaching c
 ## 👥 Credits & Acknowledgments
 
 **Developed by:**
-- **Dibakar Roy Sarkar** - Lead Developer & Educational Technologist
+- **Dibakar Roy Sarkar** - Lead Developer & AI Researcher
 - **Yue Luo** - AI Researcher & Content Specialist
 
 **Institution:**
-- **Centrum IntelliPhysics Lab** - Advanced Educational Technology Research
+- **Centrum IntelliPhysics Lab**
 
 **Special Thanks:**
 - Engineering faculty for curriculum guidance
@@ -160,7 +160,7 @@ ARIA bridges these gaps by providing an intelligent, always-available teaching c
 
 Ready to experience the future of engineering education? 
 
-**[Try ARIA Now →](https://your-app-url.streamlit.app)**
+**[Try ARIA Now →](https://aria-static-mechanics-ta.streamlit.app/)**
 
 *For technical setup and deployment information, please contact the development team.*
 
@@ -168,9 +168,9 @@ Ready to experience the future of engineering education?
 
 ## 📞 Contact & Support
 
-- **Research Inquiries**: [research@intelliphysics.org](mailto:research@intelliphysics.org)
-- **Technical Support**: [support@intelliphysics.org](mailto:support@intelliphysics.org)
-- **Collaboration**: [partnerships@intelliphysics.org](mailto:partnerships@intelliphysics.org)
+- **Research Inquiries**: [somdatta@jhu.edu](mailto:somdatta@jhu.edu)
+- **Technical Support**: [droysar1@jh.edu](mailto:droysar1@jh.edu)
+- **Collaboration**: [somdatta@jhu.edu](somdatta@jhu.edu)
 
 ---
 
