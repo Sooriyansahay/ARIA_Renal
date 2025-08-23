@@ -1,14 +1,6 @@
 import os
 import sys
-
-# Fix SQLite for Streamlit Cloud
-try:
-    import pysqlite3
-    sys.modules['sqlite3'] = pysqlite3
-except ImportError:
-    pass
-
-import chromadb
+import pickle
 from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Any, Optional
 import json
@@ -16,6 +8,8 @@ from pathlib import Path
 import logging
 from functools import lru_cache
 import hashlib
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,38 +18,42 @@ class StaticsMechanicsRAG:
     def __init__(self, base_path: str, model_name: str = "all-MiniLM-L6-v2"):
         self.base_path = Path(base_path)
         self.model = SentenceTransformer(model_name)
-        self.chroma_client = None
-        self.collection = None
+        self.embeddings_data = None
         self.is_initialized = False
         
-        # Initialize ChromaDB with error handling
+        # Initialize pickle-based storage with error handling
         try:
-            chroma_path = str(self.base_path / "embeddings" / "chroma_db")
+            embeddings_path = self.base_path / "embeddings"
+            pickle_file = embeddings_path / "embeddings_data.pkl"
             
-            # Create directory if it doesn't exist
-            os.makedirs(chroma_path, exist_ok=True)
-            
-            # Try to initialize ChromaDB
-            self.chroma_client = chromadb.PersistentClient(path=chroma_path)
-            
-            # Try to get or create collection
-            try:
-                self.collection = self.chroma_client.get_collection("statics_mechanics_content")
-            except Exception:
-                # If collection doesn't exist, create it
-                logger.warning("Collection not found, creating new collection")
-                self.collection = self.chroma_client.create_collection(
-                    name="statics_mechanics_content",
-                    metadata={"description": "Statics and Mechanics course content"}
-                )
+            # Try to load existing embeddings data
+            if pickle_file.exists():
+                with open(pickle_file, 'rb') as f:
+                    self.embeddings_data = pickle.load(f)
+                logger.info(f"Loaded {len(self.embeddings_data.get('documents', []))} documents from pickle storage")
+            else:
+                # Create empty structure if no data exists
+                logger.warning("No embeddings data found, creating empty structure")
+                self.embeddings_data = {
+                    'documents': [],
+                    'embeddings': [],
+                    'metadatas': [],
+                    'ids': []
+                }
             
             self.is_initialized = True
-            logger.info("ChromaDB initialized successfully")
+            logger.info("Pickle-based storage initialized successfully")
             
         except Exception as e:
-            logger.error(f"Failed to initialize ChromaDB: {e}")
+            logger.error(f"Failed to initialize pickle storage: {e}")
             logger.warning("Running in fallback mode without vector search")
             self.is_initialized = False
+            self.embeddings_data = {
+                'documents': [],
+                'embeddings': [],
+                'metadatas': [],
+                'ids': []
+            }
         
         # Cache for frequent queries
         self._query_cache = {}
@@ -75,9 +73,9 @@ class StaticsMechanicsRAG:
     ) -> List[Dict[str, Any]]:
         """Retrieve relevant content with optional filtering"""
         
-        # If ChromaDB is not initialized, return fallback content
-        if not self.is_initialized or not self.collection:
-            logger.warning("ChromaDB not available, returning fallback content")
+        # If storage is not initialized or no data, return fallback content
+        if not self.is_initialized or not self.embeddings_data or len(self.embeddings_data.get('documents', [])) == 0:
+            logger.warning("Vector storage not available, returning fallback content")
             return self._get_fallback_content(query, content_type)
         
         try:
@@ -93,29 +91,43 @@ class StaticsMechanicsRAG:
             # Get query embedding
             query_embedding = self._get_query_embedding(query)
             
-            # Prepare where clause for filtering
-            where_clause = {}
-            if content_type:
-                where_clause["content_type"] = content_type
-            if topic_filter:
-                where_clause["topic"] = {"$contains": topic_filter}
+            # Filter documents based on criteria
+            filtered_indices = []
+            for i, metadata in enumerate(self.embeddings_data['metadatas']):
+                include = True
+                if content_type and metadata.get('content_type') != content_type:
+                    include = False
+                if topic_filter and topic_filter not in metadata.get('topic', ''):
+                    include = False
+                if include:
+                    filtered_indices.append(i)
             
-            # Query ChromaDB
-            results = self.collection.query(
-                query_embeddings=[query_embedding],
-                n_results=n_results,
-                where=where_clause if where_clause else None,
-                include=["documents", "metadatas", "distances"]
-            )
+            # If no documents match filters, use all documents
+            if not filtered_indices:
+                filtered_indices = list(range(len(self.embeddings_data['documents'])))
+            
+            # Calculate similarities for filtered documents
+            if len(filtered_indices) == 0:
+                return self._get_fallback_content(query, content_type)
+            
+            # Get embeddings for filtered documents
+            filtered_embeddings = [self.embeddings_data['embeddings'][i] for i in filtered_indices]
+            
+            # Calculate cosine similarities
+            similarities = cosine_similarity([query_embedding], filtered_embeddings)[0]
+            
+            # Get top n_results
+            top_indices = np.argsort(similarities)[::-1][:n_results]
             
             # Format results
             formatted_results = []
-            for i in range(len(results["documents"][0])):
+            for idx in top_indices:
+                original_idx = filtered_indices[idx]
                 result = {
-                    "text": results["documents"][0][i],
-                    "metadata": results["metadatas"][0][i],
-                    "similarity_score": 1 - results["distances"][0][i],  # Convert distance to similarity
-                    "source": results["metadatas"][0][i].get("source_file", "Unknown")
+                    "text": self.embeddings_data['documents'][original_idx],
+                    "metadata": self.embeddings_data['metadatas'][original_idx],
+                    "similarity_score": float(similarities[idx]),
+                    "source": self.embeddings_data['metadatas'][original_idx].get("source_file", "Unknown")
                 }
                 formatted_results.append(result)
             
@@ -126,7 +138,7 @@ class StaticsMechanicsRAG:
             return formatted_results
             
         except Exception as e:
-            logger.error(f"Error querying ChromaDB: {e}")
+            logger.error(f"Error querying vector storage: {e}")
             return self._get_fallback_content(query, content_type)
     
     def get_concept_related_content(self, concept: str, n_results: int = 3) -> List[Dict]:
