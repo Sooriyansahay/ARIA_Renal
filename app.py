@@ -254,11 +254,11 @@ def main():
         
         st.subheader("Tips for Better Learning")
         st.markdown("""
-        Ask specific questions about concepts  
-        Describe your problem step by step  
-        Ask for guidance, not direct answers  
-        Request examples or analogies  
-        Ask about common mistakes to avoid
+        * Ask specific questions about concepts
+        * Describe your problem step by step
+        * Ask for guidance, not direct answers
+        * Request examples or analogies
+        * Ask about common mistakes to avoid
         """)
     
     if st.session_state.system_initialized and st.session_state.ta_system:
