@@ -12,6 +12,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from scripts.teaching_assistant import StaticsMechanicsTA
 from scripts.database.feedback_storage import feedback_storage
+from scripts.database.conversation_storage import conversation_storage
 from scripts.database.supabase_config import supabase_config
 
 # Get API key from environment variables or Streamlit secrets
@@ -325,33 +326,12 @@ def get_course_topics():
         "Moment of Inertia", "Stress Transformation", "Principal Stresses"
     ]
 
-def save_feedback_to_database(session_id, message_index, user_question, ai_response, feedback_type, concepts_covered=None, response_time=None):
-    """Save feedback data to database"""
+def update_conversation_feedback(conversation_id, feedback_type):
+    """Update feedback for a conversation"""
     try:
-        success = feedback_storage.store_feedback(
-            session_id=session_id,
-            conversation_id=None,  # We can link this to conversation later if needed
-            message_index=message_index,
-            user_question=user_question,
-            ai_response=ai_response,
-            feedback_type=feedback_type,
-            concepts_covered=concepts_covered or [],
-            response_time=response_time
-        )
-        if not success:
-            st.error("Failed to save feedback")
-        return success
-    except Exception as e:
-        st.error(f"Error saving feedback: {e}")
-        return False
-
-def update_feedback_in_database(session_id, message_index, new_feedback_type):
-    """Update existing feedback in database"""
-    try:
-        success = feedback_storage.update_feedback(
-            session_id=session_id,
-            message_index=message_index,
-            new_feedback_type=new_feedback_type
+        success = feedback_storage.update_conversation_feedback(
+            conversation_id=conversation_id,
+            feedback_type=feedback_type
         )
         if not success:
             st.error("Failed to update feedback")
@@ -360,16 +340,21 @@ def update_feedback_in_database(session_id, message_index, new_feedback_type):
         st.error(f"Error updating feedback: {e}")
         return False
 
-def delete_feedback_from_database(session_id, message_index):
-    """Delete feedback from database"""
+def get_conversation_feedback(conversation_id):
+    """Get feedback for a conversation"""
     try:
-        success = feedback_storage.delete_feedback(
-            session_id=session_id,
-            message_index=message_index
-        )
+        return feedback_storage.get_conversation_feedback(conversation_id)
+    except Exception as e:
+        st.error(f"Error getting feedback: {e}")
+        return None
+
+def clear_conversation_feedback(conversation_id):
+    """Clear feedback for a conversation"""
+    try:
+        success = feedback_storage.clear_conversation_feedback(conversation_id)
         return success
     except Exception as e:
-        st.error(f"Error deleting feedback: {e}")
+        st.error(f"Error clearing feedback: {e}")
         return False
 
 def handle_feedback(message_index, feedback_type):
@@ -377,23 +362,18 @@ def handle_feedback(message_index, feedback_type):
     if message_index < len(st.session_state.conversation_history):
         message = st.session_state.conversation_history[message_index]
         if message["role"] == "assistant":
-            # Get session ID (create one if it doesn't exist)
-            if "session_id" not in st.session_state:
-                st.session_state.session_id = str(datetime.now().timestamp()).replace('.', '')
+            # Get conversation ID from the message
+            conversation_id = message.get("conversation_id")
+            if not conversation_id:
+                st.error("No conversation ID found for this message")
+                return
             
-            session_id = st.session_state.session_id
             current_feedback = st.session_state.message_feedback.get(message_index)
-            
-            # Get user question and response details
-            user_question = st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else ""
-            ai_response = message["content"]
-            concepts_covered = message.get("concepts", [])
-            response_time = message.get("response_time", 0)
             
             # If clicking the same feedback type, remove it (toggle off)
             if current_feedback == feedback_type:
-                # Remove feedback from database
-                success = delete_feedback_from_database(session_id, message_index)
+                # Clear feedback from database
+                success = clear_conversation_feedback(conversation_id)
                 if success:
                     # Remove from session state
                     if message_index in st.session_state.message_feedback:
@@ -405,30 +385,23 @@ def handle_feedback(message_index, feedback_type):
                         if entry.get("message_index") != message_index
                     ]
             else:
-                # Check if feedback already exists for this message
-                if current_feedback:
-                    # Update existing feedback
-                    success = update_feedback_in_database(session_id, message_index, feedback_type)
-                else:
-                    # Add new feedback
-                    success = save_feedback_to_database(
-                        session_id=session_id,
-                        message_index=message_index,
-                        user_question=user_question,
-                        ai_response=ai_response,
-                        feedback_type=feedback_type,
-                        concepts_covered=concepts_covered,
-                        response_time=response_time
-                    )
+                # Update feedback in database
+                success = update_conversation_feedback(conversation_id, feedback_type)
                 
                 if success:
                     # Update session state
                     st.session_state.message_feedback[message_index] = feedback_type
                     
                     # Update feedback_data list (for backward compatibility)
+                    user_question = st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else ""
+                    ai_response = message["content"]
+                    concepts_covered = message.get("concepts", [])
+                    response_time = message.get("response_time", 0)
+                    
                     feedback_entry = {
                         "timestamp": datetime.now().isoformat(),
                         "message_index": message_index,
+                        "conversation_id": conversation_id,
                         "user_question": user_question,
                         "ta_response": ai_response,
                         "feedback": feedback_type,
@@ -617,17 +590,35 @@ def main():
                 })
                 with st.spinner("ARIA is thinking"):
                     try:
+                        # Get session ID (create one if it doesn't exist)
+                        if "session_id" not in st.session_state:
+                            st.session_state.session_id = conversation_storage.create_session_id()
+                        
                         start_time = time.time()
                         response_data = st.session_state.ta_system.generate_response(
                             user_input,
                             st.session_state.conversation_history[-10:]
                         )
                         response_time = time.time() - start_time
+                        
+                        # Store conversation in database and get conversation ID
+                         conversation_id = None
+                         if supabase_config.is_connected():
+                             conversation_id = conversation_storage.store_conversation(
+                                 session_id=st.session_state.session_id,
+                                 user_question=user_input,
+                                 ta_response=response_data["response"],
+                                 context_sources=response_data.get("context_sources", []),
+                                 concepts_used=response_data.get("concepts_covered", []),
+                                 response_time=response_time
+                             )
+                        
                         ta_message = {
                             "role": "assistant",
                             "content": response_data["response"],
                             "concepts": response_data.get("concepts_covered", []),
-                            "response_time": response_time
+                            "response_time": response_time,
+                            "conversation_id": conversation_id
                         }
                         st.session_state.conversation_history.append(ta_message)
                         with st.sidebar:

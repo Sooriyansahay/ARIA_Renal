@@ -21,7 +21,7 @@ class ConversationStorage:
                          ta_response: str, 
                          context_sources: List[str] = None,
                          concepts_used: List[str] = None,
-                         response_time: float = None) -> bool:
+                         response_time: float = None) -> Optional[str]:
         """
         Store a conversation exchange in the database
         
@@ -34,15 +34,16 @@ class ConversationStorage:
             response_time: Time taken to generate response
             
         Returns:
-            bool: True if successful, False otherwise
+            str: Conversation ID if successful, None otherwise
         """
         if not self.client:
             logger.error("Supabase client not available")
-            return False
+            return None
         
         try:
+            conversation_id = str(uuid.uuid4())
             conversation_data = {
-                'id': str(uuid.uuid4()),
+                'id': conversation_id,
                 'session_id': session_id,
                 'user_question': user_question,
                 'ta_response': ta_response,
@@ -57,15 +58,15 @@ class ConversationStorage:
             response = self.client.table(self.table_name).insert(conversation_data).execute()
             
             if response.data:
-                logger.info(f"Conversation stored successfully with ID: {conversation_data['id']}")
-                return True
+                logger.info(f"Conversation stored successfully with ID: {conversation_id}")
+                return conversation_id
             else:
                 logger.error("Failed to store conversation - no data returned")
-                return False
+                return None
                 
         except Exception as e:
             logger.error(f"Error storing conversation: {e}")
-            return False
+            return None
     
     def get_session_conversations(self, session_id: str) -> List[Dict[str, Any]]:
         """

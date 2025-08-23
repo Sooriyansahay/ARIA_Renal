@@ -10,104 +10,63 @@ logger = logging.getLogger(__name__)
 
 class FeedbackStorage:
     """
-    Handle feedback storage and retrieval using Supabase or fallback to JSON
+    Handle feedback storage and retrieval using Supabase conversations table or fallback to JSON
     """
     
     def __init__(self):
         self.client = supabase_config.get_client()
-        self.table_name = 'feedback'
+        self.table_name = 'conversations'
         self.fallback_file = Path(__file__).parent.parent.parent / "feedback_data.json"
         
-    def store_feedback(self, 
-                      session_id: str,
-                      conversation_id: Optional[str],
-                      message_index: int,
-                      user_question: str,
-                      ai_response: str,
-                      feedback_type: str,
-                      concepts_covered: List[str] = None,
-                      response_time: float = None) -> bool:
+    def update_conversation_feedback(self, 
+                                   conversation_id: str,
+                                   feedback_type: str) -> bool:
         """
-        Store feedback data in Supabase database or fallback to JSON
+        Update feedback for a specific conversation in the conversations table
         
         Args:
-            session_id: Session identifier
-            conversation_id: Related conversation ID (optional)
-            message_index: Index of the message in conversation
-            user_question: The user's question
-            ai_response: The AI's response
+            conversation_id: The conversation ID to update
             feedback_type: Type of feedback ('helpful', 'not_helpful', 'partially_helpful')
-            concepts_covered: List of concepts covered in the response
-            response_time: Response time in seconds
             
         Returns:
-            bool: True if stored successfully, False otherwise
+            bool: True if updated successfully, False otherwise
         """
         
         if self.client and supabase_config.is_connected():
-            return self._store_in_database(session_id, conversation_id, message_index, 
-                                         user_question, ai_response, feedback_type,
-                                         concepts_covered, response_time)
+            return self._update_feedback_in_database(conversation_id, feedback_type)
         else:
-            return self._store_in_json(session_id, conversation_id, message_index,
-                                     user_question, ai_response, feedback_type,
-                                     concepts_covered, response_time)
+            return self._update_feedback_in_json(conversation_id, feedback_type)
     
-    def _store_in_database(self, session_id: str, conversation_id: Optional[str],
-                          message_index: int, user_question: str, ai_response: str,
-                          feedback_type: str, concepts_covered: List[str],
-                          response_time: float) -> bool:
+    def _update_feedback_in_database(self, conversation_id: str, feedback_type: str) -> bool:
         """
-        Store feedback in Supabase database
+        Update feedback in conversations table in Supabase database
         """
         try:
-            feedback_data = {
-                'id': str(uuid.uuid4()),
-                'session_id': session_id,
-                'conversation_id': conversation_id,
-                'message_index': message_index,
-                'user_question': user_question,
-                'ai_response': ai_response,
-                'feedback_type': feedback_type,
-                'concepts_covered': concepts_covered or [],
-                'response_time': response_time
-            }
-            
-            response = self.client.table(self.table_name).insert(feedback_data).execute()
+            response = self.client.table(self.table_name).update({
+                'feedback': feedback_type
+            }).eq('id', conversation_id).execute()
             
             if response.data:
-                logger.info(f"Feedback stored successfully with ID: {feedback_data['id']}")
+                logger.info(f"Feedback updated successfully for conversation: {conversation_id}")
                 return True
             else:
-                logger.error("Failed to store feedback - no data returned")
+                logger.error("Failed to update feedback - no data returned")
                 return False
                 
         except Exception as e:
-            logger.error(f"Error storing feedback in database: {e}")
+            logger.error(f"Error updating feedback in database: {e}")
             # Fallback to JSON storage
-            return self._store_in_json(session_id, conversation_id, message_index,
-                                     user_question, ai_response, feedback_type,
-                                     concepts_covered, response_time)
+            return self._update_feedback_in_json(conversation_id, feedback_type)
     
-    def _store_in_json(self, session_id: str, conversation_id: Optional[str],
-                      message_index: int, user_question: str, ai_response: str,
-                      feedback_type: str, concepts_covered: List[str],
-                      response_time: float) -> bool:
+    def _update_feedback_in_json(self, conversation_id: str, feedback_type: str) -> bool:
         """
-        Fallback storage method using JSON files
+        Fallback method to update feedback using JSON files
         """
         try:
             feedback_entry = {
-                'id': str(uuid.uuid4()),
-                'timestamp': datetime.now().isoformat(),
-                'session_id': session_id,
                 'conversation_id': conversation_id,
-                'message_index': message_index,
-                'user_question': user_question,
-                'ai_response': ai_response,
                 'feedback_type': feedback_type,
-                'concepts_covered': concepts_covered or [],
-                'response_time': response_time
+                'timestamp': datetime.now().isoformat()
             }
             
             # Load existing feedback data
@@ -120,133 +79,123 @@ class FeedbackStorage:
                     logger.warning("Corrupted feedback file, starting fresh")
                     existing_data = []
             
-            # Add new feedback
-            existing_data.append(feedback_entry)
+            # Update existing feedback or add new one
+            updated = False
+            for entry in existing_data:
+                if entry.get('conversation_id') == conversation_id:
+                    entry['feedback_type'] = feedback_type
+                    entry['timestamp'] = datetime.now().isoformat()
+                    updated = True
+                    break
+            
+            if not updated:
+                existing_data.append(feedback_entry)
             
             # Save back to file
             self.fallback_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.fallback_file, 'w') as f:
                 json.dump(existing_data, f, indent=2, default=str)
             
-            logger.info(f"Feedback stored in JSON file: {feedback_entry['id']}")
+            logger.info(f"Feedback updated in JSON file for conversation: {conversation_id}")
             return True
             
-        except Exception as e:
-            logger.error(f"Error storing feedback in JSON: {e}")
-            return False
-    
-    def update_feedback(self, session_id: str, message_index: int, 
-                       new_feedback_type: str) -> bool:
-        """
-        Update existing feedback for a specific message
-        
-        Args:
-            session_id: Session identifier
-            message_index: Index of the message in conversation
-            new_feedback_type: New feedback type
-            
-        Returns:
-            bool: True if updated successfully, False otherwise
-        """
-        
-        if self.client and supabase_config.is_connected():
-            return self._update_in_database(session_id, message_index, new_feedback_type)
-        else:
-            return self._update_in_json(session_id, message_index, new_feedback_type)
-    
-    def _update_in_database(self, session_id: str, message_index: int,
-                           new_feedback_type: str) -> bool:
-        """
-        Update feedback in Supabase database
-        """
-        try:
-            response = self.client.table(self.table_name).update({
-                'feedback_type': new_feedback_type,
-                'updated_at': datetime.now().isoformat()
-            }).eq('session_id', session_id).eq('message_index', message_index).execute()
-            
-            if response.data:
-                logger.info(f"Feedback updated successfully for session {session_id}, message {message_index}")
-                return True
-            else:
-                logger.error("Failed to update feedback - no data returned")
-                return False
-                
-        except Exception as e:
-            logger.error(f"Error updating feedback in database: {e}")
-            return self._update_in_json(session_id, message_index, new_feedback_type)
-    
-    def _update_in_json(self, session_id: str, message_index: int,
-                       new_feedback_type: str) -> bool:
-        """
-        Update feedback in JSON file
-        """
-        try:
-            if not self.fallback_file.exists():
-                return False
-            
-            with open(self.fallback_file, 'r') as f:
-                feedback_data = json.load(f)
-            
-            # Find and update the feedback entry
-            updated = False
-            for entry in feedback_data:
-                if (entry.get('session_id') == session_id and 
-                    entry.get('message_index') == message_index):
-                    entry['feedback_type'] = new_feedback_type
-                    entry['updated_at'] = datetime.now().isoformat()
-                    updated = True
-                    break
-            
-            if updated:
-                with open(self.fallback_file, 'w') as f:
-                    json.dump(feedback_data, f, indent=2, default=str)
-                logger.info(f"Feedback updated in JSON for session {session_id}, message {message_index}")
-                return True
-            else:
-                logger.warning(f"Feedback not found for session {session_id}, message {message_index}")
-                return False
-                
         except Exception as e:
             logger.error(f"Error updating feedback in JSON: {e}")
             return False
     
-    def delete_feedback(self, session_id: str, message_index: int) -> bool:
+    def get_conversation_feedback(self, conversation_id: str) -> Optional[str]:
         """
-        Delete feedback for a specific message
+        Get feedback for a specific conversation
         
         Args:
-            session_id: Session identifier
-            message_index: Index of the message in conversation
+            conversation_id: The conversation ID to get feedback for
             
         Returns:
-            bool: True if deleted successfully, False otherwise
+            str: The feedback type if found, None otherwise
         """
         
         if self.client and supabase_config.is_connected():
-            return self._delete_in_database(session_id, message_index)
+            return self._get_feedback_from_database(conversation_id)
         else:
-            return self._delete_in_json(session_id, message_index)
+            return self._get_feedback_from_json(conversation_id)
     
-    def _delete_in_database(self, session_id: str, message_index: int) -> bool:
+    def _get_feedback_from_database(self, conversation_id: str) -> Optional[str]:
         """
-        Delete feedback from Supabase database
+        Get feedback from conversations table in Supabase database
         """
         try:
-            response = self.client.table(self.table_name).delete().eq(
-                'session_id', session_id
-            ).eq('message_index', message_index).execute()
+            response = self.client.table(self.table_name).select('feedback').eq('id', conversation_id).execute()
             
-            logger.info(f"Feedback deleted for session {session_id}, message {message_index}")
-            return True
+            if response.data and len(response.data) > 0:
+                return response.data[0].get('feedback')
+            else:
+                return None
                 
         except Exception as e:
-            logger.error(f"Error deleting feedback from database: {e}")
-            return self._delete_in_json(session_id, message_index)
+            logger.error(f"Error getting feedback from database: {e}")
+            return self._get_feedback_from_json(conversation_id)
     
-    def _delete_in_json(self, session_id: str, message_index: int) -> bool:
+    def _get_feedback_from_json(self, conversation_id: str) -> Optional[str]:
         """
-        Delete feedback from JSON file
+        Get feedback from JSON file
+        """
+        try:
+            if not self.fallback_file.exists():
+                return None
+            
+            with open(self.fallback_file, 'r') as f:
+                feedback_data = json.load(f)
+            
+            # Find the feedback entry
+            for entry in feedback_data:
+                if entry.get('conversation_id') == conversation_id:
+                    return entry.get('feedback_type')
+            
+            return None
+                
+        except Exception as e:
+            logger.error(f"Error getting feedback from JSON: {e}")
+            return None
+    
+    def clear_conversation_feedback(self, conversation_id: str) -> bool:
+        """
+        Clear feedback for a specific conversation (set to NULL)
+        
+        Args:
+            conversation_id: The conversation ID to clear feedback for
+            
+        Returns:
+            bool: True if cleared successfully, False otherwise
+        """
+        
+        if self.client and supabase_config.is_connected():
+            return self._clear_feedback_in_database(conversation_id)
+        else:
+            return self._clear_feedback_in_json(conversation_id)
+    
+    def _clear_feedback_in_database(self, conversation_id: str) -> bool:
+        """
+        Clear feedback from conversations table in Supabase database
+        """
+        try:
+            response = self.client.table(self.table_name).update({
+                'feedback': None
+            }).eq('id', conversation_id).execute()
+            
+            if response.data:
+                logger.info(f"Feedback cleared for conversation: {conversation_id}")
+                return True
+            else:
+                logger.error("Failed to clear feedback - no data returned")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error clearing feedback from database: {e}")
+            return self._clear_feedback_in_json(conversation_id)
+    
+    def _clear_feedback_in_json(self, conversation_id: str) -> bool:
+        """
+        Clear feedback from JSON file
         """
         try:
             if not self.fallback_file.exists():
@@ -255,25 +204,24 @@ class FeedbackStorage:
             with open(self.fallback_file, 'r') as f:
                 feedback_data = json.load(f)
             
-            # Filter out the feedback entry
+            # Remove the feedback entry
             original_length = len(feedback_data)
             feedback_data = [
                 entry for entry in feedback_data
-                if not (entry.get('session_id') == session_id and 
-                       entry.get('message_index') == message_index)
+                if entry.get('conversation_id') != conversation_id
             ]
             
             if len(feedback_data) < original_length:
                 with open(self.fallback_file, 'w') as f:
                     json.dump(feedback_data, f, indent=2, default=str)
-                logger.info(f"Feedback deleted from JSON for session {session_id}, message {message_index}")
+                logger.info(f"Feedback cleared from JSON for conversation: {conversation_id}")
                 return True
             else:
-                logger.warning(f"Feedback not found for session {session_id}, message {message_index}")
+                logger.warning(f"Feedback not found for conversation: {conversation_id}")
                 return False
                 
         except Exception as e:
-            logger.error(f"Error deleting feedback from JSON: {e}")
+            logger.error(f"Error clearing feedback from JSON: {e}")
             return False
 
 # Global instance
