@@ -252,9 +252,9 @@ def main():
     # ARIA's personal introduction
     if st.session_state.system_initialized:
         st.markdown("""
-        <div style="background-color: #e3f2fd; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #1f77b4;">
-            <h3 style="color: #1f77b4; margin: 0 0 0.5rem 0;">👋 Hi! I'm ARIA</h3>
-            <p style="margin: 0; color: #2c3e50;">Your AI Teaching Assistant for Statics & Mechanics of Materials. I'm here to guide you through problem-solving steps and help you understand key concepts. How can I help you today?</p>
+        <div style="background-color: #1e3a8a; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #3b82f6;">
+            <h3 style="color: #ffffff; margin: 0 0 0.5rem 0;">👋 Hi! I'm ARIA</h3>
+            <p style="margin: 0; color: #e5e7eb;">Your AI Teaching Assistant for Statics & Mechanics of Materials. I'm here to guide you through problem-solving steps and help you understand key concepts. How can I help you today?</p>
         </div>
         """, unsafe_allow_html=True)
     
