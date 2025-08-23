@@ -12,6 +12,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from scripts.teaching_assistant import StaticsMechanicsTA
 from scripts.database.feedback_storage import feedback_storage
+from scripts.database.supabase_config import supabase_config
 
 # Get API key from environment variables or Streamlit secrets
 try:
@@ -479,6 +480,27 @@ def main():
             st.success("TA System Ready")
         else:
             st.error("System Not Ready")
+        
+        # Supabase Database Status
+        st.subheader("Database Status")
+        if supabase_config.is_connected():
+            st.success("✅ Supabase Connected")
+            st.caption("Feedback data will be stored in Supabase database")
+        else:
+            st.warning("⚠️ Supabase Not Connected")
+            st.caption("Feedback data will be stored locally in JSON files")
+            with st.expander("How to configure Supabase"):
+                st.markdown("""
+                1. Create a Supabase project at [supabase.com](https://supabase.com)
+                2. Go to Settings > API in your dashboard
+                3. Copy your Project URL and anon key
+                4. Add them to `.streamlit/secrets.toml`:
+                ```toml
+                SUPABASE_URL = "https://your-project-ref.supabase.co"
+                SUPABASE_ANON_KEY = "your_anon_key_here"
+                ```
+                5. Restart the application
+                """)
         
         st.subheader("Focus Area")
         topics = get_course_topics()
