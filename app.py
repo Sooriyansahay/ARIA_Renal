@@ -329,7 +329,7 @@ def get_course_topics():
 def update_conversation_feedback(conversation_id, feedback_type):
     """Update feedback for a conversation"""
     try:
-        success = feedback_storage.update_conversation_feedback(
+        success = feedback_storage.update_feedback(
             conversation_id=conversation_id,
             feedback_type=feedback_type
         )

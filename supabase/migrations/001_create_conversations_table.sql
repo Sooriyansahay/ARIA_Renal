@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS conversations (
     response_time DECIMAL(10,3),
     question_length INTEGER,
     response_length INTEGER,
+    feedback VARCHAR(20) CHECK (feedback IN ('helpful', 'not_helpful', 'partially_helpful')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -16,6 +17,7 @@ CREATE TABLE IF NOT EXISTS conversations (
 CREATE INDEX IF NOT EXISTS idx_conversations_session_id ON conversations(session_id);
 CREATE INDEX IF NOT EXISTS idx_conversations_created_at ON conversations(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_conversations_concepts ON conversations USING GIN(concepts_used);
+CREATE INDEX IF NOT EXISTS idx_conversations_feedback ON conversations(feedback);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
@@ -41,7 +43,7 @@ CREATE POLICY "Allow authenticated full access" ON conversations
     WITH CHECK (true);
 
 -- Grant permissions to anon and authenticated roles
-GRANT SELECT, INSERT ON conversations TO anon;
+GRANT SELECT, INSERT, UPDATE ON conversations TO anon;
 GRANT ALL PRIVILEGES ON conversations TO authenticated;
 
 -- Create a view for conversation analytics
@@ -52,7 +54,11 @@ SELECT
     AVG(response_time) as avg_response_time,
     AVG(question_length) as avg_question_length,
     AVG(response_length) as avg_response_length,
-    COUNT(DISTINCT session_id) as unique_sessions
+    COUNT(DISTINCT session_id) as unique_sessions,
+    COUNT(CASE WHEN feedback = 'helpful' THEN 1 END) as helpful_count,
+    COUNT(CASE WHEN feedback = 'not_helpful' THEN 1 END) as not_helpful_count,
+    COUNT(CASE WHEN feedback = 'partially_helpful' THEN 1 END) as partially_helpful_count,
+    ROUND((COUNT(CASE WHEN feedback = 'helpful' THEN 1 END) * 100.0 / NULLIF(COUNT(feedback), 0)), 2) as helpful_percentage
 FROM conversations
 GROUP BY DATE_TRUNC('day', created_at)
 ORDER BY date DESC;

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class FeedbackStorage:
     """
-    Handle feedback storage and retrieval using Supabase conversations table or fallback to JSON
+    Handle feedback storage and retrieval using Supabase or fallback to JSON
     """
     
     def __init__(self):
@@ -18,11 +18,11 @@ class FeedbackStorage:
         self.table_name = 'conversations'
         self.fallback_file = Path(__file__).parent.parent.parent / "feedback_data.json"
         
-    def update_conversation_feedback(self, 
-                                   conversation_id: str,
-                                   feedback_type: str) -> bool:
+    def update_feedback(self, 
+                       conversation_id: str,
+                       feedback_type: str) -> bool:
         """
-        Update feedback for a specific conversation in the conversations table
+        Update feedback for a specific conversation in Supabase database or fallback to JSON
         
         Args:
             conversation_id: The conversation ID to update
@@ -33,11 +33,11 @@ class FeedbackStorage:
         """
         
         if self.client and supabase_config.is_connected():
-            return self._update_feedback_in_database(conversation_id, feedback_type)
+            return self._update_in_database(conversation_id, feedback_type)
         else:
-            return self._update_feedback_in_json(conversation_id, feedback_type)
+            return self._update_in_json(conversation_id, feedback_type)
     
-    def _update_feedback_in_database(self, conversation_id: str, feedback_type: str) -> bool:
+    def _update_in_database(self, conversation_id: str, feedback_type: str) -> bool:
         """
         Update feedback in conversations table in Supabase database
         """
@@ -56,9 +56,9 @@ class FeedbackStorage:
         except Exception as e:
             logger.error(f"Error updating feedback in database: {e}")
             # Fallback to JSON storage
-            return self._update_feedback_in_json(conversation_id, feedback_type)
+            return self._update_in_json(conversation_id, feedback_type)
     
-    def _update_feedback_in_json(self, conversation_id: str, feedback_type: str) -> bool:
+    def _update_in_json(self, conversation_id: str, feedback_type: str) -> bool:
         """
         Fallback method to update feedback using JSON files
         """
