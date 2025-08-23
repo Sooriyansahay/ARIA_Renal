@@ -205,12 +205,13 @@ h3{font-size:1.4rem !important}
   border-top:1px solid var(--border); opacity:0.8;
 }
 .feedback-text{
-  font-size:0.2rem; color:var(--muted); margin-right:0.5rem;
+  font-size:0.85rem; color:var(--muted); margin-right:0.5rem;
 }
 .feedback-button{
   background:transparent; border:1px solid var(--border); border-radius:8px;
-  padding:0.4rem 0.6rem; cursor:pointer; transition:all 0.15s ease;
-  color:var(--muted); font-size:0.2rem; display:flex; align-items:center; gap:0.3rem;
+  padding:0.5rem 1rem; cursor:pointer; transition:all 0.15s ease;
+  color:var(--muted); font-size:0.8rem; display:flex; align-items:center; gap:0.4rem;
+  min-width:80px; white-space:nowrap;
 }
 .feedback-button:hover{
   background:var(--panel-2); border-color:var(--accent); color:var(--text);
