@@ -202,43 +202,53 @@ h1.app-title{
 
 st.markdown("""
 <style>
-/* Base app typography: CMU Serif by default, no global !important wildcard */
-@font-face{
-  font-family:"CMU Serif";
-  src: local("CMU Serif"), local("CMUSerif");
-  font-display: swap;
+/* Make the toggle a clean icon button and hide any inner text */
+button[data-testid="collapsedControl"]{
+  position: relative;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 4px !important;
+  border: 1px solid #26272b;
+  border-radius: 10px;
+  background: #0e0f12;
+  cursor: pointer;
 }
 
-/* Body and common text use CMU Serif by inheritance */
-.stApp{ font-family:"CMU Serif", serif; }
-.main .block-container,
-.stMarkdown, p, div, label, li,
-h1,h2,h3,h4,h5,h6,
-input, textarea, select, button {
-  font-family: inherit;
+/* Hide whatever Streamlit puts inside (e.g., 'keyboard_double_arrow_right') */
+button[data-testid="collapsedControl"] *{
+  opacity: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
 }
 
-/* Load Material Icons for the sidebar toggle */
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+/* Draw a crisp double-chevron icon with an inline SVG mask */
+button[data-testid="collapsedControl"]::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 22px;
+  height: 22px;
 
-/* Force the toggle to use the icon font and a normal size */
-[data-testid="collapsedControl"] span,
-.material-icons {
-  font-family: 'Material Icons' !important;
-  font-size: 24px !important;
-  letter-spacing: normal !important;
-  line-height: 1 !important;
+  background-color: #d4d4d6;
+  -webkit-mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
+  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
+</svg>") no-repeat center / contain;
+          mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
+  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
+</svg>") no-repeat center / contain;
 }
 
-/* Optional: make the toggle look like a small icon button */
-[data-testid="collapsedControl"]{
-  background: transparent;
-  border: none;
-}
-[data-testid="collapsedControl"] span{ color:#d4d4d6 !important; }
-[data-testid="collapsedControl"]:hover span{ color:#ffffff !important; }
+/* Hover and focus states */
+button[data-testid="collapsedControl"]:hover::after{ background-color: #ffffff; }
+button[data-testid="collapsedControl"]:focus{ outline: 2px solid #6aa6ff; outline-offset: 2px; }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
