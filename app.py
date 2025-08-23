@@ -28,7 +28,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Design CSS
+# Design CSS with CMU Serif everywhere
 st.markdown("""
 <style>
 :root{
@@ -37,33 +37,71 @@ st.markdown("""
   --accent:#6aa6ff; --accent-2:#9bbcff;
 }
 
-/* Serif stack similar to CMU Serif or Times */
-@font-face{ font-family:"CMU Serif"; src: local("CMU Serif"); font-display:swap; }
-
-.stApp{
-  background-color:var(--bg);
-  color:var(--text);
-  font-family:"CMU Serif","Times New Roman",Times,Georgia,Cambria,"Liberation Serif",serif;
-  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+/* CMU Serif webfont declarations.
+   If the files are present in ./fonts they will be used.
+   Otherwise the local installed face will be used. */
+@font-face{
+  font-family:"CMU Serif";
+  src: local("CMU Serif"), local("CMUSerif"),
+       url("./fonts/cmunrm.woff2") format("woff2"),
+       url("./fonts/cmunrm.woff") format("woff"),
+       url("./fonts/cmunrm.ttf") format("truetype");
+  font-weight:400; font-style:normal; font-display:swap;
 }
+@font-face{
+  font-family:"CMU Serif";
+  src: local("CMU Serif Bold"), local("CMUSerif-Bold"),
+       url("./fonts/cmunbx.woff2") format("woff2"),
+       url("./fonts/cmunbx.woff") format("woff"),
+       url("./fonts/cmunbx.ttf") format("truetype");
+  font-weight:700; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:"CMU Serif";
+  src: local("CMU Serif Italic"), local("CMUSerif-Italic"),
+       url("./fonts/cmunti.woff2") format("woff2"),
+       url("./fonts/cmunti.woff") format("woff"),
+       url("./fonts/cmunti.ttf") format("truetype");
+  font-weight:400; font-style:italic; font-display:swap;
+}
+@font-face{
+  font-family:"CMU Serif";
+  src: local("CMU Serif Bold Italic"), local("CMUSerif-BoldItalic"),
+       url("./fonts/cmunbi.woff2") format("woff2"),
+       url("./fonts/cmunbi.woff") format("woff"),
+       url("./fonts/cmunbi.ttf") format("truetype");
+  font-weight:700; font-style:italic; font-display:swap;
+}
+
+/* Apply CMU Serif globally, including code blocks */
+html, body, .stApp, .main, .block-container,
+h1,h2,h3,h4,h5,h6,
+p,div,span,label,li,small,em,strong,
+button, input, textarea, select,
+code, pre, kbd, samp {
+  font-family: "CMU Serif", serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text);
+}
+
+.stApp{ background-color:var(--bg); }
 
 .main .block-container{ max-width:960px; padding:2rem 1.5rem; background:var(--bg); }
 
-/* Headings */
-h1,h2,h3,h4,h5,h6{
-  color:var(--text)!important; font-weight:600!important; letter-spacing:.2px!important;
-  line-height:1.25!important; margin:0 0 .8rem 0!important;
-}
-h1{font-size:2.1rem!important} h2{font-size:1.7rem!important} h3{font-size:1.35rem!important}
-
-/* Body text */
-p,div,span,label,li{
-  color:var(--text)!important; font-weight:400!important; font-size:16.5px!important; line-height:1.75!important;
+/* Centered larger app title */
+.app-title{
+  text-align:center;
+  font-weight:700;
+  line-height:1.2;
+  margin:0 0 1rem 0;
+  letter-spacing:.2px;
+  font-size:clamp(2.6rem, 2.8vw + 2rem, 3.6rem);
 }
 
-/* Links */
-a,a:visited{ color:var(--accent); text-decoration:none; }
-a:hover{ color:var(--accent-2); text-decoration:underline; }
+/* Headings scale */
+h2{font-size:1.8rem !important}
+h3{font-size:1.4rem !important}
 
 /* Sidebar */
 [data-testid="stSidebar"]{
@@ -89,7 +127,7 @@ a:hover{ color:var(--accent-2); text-decoration:underline; }
 /* Buttons */
 .stButton > button{
   background:var(--panel-2); color:var(--text); border:1px solid var(--border);
-  border-radius:12px; padding:.7rem 1.1rem; font-weight:600;
+  border-radius:12px; padding:.7rem 1.1rem; font-weight:700;
   transition:transform .08s ease, background .15s ease, border .15s ease;
 }
 .stButton > button:hover{ background:#1b1d22; border-color:#30323a; transform:translateY(-1px); }
@@ -112,9 +150,22 @@ a:hover{ color:var(--accent-2); text-decoration:underline; }
 .student-message{ background:#11151c; border-left:4px solid var(--accent); }
 .ta-message{ background:#17121a; border-left:4px solid #a47aff; }
 
-/* Code blocks */
-code, pre code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace!important; font-size:14px!important; }
-pre{ background:#0f1012!important; border:1px solid var(--border)!important; border-radius:10px!important; padding:1rem!important; overflow-x:auto!important; }
+/* Footer centered */
+.app-footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:1rem;
+  margin-top:1rem;
+}
+
+/* Code blocks keep CMU Serif but retain block styling */
+pre{
+  background:#0f1012 !important;
+  border:1px solid var(--border) !important;
+  border-radius:10px !important;
+  padding:1rem !important;
+  overflow-x:auto !important;
+}
 
 /* Light preference */
 @media (prefers-color-scheme: light){
@@ -167,7 +218,10 @@ def main():
                 st.error("Failed to initialize TA system. Check the API key.")
                 return
     
-    st.title("ARIA: Statics and Mechanics of Materials TA")
+    st.markdown(
+        '<h1 class="app-title">ARIA: Statics and Mechanics of Materials TA</h1>',
+        unsafe_allow_html=True
+    )
     
     if st.session_state.system_initialized:
         st.markdown(
@@ -284,7 +338,10 @@ def main():
             st.markdown(f"• {example}")
     
     st.divider()
-    st.caption("Built by Dibakar Roy Sarkar and Yue Luo, Centrum IntelliPhysics Lab")
+    st.markdown(
+        '<p class="app-footer">Built by Dibakar Roy Sarkar and Yue Luo, Centrum IntelliPhysics Lab</p>',
+        unsafe_allow_html=True
+    )
 
 if __name__ == "__main__":
     main()
