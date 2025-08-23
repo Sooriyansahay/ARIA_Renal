@@ -29,7 +29,128 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# No custom CSS - using standard Streamlit styling only
+# Clean dark theme CSS
+st.markdown("""
+<style>
+/* Dark background for entire app */
+.stApp {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Dark sidebar */
+.css-1d391kg {
+    background-color: #1a1a1a;
+}
+
+/* Dark main content area */
+.main .block-container {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Clean message containers */
+.chat-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border: 1px solid #333333;
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+/* Student message styling */
+.student-message {
+    background-color: #0d1421;
+    border-left: 4px solid #2196f3;
+    color: #ffffff;
+}
+
+/* TA message styling */
+.ta-message {
+    background-color: #1a0d1a;
+    border-left: 4px solid #9c27b0;
+    color: #ffffff;
+}
+
+/* Dark input fields */
+.stTextInput > div > div > input {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333333;
+}
+
+.stTextArea > div > div > textarea {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333333;
+}
+
+/* Dark selectbox */
+.stSelectbox > div > div > select {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333333;
+}
+
+/* Dark buttons */
+.stButton > button {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333333;
+}
+
+.stButton > button:hover {
+    background-color: #333333;
+    border: 1px solid #555555;
+}
+
+/* Dark info box for ARIA greeting */
+.stAlert {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    border: 1px solid #3b82f6;
+}
+
+/* Dark success/error messages */
+.stSuccess {
+    background-color: #0f5132;
+    color: #ffffff;
+}
+
+.stError {
+    background-color: #721c24;
+    color: #ffffff;
+}
+
+/* Dark metrics */
+.metric-container {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+/* Dark form containers */
+.stForm {
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+}
+
+/* Dark spinner */
+.stSpinner {
+    color: #ffffff;
+}
+
+/* Ensure all text is white on dark background */
+h1, h2, h3, h4, h5, h6, p, div, span, label {
+    color: #ffffff !important;
+}
+
+/* Dark markdown content */
+.markdown-text-container {
+    color: #ffffff;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Initialize session state
 if "ta_system" not in st.session_state:
