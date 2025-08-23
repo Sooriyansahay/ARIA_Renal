@@ -205,7 +205,7 @@ h3{font-size:1.4rem !important}
   border-top:1px solid var(--border); opacity:0.8;
 }
 .feedback-text{
-  font-size:0.9rem; color:var(--muted); margin-right:0.5rem;
+  font-size:0.6rem; color:var(--muted); margin-right:0.5rem;
 }
 .feedback-button{
   background:transparent; border:1px solid var(--border); border-radius:8px;
