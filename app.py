@@ -28,6 +28,55 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+st.markdown("""
+<style>
+/* Make the toggle a clean icon button and hide any inner text */
+button[data-testid="collapsedControl"]{
+  position: relative;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 4px !important;
+  border: 1px solid #26272b;
+  border-radius: 10px;
+  background: #0e0f12;
+  cursor: pointer;
+}
+
+/* Hide whatever Streamlit puts inside (e.g., 'keyboard_double_arrow_right') */
+button[data-testid="collapsedControl"] *{
+  opacity: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+/* Draw a crisp double-chevron icon with an inline SVG mask */
+button[data-testid="collapsedControl"]::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 22px;
+  height: 22px;
+
+  background-color: #d4d4d6;
+  -webkit-mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
+  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
+</svg>") no-repeat center / contain;
+          mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
+  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
+</svg>") no-repeat center / contain;
+}
+
+/* Hover and focus states */
+button[data-testid="collapsedControl"]:hover::after{ background-color: #ffffff; }
+button[data-testid="collapsedControl"]:focus{ outline: 2px solid #6aa6ff; outline-offset: 2px; }
+</style>
+""", unsafe_allow_html=True)
+
 # Design CSS with CMU Serif everywhere
 st.markdown("""
 <style>
@@ -199,56 +248,6 @@ h1.app-title{
 }
 </style>
 """, unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-/* Make the toggle a clean icon button and hide any inner text */
-button[data-testid="collapsedControl"]{
-  position: relative;
-  width: 36px !important;
-  height: 36px !important;
-  padding: 4px !important;
-  border: 1px solid #26272b;
-  border-radius: 10px;
-  background: #0e0f12;
-  cursor: pointer;
-}
-
-/* Hide whatever Streamlit puts inside (e.g., 'keyboard_double_arrow_right') */
-button[data-testid="collapsedControl"] *{
-  opacity: 0 !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
-}
-
-/* Draw a crisp double-chevron icon with an inline SVG mask */
-button[data-testid="collapsedControl"]::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 22px;
-  height: 22px;
-
-  background-color: #d4d4d6;
-  -webkit-mask: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
-  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
-</svg>") no-repeat center / contain;
-          mask: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
-  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
-</svg>") no-repeat center / contain;
-}
-
-/* Hover and focus states */
-button[data-testid="collapsedControl"]:hover::after{ background-color: #ffffff; }
-button[data-testid="collapsedControl"]:focus{ outline: 2px solid #6aa6ff; outline-offset: 2px; }
-</style>
-""", unsafe_allow_html=True)
-
 
 
 
