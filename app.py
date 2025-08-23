@@ -29,125 +29,235 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Clean dark theme CSS
+# Enhanced minimal dark theme CSS
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* Dark background for entire app */
 .stApp {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #0a0a0a;
+    color: #e8e8e8;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
 }
 
-/* Dark sidebar */
+/* Enhanced sidebar */
 .css-1d391kg {
-    background-color: #1a1a1a;
+    background-color: #111111;
+    border-right: 1px solid #2a2a2a;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Dark main content area */
+/* Enhanced main content area */
 .main .block-container {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #0a0a0a;
+    color: #e8e8e8;
+    padding: 2rem 1.5rem;
+    max-width: 1200px;
 }
 
-/* Clean message containers */
+/* Enhanced message containers */
 .chat-message {
-    padding: 1rem;
-    border-radius: 8px;
-    margin: 1rem 0;
-    border: 1px solid #333333;
-    background-color: #1a1a1a;
-    color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    border: 1px solid #2a2a2a;
+    background-color: #141414;
+    color: #e8e8e8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    font-weight: 400;
+    line-height: 1.7;
 }
 
-/* Student message styling */
+.chat-message:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Enhanced student message styling */
 .student-message {
-    background-color: #0d1421;
-    border-left: 4px solid #2196f3;
-    color: #ffffff;
+    background-color: #0f1419;
+    border-left: 4px solid #3b82f6;
+    color: #e8e8e8;
+    border-color: #1e3a8a;
 }
 
-/* TA message styling */
+/* Enhanced TA message styling */
 .ta-message {
-    background-color: #1a0d1a;
-    border-left: 4px solid #9c27b0;
-    color: #ffffff;
+    background-color: #1a0f1a;
+    border-left: 4px solid #a855f7;
+    color: #e8e8e8;
+    border-color: #581c87;
 }
 
-/* Dark input fields */
+/* Enhanced input fields */
 .stTextInput > div > div > input {
     background-color: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid #333333;
+    color: #e8e8e8;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stTextInput > div > div > input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
 }
 
 .stTextArea > div > div > textarea {
     background-color: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid #333333;
+    color: #e8e8e8;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark selectbox */
+.stTextArea > div > div > textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+/* Enhanced selectbox */
 .stSelectbox > div > div > select {
     background-color: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid #333333;
+    color: #e8e8e8;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark buttons */
+/* Enhanced buttons */
 .stButton > button {
     background-color: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid #333333;
+    color: #e8e8e8;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .stButton > button:hover {
-    background-color: #333333;
-    border: 1px solid #555555;
+    background-color: #2a2a2a;
+    border-color: #3a3a3a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
 }
 
-/* Dark info box for ARIA greeting */
+/* Enhanced ARIA greeting box */
 .stAlert {
-    background-color: #1e3a8a;
-    color: #ffffff;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #e8e8e8;
     border: 1px solid #3b82f6;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+    font-weight: 400;
+    line-height: 1.6;
 }
 
-/* Dark success/error messages */
+/* Enhanced success/error messages */
 .stSuccess {
     background-color: #0f5132;
-    color: #ffffff;
+    color: #e8e8e8;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(15, 81, 50, 0.2);
+    border: 1px solid #16a34a;
 }
 
 .stError {
     background-color: #721c24;
-    color: #ffffff;
+    color: #e8e8e8;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(114, 28, 36, 0.2);
+    border: 1px solid #dc2626;
 }
 
-/* Dark metrics */
+/* Enhanced metrics */
 .metric-container {
     background-color: #1a1a1a;
-    color: #ffffff;
+    color: #e8e8e8;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark form containers */
+/* Enhanced form containers */
 .stForm {
-    background-color: #1a1a1a;
-    border: 1px solid #333333;
+    background-color: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark spinner */
+/* Enhanced spinner */
 .stSpinner {
-    color: #ffffff;
+    color: #3b82f6;
 }
 
-/* Ensure all text is white on dark background */
-h1, h2, h3, h4, h5, h6, p, div, span, label {
-    color: #ffffff !important;
+/* Enhanced typography */
+h1, h2, h3, h4, h5, h6 {
+    color: #f8fafc !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    margin-bottom: 1rem !important;
 }
 
-/* Dark markdown content */
+h1 { font-size: 2.25rem !important; }
+h2 { font-size: 1.875rem !important; }
+h3 { font-size: 1.5rem !important; }
+h4 { font-size: 1.25rem !important; }
+
+p, div, span, label {
+    color: #e8e8e8 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 400 !important;
+}
+
+/* Enhanced markdown content */
 .markdown-text-container {
-    color: #ffffff;
+    color: #e8e8e8;
+    line-height: 1.7;
+}
+
+/* Enhanced sidebar elements */
+.css-1d391kg h1, .css-1d391kg h2, .css-1d391kg h3 {
+    color: #f8fafc !important;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Clean dividers */
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2a2a2a, transparent);
+    margin: 2rem 0;
 }
 </style>
 """, unsafe_allow_html=True)
