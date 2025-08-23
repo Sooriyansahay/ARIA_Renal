@@ -202,27 +202,46 @@ h1.app-title{
 
 st.markdown("""
 <style>
-/* Load Material Symbols for Streamlit header/controls */
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL,wght,GRAD,opsz@0,400,0,24');
-
-/* Keep icons using their own font, not CMU Serif */
-.material-icons,
-.material-symbols-outlined,
-[class*="material-icons"],
+/* 1) Hide the ligature text inside the sidebar toggle */
 [data-testid="collapsedControl"] span {
-  font-family: 'Material Symbols Outlined' !important;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
-  font-size: 24px !important;      /* prevent giant icon due to global font-size overrides */
-  line-height: 1 !important;
+  font-size: 0 !important;     /* prevents giant text from global font-size */
+  color: transparent !important;
 }
 
-/* If you set global font on all spans, exempt icon spans */
-span.material-icons,
-span.material-symbols-outlined { font-family: 'Material Symbols Outlined' !important; }
+/* 2) Insert a crisp SVG icon instead of text */
+[data-testid="collapsedControl"]::before{
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
 
-/* Optional: color and hover for the sidebar toggle */
-[data-testid="collapsedControl"] span { color: #cfcfd2 !important; }
-[data-testid="collapsedControl"]:hover span { color: #ffffff !important; }
+  /* Use an inline SVG as a mask so we can color it with background-color */
+  -webkit-mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
+  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
+</svg>") no-repeat center;
+  mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
+  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
+</svg>") no-repeat center;
+  background-color: #cfcfd2;    /* icon color */
+}
+
+/* 3) Hover color so it feels like a proper control */
+[data-testid="collapsedControl"]:hover::before{
+  background-color: #ffffff;
+}
+
+/* 4) Optional: style the toggle container so it looks like a button */
+[data-testid="collapsedControl"]{
+  background: #0e0f12;
+  border: 1px solid #26272b;
+  border-radius: 10px;
+  padding: 4px 6px;
+}
 </style>
 """, unsafe_allow_html=True)
 
