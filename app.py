@@ -200,6 +200,33 @@ h1.app-title{
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* Load Material Symbols for Streamlit header/controls */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL,wght,GRAD,opsz@0,400,0,24');
+
+/* Keep icons using their own font, not CMU Serif */
+.material-icons,
+.material-symbols-outlined,
+[class*="material-icons"],
+[data-testid="collapsedControl"] span {
+  font-family: 'Material Symbols Outlined' !important;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+  font-size: 24px !important;      /* prevent giant icon due to global font-size overrides */
+  line-height: 1 !important;
+}
+
+/* If you set global font on all spans, exempt icon spans */
+span.material-icons,
+span.material-symbols-outlined { font-family: 'Material Symbols Outlined' !important; }
+
+/* Optional: color and hover for the sidebar toggle */
+[data-testid="collapsedControl"] span { color: #cfcfd2 !important; }
+[data-testid="collapsedControl"]:hover span { color: #ffffff !important; }
+</style>
+""", unsafe_allow_html=True)
+
+
 
 # Session state
 if "ta_system" not in st.session_state:
