@@ -462,31 +462,30 @@ def main():
                 """
                 st.markdown(feedback_html, unsafe_allow_html=True)
                 
-                col1, col2, col3, col4 = st.columns([1, 1, 1, 8])
-                
+                # columns: make the first three wider; last one is spacer
+                col1, col2, col3, _spacer = st.columns([2.8, 2.8, 2.8, 3.6])
+
                 with col1:
                     button_type = "primary" if current_feedback == "helpful" else "secondary"
-                    if st.button("👍 Helpful", key=f"helpful_{i}", 
-                               help="This response was helpful" if is_changeable else "Feedback locked after new question",
-                               type=button_type,
-                               disabled=not is_changeable):
+                    if st.button("👍 Helpful", key=f"helpful_{i}",
+                                help="This response was helpful" if is_changeable else "Feedback locked after new question",
+                                type=button_type, disabled=not is_changeable, use_container_width=True):
                         handle_feedback(i, "helpful")
-                
+
                 with col2:
                     button_type = "primary" if current_feedback == "not_helpful" else "secondary"
-                    if st.button("👎 Not Helpful", key=f"not_helpful_{i}", 
-                               help="This response was not helpful" if is_changeable else "Feedback locked after new question",
-                               type=button_type,
-                               disabled=not is_changeable):
+                    if st.button("👎 Not Helpful", key=f"not_helpful_{i}",
+                                help="This response was not helpful" if is_changeable else "Feedback locked after new question",
+                                type=button_type, disabled=not is_changeable, use_container_width=True):
                         handle_feedback(i, "not_helpful")
-                
+
                 with col3:
                     button_type = "primary" if current_feedback == "partially_helpful" else "secondary"
-                    if st.button("🤔 Partially", key=f"partial_{i}", 
-                               help="This response was partially helpful" if is_changeable else "Feedback locked after new question",
-                               type=button_type,
-                               disabled=not is_changeable):
+                    if st.button("🤔 Partially", key=f"partial_{i}",
+                                help="This response was partially helpful" if is_changeable else "Feedback locked after new question",
+                                type=button_type, disabled=not is_changeable, use_container_width=True):
                         handle_feedback(i, "partially_helpful")
+
                 
                 # Show feedback status if already given
                 if current_feedback:
