@@ -217,9 +217,13 @@ h3{font-size:1.4rem !important}
 }
 .feedback-button.selected{
   background:var(--accent); border-color:var(--accent); color:white;
+  transform:scale(1.05);
 }
 .feedback-button.selected.negative{
   background:#dc3545; border-color:#dc3545;
+}
+.feedback-button.selected.partial{
+  background:#ffa500; border-color:#ffa500;
 }
 
 /* Footer centered */
@@ -286,6 +290,8 @@ if "feedback_data" not in st.session_state:
     st.session_state.feedback_data = []
 if "message_feedback" not in st.session_state:
     st.session_state.message_feedback = {}
+if "last_question_count" not in st.session_state:
+    st.session_state.last_question_count = 0
 
 def initialize_ta_system():
     try:
@@ -319,19 +325,41 @@ def handle_feedback(message_index, feedback_type):
     if message_index < len(st.session_state.conversation_history):
         message = st.session_state.conversation_history[message_index]
         if message["role"] == "assistant":
-            feedback_entry = {
-                "timestamp": datetime.now().isoformat(),
-                "message_index": message_index,
-                "user_question": st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else "",
-                "ta_response": message["content"],
-                "feedback": feedback_type,
-                "concepts_covered": message.get("concepts", []),
-                "response_time": message.get("response_time", 0)
-            }
+            # Check if user is changing feedback or giving new feedback
+            current_feedback = st.session_state.message_feedback.get(message_index)
             
-            # Add to session state
-            st.session_state.feedback_data.append(feedback_entry)
-            st.session_state.message_feedback[message_index] = feedback_type
+            # If clicking the same feedback type, remove it (toggle off)
+            if current_feedback == feedback_type:
+                # Remove feedback
+                if message_index in st.session_state.message_feedback:
+                    del st.session_state.message_feedback[message_index]
+                
+                # Remove from feedback_data list
+                st.session_state.feedback_data = [
+                    entry for entry in st.session_state.feedback_data 
+                    if entry.get("message_index") != message_index
+                ]
+            else:
+                # Update or add new feedback
+                feedback_entry = {
+                    "timestamp": datetime.now().isoformat(),
+                    "message_index": message_index,
+                    "user_question": st.session_state.conversation_history[message_index-1]["content"] if message_index > 0 else "",
+                    "ta_response": message["content"],
+                    "feedback": feedback_type,
+                    "concepts_covered": message.get("concepts", []),
+                    "response_time": message.get("response_time", 0)
+                }
+                
+                # Remove any existing feedback for this message
+                st.session_state.feedback_data = [
+                    entry for entry in st.session_state.feedback_data 
+                    if entry.get("message_index") != message_index
+                ]
+                
+                # Add new feedback
+                st.session_state.feedback_data.append(feedback_entry)
+                st.session_state.message_feedback[message_index] = feedback_type
             
             # Save to file
             save_feedback_to_file(st.session_state.feedback_data)
@@ -410,6 +438,11 @@ def main():
                 # Add feedback buttons
                 current_feedback = st.session_state.message_feedback.get(i, None)
                 
+                # Check if this is the most recent TA response (feedback is changeable)
+                user_messages_count = len([msg for msg in st.session_state.conversation_history if msg["role"] == "user"])
+                message_question_index = len([msg for msg in st.session_state.conversation_history[:i+1] if msg["role"] == "user"])
+                is_changeable = (message_question_index == user_messages_count)  # This is the response to the latest question
+                
                 feedback_html = f"""
                 <div class="feedback-container">
                     <span class="feedback-text">Was this response helpful?</span>
@@ -420,30 +453,43 @@ def main():
                 col1, col2, col3, col4 = st.columns([1, 1, 1, 8])
                 
                 with col1:
+                    button_type = "primary" if current_feedback == "helpful" else "secondary"
                     if st.button("👍 Helpful", key=f"helpful_{i}", 
-                               help="This response was helpful",
-                               disabled=current_feedback is not None):
+                               help="This response was helpful" if is_changeable else "Feedback locked after new question",
+                               type=button_type,
+                               disabled=not is_changeable):
                         handle_feedback(i, "helpful")
                 
                 with col2:
+                    button_type = "primary" if current_feedback == "not_helpful" else "secondary"
                     if st.button("👎 Not Helpful", key=f"not_helpful_{i}", 
-                               help="This response was not helpful",
-                               disabled=current_feedback is not None):
+                               help="This response was not helpful" if is_changeable else "Feedback locked after new question",
+                               type=button_type,
+                               disabled=not is_changeable):
                         handle_feedback(i, "not_helpful")
                 
                 with col3:
+                    button_type = "primary" if current_feedback == "partially_helpful" else "secondary"
                     if st.button("🤔 Partially", key=f"partial_{i}", 
-                               help="This response was partially helpful",
-                               disabled=current_feedback is not None):
+                               help="This response was partially helpful" if is_changeable else "Feedback locked after new question",
+                               type=button_type,
+                               disabled=not is_changeable):
                         handle_feedback(i, "partially_helpful")
                 
                 # Show feedback status if already given
                 if current_feedback:
-                    feedback_text = {
-                        "helpful": "✅ Marked as helpful",
-                        "not_helpful": "❌ Marked as not helpful", 
-                        "partially_helpful": "🤔 Marked as partially helpful"
-                    }
+                    if is_changeable:
+                        feedback_text = {
+                            "helpful": "✅ You found this helpful (click to change)",
+                            "not_helpful": "❌ You found this not helpful (click to change)", 
+                            "partially_helpful": "🤔 You found this partially helpful (click to change)"
+                        }
+                    else:
+                        feedback_text = {
+                            "helpful": "✅ Marked as helpful",
+                            "not_helpful": "❌ Marked as not helpful", 
+                            "partially_helpful": "🤔 Marked as partially helpful"
+                        }
                     st.markdown(f"<small style='color: var(--muted);'>{feedback_text[current_feedback]}</small>", 
                               unsafe_allow_html=True)
                 
@@ -460,6 +506,10 @@ def main():
                 submit_button = st.form_submit_button("Ask ARIA", use_container_width=True)
             
             if submit_button and user_input:
+                # Track new question - this will reset feedback changeability for previous responses
+                current_question_count = len([msg for msg in st.session_state.conversation_history if msg["role"] == "user"])
+                st.session_state.last_question_count = current_question_count + 1
+                
                 st.session_state.conversation_history.append({
                     "role": "user",
                     "content": user_input
