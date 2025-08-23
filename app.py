@@ -15,7 +15,7 @@ from scripts.teaching_assistant import StaticsMechanicsTA
 # Get API key from environment variables or Streamlit secrets
 try:
     OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-except:
+except Exception:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     if not OPENAI_API_KEY:
         st.error("OpenAI API key not found. Please set it in Streamlit secrets or environment variables.")
@@ -23,411 +23,225 @@ except:
 
 # Page configuration
 st.set_page_config(
-    page_title="ARIA - Statics & Mechanics TA",
-    page_icon="🔧",
+    page_title="ARIA Statics and Mechanics TA",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Refined academic design with serif fonts
+# Minimal dark theme with serif typography similar to CMU Serif or Times New Roman
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
-
-/* Root variables for consistent theming */
-:root {
-    --primary-bg: #fafafa;
-    --secondary-bg: #ffffff;
-    --accent-bg: #f5f7fa;
-    --primary-text: #2c3e50;
-    --secondary-text: #5a6c7d;
-    --accent-color: #3498db;
-    --success-color: #27ae60;
-    --warning-color: #f39c12;
-    --error-color: #e74c3c;
-    --border-color: #e1e8ed;
-    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
-    --border-radius: 8px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+:root{
+  --bg: #0c0c0d;
+  --panel: #141416;
+  --panel-2: #101113;
+  --text: #e9e7e4;
+  --muted: #b9b6b0;
+  --border: #26272b;
+  --accent: #7f93ff;
+  --accent-2: #9aa8ff;
+  --success: #19b36b;
+  --danger: #e24a4a;
 }
 
-/* Global app styling */
-.stApp {
-    background-color: var(--primary-bg);
-    color: var(--primary-text);
-    font-family: 'Crimson Text', 'Times New Roman', serif;
-    line-height: 1.7;
-    font-size: 16px;
+/* Prefer a serif stack similar to CMU Serif or Times New Roman if available */
+@font-face{
+  font-family: "CMU Serif";
+  src: local("CMU Serif");
+  font-display: swap;
 }
 
-/* Enhanced sidebar with academic styling */
-.css-1d391kg {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    border-right: 2px solid var(--border-color);
-    box-shadow: var(--shadow-medium);
+.stApp{
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "CMU Serif", "Times New Roman", Times, Georgia, Cambria, "Liberation Serif", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Main content area refinements */
-.main .block-container {
-    background-color: var(--primary-bg);
-    padding: 2.5rem 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
+/* Main content width and comfortable reading rhythm */
+.main .block-container{
+  max-width: 960px;
+  padding: 2rem 1.5rem;
+  background: var(--bg);
 }
 
-/* Refined message containers with academic styling */
-.chat-message {
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    margin: 2rem 0;
-    border: 1px solid var(--border-color);
-    background-color: var(--secondary-bg);
-    color: var(--primary-text);
-    box-shadow: var(--shadow-light);
-    transition: var(--transition);
-    font-size: 1.05rem;
-    line-height: 1.8;
+/* Headings */
+h1, h2, h3, h4, h5, h6{
+  color: var(--text) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  line-height: 1.25 !important;
+  margin: 0 0 0.8rem 0 !important;
+}
+h1{ font-size: 2.1rem !important; }
+h2{ font-size: 1.7rem !important; }
+h3{ font-size: 1.35rem !important; }
+h4{ font-size: 1.15rem !important; }
+
+/* Body copy tuned for long reading */
+p, div, span, label, li{
+  color: var(--text) !important;
+  font-weight: 400 !important;
+  font-size: 16.5px !important;
+  line-height: 1.75 !important;
 }
 
-.chat-message:hover {
-    box-shadow: var(--shadow-medium);
-    transform: translateY(-2px);
+/* Links with gentle accent */
+a, a:visited{
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover{
+  color: var(--accent-2);
+  text-decoration: underline;
 }
 
-/* Student message with refined styling */
-.student-message {
-    background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
-    border-left: 4px solid var(--accent-color);
-    border-color: #e3f2fd;
-    position: relative;
+/* Sidebar using stable selector */
+[data-testid="stSidebar"]{
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.25);
+  padding-top: 0.5rem;
+}
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3{
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
-.student-message::before {
-    content: "👤";
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    font-size: 1.2rem;
-    opacity: 0.6;
-}
-
-/* TA message with academic authority */
-.ta-message {
-    background: linear-gradient(135deg, #fdfbff 0%, #ffffff 100%);
-    border-left: 4px solid #8e44ad;
-    border-color: #f3e5f5;
-    position: relative;
-}
-
-.ta-message::before {
-    content: "🎓";
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    font-size: 1.2rem;
-    opacity: 0.6;
-}
-
-/* Enhanced input fields with academic styling */
+/* Form fields */
 .stTextInput > div > div > input,
-.stTextArea > div > div > textarea {
-    background-color: var(--secondary-bg);
-    color: var(--primary-text);
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1rem;
-    font-family: 'Crimson Text', 'Times New Roman', serif;
-    font-size: 1.05rem;
-    transition: var(--transition);
-    box-shadow: var(--shadow-light);
+.stTextArea > div > div > textarea,
+.stSelectbox > div > div > select{
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  transition: border 0.15s ease, box-shadow 0.15s ease;
 }
-
 .stTextInput > div > div > input:focus,
-.stTextArea > div > div > textarea:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-    outline: none;
-    background-color: #fbfcfe;
+.stTextArea > div > div > textarea:focus,
+.stSelectbox > div > div > select:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(127,147,255,0.18);
+  outline: none;
 }
 
-/* Enhanced selectbox */
-.stSelectbox > div > div > select {
-    background-color: var(--secondary-bg);
-    color: var(--primary-text);
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1rem;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-size: 0.95rem;
-    transition: var(--transition);
-    box-shadow: var(--shadow-light);
+/* Buttons */
+.stButton > button{
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 1.1rem;
+  font-weight: 600;
+  transition: transform 0.08s ease, background 0.15s ease, border 0.15s ease;
+}
+.stButton > button:hover{
+  background: #1b1d22;
+  border-color: #30323a;
+  transform: translateY(-1px);
 }
 
-.stSelectbox > div > div > select:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+/* Alert and status blocks */
+.stAlert{
+  background: linear-gradient(135deg, #182145 0%, #111842 100%);
+  color: var(--text);
+  border: 1px solid #2b3a7a;
+  border-radius: 12px;
+  padding: 1.2rem 1.25rem;
+}
+.stSuccess{
+  background: #0f2a1f;
+  color: var(--text);
+  border: 1px solid #1f7a52;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+.stError{
+  background: #2a1416;
+  color: var(--text);
+  border: 1px solid #7a2b2b;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
 }
 
-/* Refined button styling */
-.stButton > button {
-    background: linear-gradient(135deg, var(--accent-color) 0%, #2980b9 100%);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.875rem 2rem;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: var(--transition);
-    box-shadow: var(--shadow-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+/* Metrics */
+.metric-container{
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 1rem;
 }
 
-.stButton > button:hover {
-    background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
-    box-shadow: var(--shadow-medium);
-    transform: translateY(-1px);
+/* Forms and sections */
+.stForm{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
 }
 
-/* Secondary button variant */
-.stButton > button[kind="secondary"] {
-    background: transparent;
-    color: var(--accent-color);
-    border: 2px solid var(--accent-color);
+/* Divider */
+hr{
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 1.75rem 0;
 }
 
-.stButton > button[kind="secondary"]:hover {
-    background-color: var(--accent-color);
-    color: white;
+/* Conversation styling */
+.chat-message{
+  padding: 1.15rem 1.2rem;
+  border-radius: 12px;
+  margin: 1rem 0;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.18);
+}
+.student-message{
+  background: #12161c;
+  border-left: 4px solid #6ea3ff;
+}
+.ta-message{
+  background: #17121a;
+  border-left: 4px solid #a47aff;
 }
 
-/* Enhanced ARIA greeting */
-.stAlert {
-    background: linear-gradient(135deg, #e8f4fd 0%, #ffffff 100%);
-    color: var(--primary-text);
-    border: 2px solid #bde0ff;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: var(--shadow-medium);
-    margin: 2rem 0;
-    position: relative;
+/* Code blocks */
+code, pre code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace !important;
+  font-size: 14px !important;
+}
+pre{
+  background: #0f1012 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  padding: 1rem !important;
+  overflow-x: auto !important;
 }
 
-.stAlert::before {
-    content: "🤖";
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    font-size: 1.5rem;
-    opacity: 0.7;
-}
-
-/* Status messages with improved visibility */
-.stSuccess {
-    background: linear-gradient(135deg, #e8f8f5 0%, #ffffff 100%);
-    color: #1e8449;
-    border: 2px solid #a9dfbf;
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-light);
-    font-weight: 500;
-}
-
-.stError {
-    background: linear-gradient(135deg, #fdedec 0%, #ffffff 100%);
-    color: #c0392b;
-    border: 2px solid #f1948a;
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-light);
-    font-weight: 500;
-}
-
-.stWarning {
-    background: linear-gradient(135deg, #fef9e7 0%, #ffffff 100%);
-    color: #b7950b;
-    border: 2px solid #f7dc6f;
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-light);
-    font-weight: 500;
-}
-
-/* Enhanced metrics display */
-.metric-container {
-    background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--accent-bg) 100%);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-light);
-    transition: var(--transition);
-}
-
-.metric-container:hover {
-    box-shadow: var(--shadow-medium);
-}
-
-/* Form containers with academic styling */
-.stForm {
-    background: linear-gradient(135deg, var(--secondary-bg) 0%, #fafbfc 100%);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: var(--shadow-medium);
-    margin: 1.5rem 0;
-}
-
-/* Loading spinner */
-.stSpinner {
-    color: var(--accent-color);
-}
-
-/* Typography hierarchy with serif fonts */
-h1, h2, h3, h4, h5, h6 {
-    color: var(--primary-text) !important;
-    font-family: 'Crimson Text', 'Times New Roman', serif !important;
-    font-weight: 700 !important;
-    line-height: 1.3 !important;
-    margin: 1.5rem 0 1rem 0 !important;
-    letter-spacing: -0.5px;
-}
-
-h1 { 
-    font-size: 2.5rem !important;
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-h2 { 
-    font-size: 2rem !important;
-    color: #34495e !important;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 0.5rem;
-}
-
-h3 { 
-    font-size: 1.6rem !important;
-    color: #5a6c7d !important;
-}
-
-h4 { 
-    font-size: 1.3rem !important;
-    color: #7f8c8d !important;
-}
-
-/* Body text and labels */
-p, div, span, label {
-    color: var(--primary-text) !important;
-    font-family: 'Crimson Text', 'Times New Roman', serif !important;
-    font-weight: 400 !important;
-    line-height: 1.7 !important;
-}
-
-/* Small text and captions */
-.stCaption, .caption {
-    font-family: 'Source Sans Pro', sans-serif !important;
-    font-size: 0.85rem !important;
-    color: var(--secondary-text) !important;
-    font-style: italic;
-}
-
-/* Enhanced sidebar elements */
-.css-1d391kg h1, 
-.css-1d391kg h2, 
-.css-1d391kg h3 {
-    color: var(--primary-text) !important;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.css-1d391kg .stSubheader {
-    color: #5a6c7d !important;
-    font-weight: 600 !important;
-    margin-top: 2rem !important;
-}
-
-/* List styling in sidebar */
-.css-1d391kg ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.css-1d391kg li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f0f2f4;
-    font-size: 0.95rem;
-}
-
-.css-1d391kg li::before {
-    content: "→";
-    color: var(--accent-color);
-    margin-right: 0.5rem;
-    font-weight: bold;
-}
-
-/* Refined dividers */
-hr {
-    border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, var(--border-color) 20%, var(--border-color) 80%, transparent 100%);
-    margin: 3rem 0;
-}
-
-/* Code blocks (if any) */
-code {
-    background-color: #f8f9fa;
-    color: #e74c3c;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    border: 1px solid #dee2e6;
-}
-
-/* Enhanced markdown content */
-.markdown-text-container {
-    color: var(--primary-text);
-    line-height: 1.8;
-    font-size: 1.05rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .main .block-container {
-        padding: 1.5rem 1rem;
-    }
-    
-    .chat-message {
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-    }
-    
-    h1 { font-size: 2rem !important; }
-    h2 { font-size: 1.7rem !important; }
-    h3 { font-size: 1.4rem !important; }
-}
-
-/* Focus indicators for accessibility */
-*:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Selection styling */
-::selection {
-    background-color: rgba(52, 152, 219, 0.2);
-    color: var(--primary-text);
+/* Respect OS light preference */
+@media (prefers-color-scheme: light){
+  :root{
+    --bg: #faf9f7;
+    --panel: #ffffff;
+    --panel-2: #f7f7f9;
+    --text: #2b2a28;
+    --muted: #5d5b57;
+    --border: #e6e4df;
+    --accent: #3147c4;
+    --accent-2: #5164de;
+  }
+  .stApp{ background: var(--bg); color: var(--text); }
+  .main .block-container{ background: var(--bg); }
+  a, a:visited{ color: var(--accent); }
+  .stButton > button{ background: var(--panel-2); }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -464,136 +278,84 @@ def get_course_topics():
 def main():
     # Auto-initialize TA system on first load
     if not st.session_state.system_initialized:
-        with st.spinner("Initializing TA system..."):
+        with st.spinner("Initializing TA system"):
             ta_system = initialize_ta_system()
             if ta_system:
                 st.session_state.ta_system = ta_system
                 st.session_state.system_initialized = True
-                st.success("TA system ready!", icon="✅")
+                st.success("TA system ready")
             else:
-                st.error("Failed to initialize TA system. Please check the API key.")
+                st.error("Failed to initialize TA system. Check the API key.")
                 return
     
-    # Header with enhanced styling
-    st.title("🔧 ARIA - Statics & Mechanics Teaching Assistant")
+    # Header
+    st.title("ARIA Statics and Mechanics Teaching Assistant")
     
-    # ARIA's personal introduction with enhanced styling
+    # ARIA introduction
     if st.session_state.system_initialized:
-        st.info("👋 **Welcome!** I'm ARIA, your AI Teaching Assistant for Statics & Mechanics of Materials. I'm designed to guide you through problem-solving steps and help you understand fundamental concepts. My goal is to help you learn by thinking, not by giving direct answers. How may I assist your learning journey today?")
+        st.info("I am ARIA, your teaching assistant for Statics and Mechanics of Materials. I will guide you through problem solving steps and help you understand key concepts. How can I help you today")
     
     # Sidebar for configuration
     with st.sidebar:
-        st.header("⚙️ Configuration")
+        st.header("Configuration")
         
-        # System status with enhanced display
-        st.subheader("System Status")
+        # System status
         if st.session_state.system_initialized:
-            st.success("✅ TA System Ready")
+            st.success("TA System Ready")
         else:
-            st.error("❌ System Not Ready")
+            st.error("System Not Ready")
             
-        # Topic filter with improved styling
-        st.subheader("📚 Focus Area")
+        # Topic filter
+        st.subheader("Focus Area")
         topics = get_course_topics()
         selected_topic = st.selectbox(
-            "Select a topic to focus on (optional):",
-            ["All Topics"] + topics,
-            help="Choose a specific area to concentrate our discussion"
+            "Select a topic to focus on (optional)",
+            ["All Topics"] + topics
         )
         
         # Conversation controls
-        st.subheader("💬 Conversation")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Clear Chat", help="Start a new conversation"):
-                st.session_state.conversation_history = []
-                st.rerun()
+        st.subheader("Conversation")
+        if st.button("Clear Conversation"):
+            st.session_state.conversation_history = []
+            st.rerun()
         
-        with col2:
-            # Display conversation length
-            conv_length = len(st.session_state.conversation_history)
-            st.metric("Messages", conv_length)
-        
-        # Enhanced usage tips
-        st.subheader("💡 Learning Tips")
+        # Usage tips
+        st.subheader("Tips for Better Learning")
         st.markdown("""
-        **For effective learning with ARIA:**
-        
-        • **Ask specific questions** about concepts you're struggling with
-        • **Describe your approach** so I can guide your thinking
-        • **Request explanations** rather than direct solutions
-        • **Ask for examples** to solidify understanding
-        • **Inquire about common mistakes** to avoid pitfalls
-        
-        *Remember: The goal is understanding, not just answers!*
+        • Ask specific questions about concepts  
+        • Describe your problem step by step  
+        • Ask for guidance, not direct answers  
+        • Request examples or analogies  
+        • Ask about common mistakes to avoid
         """)
         
-        # Quick help
-        st.subheader("🚀 Quick Start")
-        example_questions = [
-            "How should I approach this truss analysis?",
-            "What's the first step in beam deflection problems?",
-            "Can you explain the concept of stress transformation?",
-            "What assumptions do I make for rigid body analysis?"
-        ]
-        
-        st.markdown("**Try asking:**")
-        for i, question in enumerate(example_questions, 1):
-            st.markdown(f"{i}. *{question}*")
-    
     # Main chat interface
     if st.session_state.system_initialized and st.session_state.ta_system:
-        # Display conversation history with enhanced styling
-        if st.session_state.conversation_history:
-            st.markdown("---")
-            st.subheader("📝 Conversation History")
-            
-            for i, msg in enumerate(st.session_state.conversation_history):
-                if msg["role"] == "user":
-                    with st.container():
-                        st.markdown(
-                            f'<div class="chat-message student-message">'
-                            f'<strong>You:</strong><br>{msg["content"]}'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
-                else:
-                    with st.container():
-                        st.markdown(
-                            f'<div class="chat-message ta-message">'
-                            f'<strong>ARIA:</strong><br>{msg["content"]}'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
-                        
-                        # Display additional info if available
-                        if "concepts" in msg and msg["concepts"]:
-                            with st.expander("📖 Concepts Covered"):
-                                st.write(", ".join(msg["concepts"]))
+        # Display conversation history with styled blocks
+        for msg in st.session_state.conversation_history:
+            if msg["role"] == "user":
+                st.markdown(
+                    f'<div class="chat-message student-message"><strong>You</strong><br>{msg["content"]}</div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f'<div class="chat-message ta-message"><strong>ARIA</strong><br>{msg["content"]}</div>',
+                    unsafe_allow_html=True
+                )
+                st.divider()
         
-        # Enhanced chat input
-        st.markdown("---")
-        st.subheader("✏️ Ask ARIA")
-        
+        # Chat input
         with st.form(key="chat_form", clear_on_submit=True):
             user_input = st.text_area(
-                "**Your question or problem:**",
-                placeholder="Example: I'm working on a cantilever beam problem with a distributed load. How should I start setting up the equations for finding the maximum deflection?",
-                height=120,
-                help="Be specific about what you need help understanding or what step you're struggling with."
+                "Ask your question",
+                placeholder="For example, how to calculate the moment about point A in a beam problem",
+                height=100
             )
             
-            # Form submission
-            col1, col2, col3 = st.columns([2, 1, 1])
+            col1, col2 = st.columns([1, 4])
             with col1:
-                submit_button = st.form_submit_button(
-                    "🚀 Ask ARIA", 
-                    use_container_width=True,
-                    type="primary"
-                )
-            with col2:
-                if selected_topic != "All Topics":
-                    st.markdown(f"*Focus: {selected_topic}*")
+                submit_button = st.form_submit_button("Ask ARIA", use_container_width=True)
             
             if submit_button and user_input:
                 # Add user message to history
@@ -603,17 +365,12 @@ def main():
                 })
                 
                 # Generate TA response
-                with st.spinner("🧠 ARIA is analyzing your question..."):
+                with st.spinner("ARIA is thinking"):
                     try:
                         start_time = time.time()
                         
-                        # Add topic context if selected
-                        enhanced_input = user_input
-                        if selected_topic != "All Topics":
-                            enhanced_input = f"[Context: {selected_topic}] {user_input}"
-                        
                         response_data = st.session_state.ta_system.generate_response(
-                            enhanced_input,
+                            user_input,
                             st.session_state.conversation_history[-10:]  # Last 10 messages
                         )
                         
@@ -624,93 +381,53 @@ def main():
                             "role": "assistant",
                             "content": response_data["response"],
                             "concepts": response_data.get("concepts_covered", []),
-                            "response_time": response_time,
-                            "timestamp": datetime.now().strftime("%H:%M:%S")
+                            "response_time": response_time
                         }
                         
                         st.session_state.conversation_history.append(ta_message)
                         
                         # Show performance metrics in sidebar
                         with st.sidebar:
-                            st.markdown("---")
-                            st.subheader("⚡ Performance")
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.metric("Response Time", f"{response_time:.2f}s")
-                            with col2:
-                                st.metric("Last Update", ta_message["timestamp"])
+                            st.metric("Response Time", f"{response_time:.2f}s")
                         
                         st.rerun()
                         
                     except Exception as e:
-                        st.error(f"❌ Error generating response: {e}")
-                        st.info("💡 Please try rephrasing your question or check your internet connection.")
+                        st.error(f"Error generating response: {e}")
     
     else:
-        # Enhanced welcome message
-        st.markdown("---")
+        # Welcome message
         st.markdown("""
-        ## 🎓 Welcome to Your Academic Companion!
+        ## Welcome to your Statics and Mechanics Teaching Assistant
         
-        **ARIA** is your intelligent Teaching Assistant, specifically designed for Statics and Mechanics of Materials. 
-        Unlike traditional homework helpers, ARIA focuses on **developing your problem-solving skills** through guided learning.
+        This assistant helps you learn by  
+        • Guiding you through problem solving steps  
+        • Explaining key concepts and formulas  
+        • Providing hints and examples  
+        • Asking questions to check your understanding
         
-        ### 🌟 What Makes ARIA Special?
+        Important  
+        This assistant will not give direct answers. It will help you develop problem solving skills.
         
-        **🎯 Pedagogical Approach:** ARIA will guide you through problems step-by-step, asking thought-provoking questions rather than providing direct answers.
-        
-        **📚 Deep Subject Knowledge:** Specialized understanding of statics, strength of materials, and structural analysis principles.
-        
-        **🤝 Adaptive Learning:** Adjusts explanations based on your level of understanding and learning progress.
-        
-        **💡 Conceptual Focus:** Emphasizes understanding fundamental principles that you can apply to various problems.
-        
-        ---
-        
-        ### 📖 Core Topics I Can Help With:
+        The system initializes automatically.
         """)
         
-        # Display topics in a more attractive layout
-        topics = get_course_topics()
-        cols = st.columns(3)
+        # Example questions
+        st.subheader("Example Questions You Can Ask")
+        examples = [
+            "How do I start analyzing a truss structure",
+            "What is the difference between stress and strain",
+            "Can you guide me through setting up equilibrium equations",
+            "What are the key steps for calculating beam deflections",
+            "How do I determine if a structure is statically determinate"
+        ]
         
-        for i, topic in enumerate(topics):
-            with cols[i % 3]:
-                st.markdown(f"**• {topic}**")
-        
-        st.markdown("""
-        ---
-        
-        ### 💬 Example Learning Conversations:
-        
-        **Instead of asking:** *"What's the answer to this truss problem?"*  
-        **Try asking:** *"How do I determine if this truss is statically determinate?"*
-        
-        **Instead of asking:** *"Calculate the stress for me"*  
-        **Try asking:** *"What factors should I consider when analyzing stress in this member?"*
-        
-        **Instead of asking:** *"Give me the formula"*  
-        **Try asking:** *"Can you help me understand when to use this type of analysis?"*
-        
-        ---
-        
-        **🚀 The system is initializing... Please wait a moment.**
-        """)
+        for example in examples:
+            st.markdown(f"• {example}")
     
-    # Enhanced attribution footer
-    st.markdown("---")
-    st.markdown(
-        """
-        <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); 
-                   border-radius: 8px; border: 1px solid #e1e8ed; margin-top: 2rem;">
-            <p style="margin: 0; font-style: italic; color: #5a6c7d;">
-                <strong>Built with ❤️ by Dibakar Roy Sarkar and Yue Luo</strong><br>
-                <em>Centrum IntelliPhysics Lab • Academic Excellence Through AI</em>
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # Attribution footer
+    st.divider()
+    st.caption("Built by Dibakar Roy Sarkar and Yue Luo, Centrum IntelliPhysics Lab")
 
 if __name__ == "__main__":
     main()
