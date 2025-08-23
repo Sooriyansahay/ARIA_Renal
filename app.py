@@ -210,7 +210,7 @@ h3{font-size:1.4rem !important}
 .feedback-button{
   background:transparent; border:1px solid var(--border); border-radius:8px;
   padding:0.4rem 0.6rem; cursor:pointer; transition:all 0.15s ease;
-  color:var(--muted); font-size:0.85rem; display:flex; align-items:center; gap:0.3rem;
+  color:var(--muted); font-size:0.2rem; display:flex; align-items:center; gap:0.3rem;
 }
 .feedback-button:hover{
   background:var(--panel-2); border-color:var(--accent); color:var(--text);
