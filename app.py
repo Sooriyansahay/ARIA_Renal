@@ -180,6 +180,27 @@ pre{
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+:root { --app-font-size: 3rem; }
+
+/* make everything bigger except the main title */
+body, .stApp, .main .block-container,
+p, div, span, label, li, small, em, strong,
+.stMarkdown, .stTextInput *, .stTextArea *, .stSelectbox *,
+.stButton > button, code, pre, kbd, samp {
+  font-size: var(--app-font-size) !important;
+  line-height: 1.35 !important;
+}
+
+/* keep your custom title size */
+h1.app-title{
+  font-size: clamp(2.6rem, 2.8vw + 2rem, 3.6rem) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # Session state
 if "ta_system" not in st.session_state:
     st.session_state.ta_system = None
