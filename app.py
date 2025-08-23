@@ -182,7 +182,7 @@ pre{
 
 st.markdown("""
 <style>
-:root { --app-font-size: 1.5rem; }
+:root { --app-font-size: 1.15rem; }
 
 /* make everything bigger except the main title */
 body, .stApp, .main .block-container,
