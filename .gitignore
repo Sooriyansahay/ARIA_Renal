@@ -54,11 +54,11 @@ logs/
 *.bin
 *.safetensors
 
-# ChromaDB large files
-embeddings/chroma_db/chroma.sqlite3
-embeddings/chroma_db/*.sqlite3
-embeddings/chroma_db/**/*.bin
-embeddings/chroma_db/**/*.dat
+# ChromaDB large files (commented out to allow deployment)
+# embeddings/chroma_db/chroma.sqlite3
+# embeddings/chroma_db/*.sqlite3
+# embeddings/chroma_db/**/*.bin
+# embeddings/chroma_db/**/*.dat
 
 # Temporary files
 *.tmp

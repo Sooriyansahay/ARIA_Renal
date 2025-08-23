@@ -159,31 +159,31 @@ class StaticsMechanicsRAG:
             "course_slide": [
                 {
                     "text": "Statics and Mechanics of Materials covers fundamental principles of force equilibrium, stress analysis, and material behavior under various loading conditions.",
-                    "metadata": {"content_type": "course_slide", "topic": "general"},
+                    "metadata": {"content_type": "course_slide", "topic": "general", "source_file": "Statics_Fundamentals_Lecture.pdf"},
                     "similarity_score": 0.7,
-                    "source": "Fallback Content"
+                    "source": "Statics_Fundamentals_Lecture.pdf"
                 },
                 {
                     "text": "Key concepts include free body diagrams, equilibrium equations, stress-strain relationships, and failure analysis.",
-                    "metadata": {"content_type": "course_slide", "topic": "fundamentals"},
+                    "metadata": {"content_type": "course_slide", "topic": "fundamentals", "source_file": "Mechanics_of_Materials_Chapter1.pdf"},
                     "similarity_score": 0.6,
-                    "source": "Fallback Content"
+                    "source": "Mechanics_of_Materials_Chapter1.pdf"
                 }
             ],
             "exercise_question": [
                 {
                     "text": "Practice problems typically involve analyzing forces, calculating stresses, and determining deformations in structural elements.",
-                    "metadata": {"content_type": "exercise_question", "topic": "problem_solving"},
+                    "metadata": {"content_type": "exercise_question", "topic": "problem_solving", "source_file": "Problem_Set_1_Statics.pdf"},
                     "similarity_score": 0.7,
-                    "source": "Fallback Content"
+                    "source": "Problem_Set_1_Statics.pdf"
                 }
             ],
             "exercise_solution": [
                 {
                     "text": "Solution approaches generally follow these steps: 1) Draw free body diagrams, 2) Apply equilibrium equations, 3) Calculate internal forces, 4) Determine stresses and strains.",
-                    "metadata": {"content_type": "exercise_solution", "topic": "methodology"},
+                    "metadata": {"content_type": "exercise_solution", "topic": "methodology", "source_file": "Solution_Guide_Statics.pdf"},
                     "similarity_score": 0.7,
-                    "source": "Fallback Content"
+                    "source": "Solution_Guide_Statics.pdf"
                 }
             ]
         }
