@@ -29,9 +29,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better performance and appearance
+# Custom CSS for dark theme with black background
 st.markdown("""
 <style>
+/* Force dark theme background */
+.stApp {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Main content area */
+.main .block-container {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
 /* Main header styling */
 .main-header {
     font-size: 2.5rem;
@@ -47,33 +59,33 @@ st.markdown("""
     border-radius: 0.8rem;
     margin: 1rem 0;
     border-left: 5px solid #1f77b4;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    color: #2c3e50;
+    box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+    color: #ffffff;
     font-size: 1rem;
     line-height: 1.6;
 }
 
 /* Student message styling */
 .student-message {
-    background-color: #ffffff;
+    background-color: #1a1a1a;
     border: 2px solid #ff7f0e;
     border-left: 5px solid #ff7f0e;
-    color: #2c3e50;
+    color: #ffffff;
 }
 
 /* TA message styling */
 .ta-message {
-    background-color: #f8f9fa;
+    background-color: #1a1a1a;
     border: 2px solid #1f77b4;
     border-left: 5px solid #1f77b4;
-    color: #2c3e50;
+    color: #ffffff;
 }
 
-/* Streamlit input styling */
+/* Streamlit input styling for dark theme */
 .stTextArea > div > div > textarea {
-    background-color: #ffffff !important;
-    color: #2c3e50 !important;
-    border: 2px solid #bdc3c7 !important;
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border: 2px solid #444444 !important;
     border-radius: 0.5rem !important;
     font-size: 1rem !important;
 }
@@ -100,12 +112,12 @@ st.markdown("""
     box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
 }
 
-/* Sidebar styling */
+/* Sidebar styling for dark theme */
 .css-1d391kg {
-    background-color: #2c3e50 !important;
+    background-color: #1a1a1a !important;
 }
 
-/* Sidebar text styling - make text white for better visibility */
+/* Sidebar text styling */
 .css-1d391kg .stMarkdown, 
 .css-1d391kg .stText,
 .css-1d391kg h1,
@@ -119,6 +131,10 @@ st.markdown("""
 }
 
 /* Force white color for all sidebar content */
+[data-testid="stSidebar"] {
+    background-color: #1a1a1a !important;
+}
+
 [data-testid="stSidebar"] .stMarkdown,
 [data-testid="stSidebar"] .stText,
 [data-testid="stSidebar"] h1,
@@ -131,9 +147,14 @@ st.markdown("""
     color: #ffffff !important;
 }
 
-/* General text contrast improvements */
+/* General text contrast improvements for dark theme */
 .stMarkdown, .stText {
-    color: #2c3e50 !important;
+    color: #ffffff !important;
+}
+
+/* All text elements should be white on black background */
+h1, h2, h3, h4, h5, h6, p, span, div {
+    color: #ffffff !important;
 }
 
 /* Success/Error message styling */
@@ -149,11 +170,36 @@ st.markdown("""
     border: 1px solid #f5c6cb !important;
 }
 
-/* Selectbox styling */
+/* Selectbox styling for dark theme */
 .stSelectbox > div > div {
-    background-color: #ffffff !important;
-    color: #2c3e50 !important;
-    border: 2px solid #bdc3c7 !important;
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border: 2px solid #444444 !important;
+}
+
+/* Additional dark theme elements */
+.stNumberInput > div > div > input {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border: 2px solid #444444 !important;
+}
+
+/* Metric styling for dark theme */
+[data-testid="metric-container"] {
+    background-color: #1a1a1a !important;
+    border: 1px solid #444444 !important;
+    color: #ffffff !important;
+}
+
+/* Expander styling */
+.streamlit-expanderHeader {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.streamlit-expanderContent {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
 }
 </style>
 """, unsafe_allow_html=True)
