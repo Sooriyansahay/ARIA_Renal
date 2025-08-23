@@ -202,48 +202,44 @@ h1.app-title{
 
 st.markdown("""
 <style>
-/* 1) Hide the ligature text inside the sidebar toggle */
-[data-testid="collapsedControl"] span {
-  font-size: 0 !important;     /* prevents giant text from global font-size */
-  color: transparent !important;
+/* Base app typography: CMU Serif by default, no global !important wildcard */
+@font-face{
+  font-family:"CMU Serif";
+  src: local("CMU Serif"), local("CMUSerif");
+  font-display: swap;
 }
 
-/* 2) Insert a crisp SVG icon instead of text */
-[data-testid="collapsedControl"]::before{
-  content: "";
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  vertical-align: middle;
-
-  /* Use an inline SVG as a mask so we can color it with background-color */
-  -webkit-mask: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
-  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
-</svg>") no-repeat center;
-  mask: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-  <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'/>\
-  <path d='M4.59 16.59 9.17 12 4.59 7.41 6 6l6 6-6 6z'/>\
-</svg>") no-repeat center;
-  background-color: #cfcfd2;    /* icon color */
+/* Body and common text use CMU Serif by inheritance */
+.stApp{ font-family:"CMU Serif", serif; }
+.main .block-container,
+.stMarkdown, p, div, label, li,
+h1,h2,h3,h4,h5,h6,
+input, textarea, select, button {
+  font-family: inherit;
 }
 
-/* 3) Hover color so it feels like a proper control */
-[data-testid="collapsedControl"]:hover::before{
-  background-color: #ffffff;
+/* Load Material Icons for the sidebar toggle */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Force the toggle to use the icon font and a normal size */
+[data-testid="collapsedControl"] span,
+.material-icons {
+  font-family: 'Material Icons' !important;
+  font-size: 24px !important;
+  letter-spacing: normal !important;
+  line-height: 1 !important;
 }
 
-/* 4) Optional: style the toggle container so it looks like a button */
+/* Optional: make the toggle look like a small icon button */
 [data-testid="collapsedControl"]{
-  background: #0e0f12;
-  border: 1px solid #26272b;
-  border-radius: 10px;
-  padding: 4px 6px;
+  background: transparent;
+  border: none;
 }
+[data-testid="collapsedControl"] span{ color:#d4d4d6 !important; }
+[data-testid="collapsedControl"]:hover span{ color:#ffffff !important; }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
