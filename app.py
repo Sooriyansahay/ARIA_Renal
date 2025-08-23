@@ -277,6 +277,17 @@ h1.app-title{
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* Feedback buttons: keep text on one line and give room */
+.stButton > button{
+  white-space: nowrap !important;       /* prevents Helpf / ul split */
+  min-width: 10.5rem !important;        /* ~168px; adjust if you want wider */
+  font-size: 0.95rem !important;        /* slightly smaller so it fits */
+  padding: 0.55rem 1rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 
