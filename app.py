@@ -602,16 +602,16 @@ def main():
                         response_time = time.time() - start_time
                         
                         # Store conversation in database and get conversation ID
-                         conversation_id = None
-                         if supabase_config.is_connected():
-                             conversation_id = conversation_storage.store_conversation(
-                                 session_id=st.session_state.session_id,
-                                 user_question=user_input,
-                                 ta_response=response_data["response"],
-                                 context_sources=response_data.get("context_sources", []),
-                                 concepts_used=response_data.get("concepts_covered", []),
-                                 response_time=response_time
-                             )
+                        conversation_id = None
+                        if supabase_config.is_connected():
+                            conversation_id = conversation_storage.store_conversation(
+                                session_id=st.session_state.session_id,
+                                user_question=user_input,
+                                ta_response=response_data["response"],
+                                context_sources=response_data.get("context_sources", []),
+                                concepts_used=response_data.get("concepts_covered", []),
+                                response_time=response_time
+                            )
                         
                         ta_message = {
                             "role": "assistant",
