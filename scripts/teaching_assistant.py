@@ -51,6 +51,10 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
         start_time = datetime.now()
         
         try:
+            # Check if question is relevant to course materials
+            is_course_relevant = self._is_question_course_relevant(student_question)
+            logger.info(f"Question relevance to course materials: {is_course_relevant}")
+            
             # Retrieve relevant content
             relevant_content = self._get_relevant_content(student_question)
             
@@ -77,14 +81,16 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             assistant_response = response.choices[0].message.content
             logger.info(f"Generated answer length: {len(assistant_response)}")
             
-            # Add source references to the response
-            source_references = self._format_source_references(relevant_content)
-            logger.info(f"Source references: {source_references}")
-            
-            # Always append source references to the response
-            if source_references:
-                assistant_response += f"\n\n📚 Sources: {source_references}"
-                logger.info(f"Final answer with sources: {assistant_response[-100:]}...")
+            # Only add source references if question is relevant to course materials
+            if is_course_relevant:
+                source_references = self._format_source_references(relevant_content)
+                logger.info(f"Source references: {source_references}")
+                
+                if source_references:
+                    assistant_response += f"\n\n📚 Sources: {source_references}"
+                    logger.info(f"Final answer with sources: {assistant_response[-100:]}...")
+            else:
+                logger.info("Question not course-relevant, skipping source references")
             
             # Calculate response time
             response_time = (datetime.now() - start_time).total_seconds()
@@ -101,7 +107,8 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
                 "response": assistant_response,
                 "relevant_topics": [content["metadata"].get("topic", "Unknown") for content in relevant_content],
                 "concepts_covered": self._extract_concepts_from_content(relevant_content),
-                "suggested_review": self._suggest_review_materials(relevant_content)
+                "suggested_review": self._suggest_review_materials(relevant_content),
+                "is_course_relevant": is_course_relevant
             }
             
         except Exception as e:
@@ -270,6 +277,62 @@ Do NOT give direct answers. Keep it brief and focused.
             if "concepts" in content["metadata"]:
                 concepts.update(content["metadata"]["concepts"])
         return list(concepts)
+    
+    def _is_question_course_relevant(self, question: str) -> bool:
+        """Check if the question is relevant to statics and mechanics course materials"""
+        
+        # Convert question to lowercase for case-insensitive matching
+        question_lower = question.lower()
+        
+        # Define course-relevant keywords
+        statics_keywords = [
+            'static', 'statics', 'equilibrium', 'force', 'forces', 'moment', 'moments',
+            'torque', 'reaction', 'reactions', 'support', 'supports', 'free body diagram',
+            'fbd', 'beam', 'beams', 'truss', 'trusses', 'frame', 'frames', 'joint',
+            'joints', 'pin', 'roller', 'fixed', 'cantilever'
+        ]
+        
+        mechanics_keywords = [
+            'stress', 'strain', 'deformation', 'deflection', 'bending', 'shear',
+            'tension', 'compression', 'torsion', 'axial', 'flexural', 'elastic',
+            'modulus', 'material', 'materials', 'mechanics', 'strength', 'loading',
+            'load', 'loads', 'pressure', 'normal', 'tangential', 'principal',
+            'mohr', 'circle', 'yield', 'failure', 'safety', 'factor'
+        ]
+        
+        engineering_keywords = [
+            'engineering', 'structural', 'mechanical', 'civil', 'design',
+            'analysis', 'calculate', 'calculation', 'solve', 'problem',
+            'diagram', 'section', 'cross-section', 'area', 'inertia',
+            'centroid', 'geometry', 'coordinate', 'axis', 'axes'
+        ]
+        
+        # Combine all keywords
+        all_keywords = statics_keywords + mechanics_keywords + engineering_keywords
+        
+        # Check if any keyword is present in the question
+        for keyword in all_keywords:
+            if keyword in question_lower:
+                return True
+        
+        # Additional check for common engineering units and symbols
+        engineering_units = [
+            'kn', 'kip', 'lb', 'lbs', 'newton', 'newtons', 'n', 'pa', 'psi',
+            'mpa', 'gpa', 'kpa', 'mm', 'cm', 'm', 'ft', 'in', 'inch', 'inches',
+            'degree', 'degrees', 'radian', 'radians', 'kg', 'gram', 'ton'
+        ]
+        
+        for unit in engineering_units:
+            if unit in question_lower:
+                return True
+        
+        # Check for mathematical expressions common in engineering
+        math_patterns = ['σ', 'τ', 'ε', 'δ', 'θ', 'φ', 'ω', 'α', 'β', 'γ']
+        for pattern in math_patterns:
+            if pattern in question:
+                return True
+        
+        return False
     
     def _suggest_review_materials(self, content_list: List[Dict]) -> List[str]:
         """Suggest review materials based on retrieved content"""
