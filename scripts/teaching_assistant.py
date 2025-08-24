@@ -55,18 +55,22 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             is_course_relevant = self._is_question_course_relevant(student_question)
             logger.info(f"Question relevance to course materials: {is_course_relevant}")
             
-            # Retrieve relevant content
-            relevant_content = self._get_relevant_content(student_question)
-            
-            # Prepare context for GPT
-            context = self._prepare_context(relevant_content)
-            
-            # Create messages for GPT
-            messages = self._create_messages(
-                student_question, 
-                context, 
-                conversation_history
-            )
+            if is_course_relevant:
+                # For course-relevant questions: retrieve content and use course context
+                relevant_content = self._get_relevant_content(student_question)
+                context = self._prepare_context(relevant_content)
+                messages = self._create_messages(
+                    student_question, 
+                    context, 
+                    conversation_history
+                )
+            else:
+                # For irrelevant questions: use general assistant mode without course context
+                relevant_content = []  # No course content for irrelevant questions
+                messages = self._create_general_messages(
+                    student_question,
+                    conversation_history
+                )
             
             # Generate response with GPT using new client format
             response = self.client.chat.completions.create(
@@ -82,7 +86,7 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             logger.info(f"Generated answer length: {len(assistant_response)}")
             
             # Only add source references if question is relevant to course materials
-            if is_course_relevant:
+            if is_course_relevant and relevant_content:
                 source_references = self._format_source_references(relevant_content)
                 logger.info(f"Source references: {source_references}")
                 
@@ -90,7 +94,7 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
                     assistant_response += f"\n\n📚 Sources: {source_references}"
                     logger.info(f"Final answer with sources: {assistant_response[-100:]}...")
             else:
-                logger.info("Question not course-relevant, skipping source references")
+                logger.info("Question not course-relevant or no content found, skipping source references")
             
             # Calculate response time
             response_time = (datetime.now() - start_time).total_seconds()
@@ -105,10 +109,11 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             
             return {
                 "response": assistant_response,
-                "relevant_topics": [content["metadata"].get("topic", "Unknown") for content in relevant_content],
-                "concepts_covered": self._extract_concepts_from_content(relevant_content),
-                "suggested_review": self._suggest_review_materials(relevant_content),
-                "is_course_relevant": is_course_relevant
+                "relevant_topics": [content["metadata"].get("topic", "Unknown") for content in relevant_content] if relevant_content else [],
+                "concepts_covered": self._extract_concepts_from_content(relevant_content) if relevant_content else [],
+                "suggested_review": self._suggest_review_materials(relevant_content) if relevant_content else [],
+                "is_course_relevant": is_course_relevant,
+                "context_sources": [c["metadata"].get("source_file", "unknown") for c in relevant_content] if relevant_content else []
             }
             
         except Exception as e:
@@ -197,6 +202,36 @@ Do NOT give direct answers. Keep it brief and focused.
 """
         
         messages.append({"role": "user", "content": user_message})
+        
+        return messages
+    
+    def _create_general_messages(
+        self, 
+        question: str, 
+        conversation_history: List[Dict] = None
+    ) -> List[Dict]:
+        """Create message structure for general (non-course) questions"""
+        
+        # Use a general assistant system prompt for non-course questions
+        general_system_prompt = """
+You are ARIA, a helpful teaching assistant. The user has asked a question that is not related to statics and mechanics of materials coursework.
+
+Provide a helpful, concise response to their question. Be friendly and informative, but keep your response brief (3-5 sentences). 
+
+If the question is completely unrelated to academics, gently redirect them back to course-related topics while still being helpful.
+"""
+        
+        messages = [
+            {"role": "system", "content": general_system_prompt}
+        ]
+        
+        # Add conversation history if available
+        if conversation_history:
+            for msg in conversation_history[-6:]:  # Last 6 messages for context
+                messages.append(msg)
+        
+        # Add current question without course context
+        messages.append({"role": "user", "content": question})
         
         return messages
     
