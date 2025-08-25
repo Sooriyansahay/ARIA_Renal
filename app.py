@@ -132,13 +132,13 @@ h3{font-size:1.4rem !important}
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stSelectbox > div > div > select{
-  background:var(--panel-2); color:var(--text); border:1px solid var(--border);
+  background:var(--panel-2); color:var(--text) !important; border:1px solid var(--border) !important;
   border-radius:12px; padding:.75rem .9rem; transition:border .15s ease, box-shadow .15s ease;
 }
 .stTextInput > div > div > input:focus,
 .stTextArea > div > div > textarea:focus,
 .stSelectbox > div > div > select:focus{
-  border-color:var(--accent); box-shadow:0 0 0 3px rgba(106,166,255,.18); outline:none;
+  border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(106,166,255,.18) !important; outline:none;
 }
 
 /* Buttons */
