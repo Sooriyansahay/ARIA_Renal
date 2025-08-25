@@ -142,31 +142,92 @@ h3{font-size:1.4rem !important}
   border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(106,166,255,.18) !important; outline:none;
 }
 
-/* Buttons */
+/* General Buttons - Enhanced visibility */
 .stButton > button{
-  background:var(--panel-2); color:var(--text); border:1px solid var(--border);
-  border-radius:12px; padding:.7rem 1.1rem; font-weight:700;
-  transition:transform .08s ease, background .15s ease, border .15s ease;
+  background:var(--panel-2) !important; 
+  color:var(--text) !important; 
+  border:2px solid var(--border) !important;
+  border-radius:8px !important; 
+  padding:.7rem 1.1rem !important; 
+  font-weight:700 !important;
+  font-size:0.95rem !important;
+  transition:all .2s ease !important;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1) !important;
 }
-.stButton > button:hover{ background:var(--accent-hover); border-color:var(--accent); transform:translateY(-1px); color:white; }
+.stButton > button:hover{ 
+  background:var(--accent-hover) !important; 
+  border-color:var(--accent) !important; 
+  transform:translateY(-1px) !important; 
+  color:white !important;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15) !important;
+}
 
-/* Focus Area Selectbox - Responsive to theme */
+/* Clear Conversation button specific styling */
+[data-testid="stSidebar"] .stButton > button {
+  background:var(--accent-2) !important;
+  color:var(--text) !important;
+  border:2px solid var(--accent) !important;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+  background:var(--accent) !important;
+  color:white !important;
+}
+
+/* Focus Area Selectbox - Enhanced visibility for both themes */
 .stSelectbox > div > div > select{
-  background:var(--panel-2) !important; color:var(--text) !important; 
-  border:1px solid var(--border) !important;
+  background:var(--panel-2) !important; 
+  color:var(--text) !important; 
+  border:2px solid var(--border) !important;
+  border-radius:8px !important;
+  font-weight:600 !important;
+  font-size:1rem !important;
+  padding:0.5rem 0.75rem !important;
+  -webkit-appearance:none !important;
+  -moz-appearance:none !important;
+  appearance:none !important;
 }
 .stSelectbox > div > div > select:focus{
-  border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(180, 149, 106, 0.15) !important;
+  border-color:var(--accent) !important; 
+  box-shadow:0 0 0 3px rgba(180, 149, 106, 0.25) !important;
+  outline:none !important;
+}
+/* Custom dropdown arrow */
+.stSelectbox > div > div {
+  position:relative !important;
+}
+.stSelectbox > div > div::after {
+  content:'▼' !important;
+  position:absolute !important;
+  right:12px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  pointer-events:none !important;
+  color:var(--text) !important;
+  font-size:0.8rem !important;
 }
 
-/* Ask ARIA button - Responsive to theme */
+/* Ask ARIA button - Enhanced visibility and contrast */
 .stForm .stButton > button{
-  background:var(--accent-2) !important; color:var(--text) !important; 
-  border:1px solid var(--border) !important; font-weight:700 !important;
+  background:var(--accent) !important; 
+  color:white !important; 
+  border:2px solid var(--accent) !important; 
+  font-weight:700 !important;
+  font-size:1rem !important;
+  border-radius:8px !important;
+  padding:0.6rem 1.2rem !important;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1) !important;
+  transition:all 0.2s ease !important;
 }
 .stForm .stButton > button:hover{
-  background:var(--accent-hover) !important; color:white !important; border-color:var(--accent) !important;
-  transform:translateY(-1px) !important;
+  background:var(--accent-hover) !important; 
+  color:white !important; 
+  border-color:var(--accent-hover) !important;
+  transform:translateY(-2px) !important;
+  box-shadow:0 4px 8px rgba(0,0,0,0.2) !important;
+}
+.stForm .stButton > button:active{
+  transform:translateY(0px) !important;
+  box-shadow:0 1px 2px rgba(0,0,0,0.1) !important;
 }
 
 /* Darken placeholder text for better contrast */
@@ -206,32 +267,49 @@ h3{font-size:1.4rem !important}
   background:var(--panel); border-left:4px solid var(--claude-purple); 
 }
 
-/* Feedback buttons */
+/* Enhanced Feedback buttons */
 .feedback-container{
   display:flex; align-items:center; gap:0.5rem; margin-top:0.75rem; padding-top:0.75rem;
-  border-top:1px solid var(--border); opacity:0.8;
+  border-top:1px solid var(--border); opacity:0.9;
 }
 .feedback-text{
-  font-size:0.85rem; color:var(--muted); margin-right:0.5rem;
+  font-size:0.9rem; color:var(--text); margin-right:0.5rem; font-weight:600;
 }
 .feedback-button{
-  background:transparent; border:1px solid var(--border); border-radius:8px;
-  padding:0.5rem 1rem; cursor:pointer; transition:all 0.15s ease;
-  color:var(--muted); font-size:0.8rem; display:flex; align-items:center; gap:0.4rem;
-  min-width:80px; white-space:nowrap;
+  background:var(--panel-2) !important; 
+  border:2px solid var(--border) !important; 
+  border-radius:8px !important;
+  padding:0.5rem 1rem !important; 
+  cursor:pointer !important; 
+  transition:all 0.2s ease !important;
+  color:var(--text) !important; 
+  font-size:0.85rem !important; 
+  display:flex !important; 
+  align-items:center !important; 
+  gap:0.4rem !important;
+  min-width:80px !important; 
+  white-space:nowrap !important;
+  font-weight:600 !important;
 }
 .feedback-button:hover{
-  background:var(--panel-2); border-color:var(--accent); color:var(--text);
+  background:var(--accent-2) !important; 
+  border-color:var(--accent) !important; 
+  color:var(--text) !important;
+  transform:translateY(-1px) !important;
 }
 .feedback-button.selected{
-  background:var(--accent); border-color:var(--accent); color:white;
-  transform:scale(1.05);
+  background:var(--accent) !important; 
+  border-color:var(--accent) !important; 
+  color:white !important;
+  transform:scale(1.05) !important;
 }
 .feedback-button.selected.negative{
-  background:#dc3545; border-color:#dc3545;
+  background:#dc3545 !important; 
+  border-color:#dc3545 !important;
 }
 .feedback-button.selected.partial{
-  background:#ffa500; border-color:#ffa500;
+  background:#ffa500 !important; 
+  border-color:#ffa500 !important;
 }
 
 /* Footer centered */
@@ -306,7 +384,20 @@ pre{
   .stSelectbox > div > div > select {
     background: var(--panel-2) !important;
     color: var(--text) !important;
-    border: 1px solid var(--border) !important;
+    border: 2px solid var(--border) !important;
+  }
+  
+  /* Enhanced button styling for dark mode */
+  .stButton > button {
+    background: var(--panel-2) !important;
+    color: var(--text) !important;
+    border: 2px solid var(--border) !important;
+  }
+  
+  .stForm .stButton > button {
+    background: var(--accent) !important;
+    color: white !important;
+    border: 2px solid var(--accent) !important;
   }
   
   /* Feedback buttons in dark mode */
@@ -314,6 +405,20 @@ pre{
     background: var(--panel-2) !important;
     color: var(--text) !important;
     border: 1px solid var(--border) !important;
+  }
+  
+  /* Selectbox dropdown arrow in dark mode */
+  .stSelectbox > div > div::after {
+    color: var(--text) !important;
+  }
+  
+  /* Ensure proper contrast for labels */
+  [data-testid="stSidebar"] label,
+  .stSelectbox label,
+  .stTextInput label,
+  .stTextArea label {
+    color: var(--text) !important;
+    font-weight: 600 !important;
   }
 }
 </style>
