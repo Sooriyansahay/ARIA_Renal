@@ -149,22 +149,22 @@ h3{font-size:1.4rem !important}
 }
 .stButton > button:hover{ background:var(--accent-hover); border-color:var(--accent); transform:translateY(-1px); color:white; }
 
-/* Focus Area Selectbox - Light yellowish-brown styling */
+/* Focus Area Selectbox - Lighter shade within yellowish-brown palette */
 .stSelectbox > div > div > select{
-  background:var(--callout-bg) !important; color:var(--text) !important; 
-  border:1px solid var(--accent) !important;
+  background:#FBF8F1 !important; color:var(--text) !important; 
+  border:1px solid #E6D4B7 !important;
 }
 .stSelectbox > div > div > select:focus{
-  border-color:var(--accent-2) !important; box-shadow:0 0 0 3px rgba(180, 149, 106, 0.2) !important;
+  border-color:var(--accent-2) !important; box-shadow:0 0 0 3px rgba(180, 149, 106, 0.15) !important;
 }
 
-/* Ask ARIA button - Complementary styling */
+/* Ask ARIA button - Lighter tone complementing the color scheme */
 .stForm .stButton > button{
-  background:var(--accent) !important; color:white !important; 
-  border:1px solid var(--accent) !important; font-weight:700 !important;
+  background:#E6D4B7 !important; color:var(--text) !important; 
+  border:1px solid #D4A574 !important; font-weight:700 !important;
 }
 .stForm .stButton > button:hover{
-  background:var(--accent-2) !important; border-color:var(--accent-2) !important;
+  background:var(--accent) !important; color:white !important; border-color:var(--accent) !important;
   transform:translateY(-1px) !important;
 }
 
@@ -246,7 +246,7 @@ pre{
   overflow-x:auto !important;
 }
 
-/* Navigation bar icons - Light colors for better visibility */
+/* Navigation bar icons - White Share option for better visibility */
 [data-testid="stHeader"] {
   background-color: rgba(0, 0, 0, 0.9) !important;
 }
@@ -258,10 +258,10 @@ pre{
   color: #F5F1E8 !important;
 }
 [data-testid="stHeader"] [data-testid="stHeaderActionElements"] button {
-  color: #F5F1E8 !important;
+  color: white !important;
 }
 [data-testid="stHeader"] [data-testid="stHeaderActionElements"] svg {
-  fill: #F5F1E8 !important;
+  fill: white !important;
 }
 
 /* Dark mode preference - maintain yellowish-brown theme */
@@ -656,7 +656,7 @@ def main():
     
     st.divider()
     st.markdown(
-        '<div class="app-footer"><div>Dibakar Roy Sarkar and Yue Luo, Centrum Intelliphysics Lab (Somdatta Goswami),</div><div>Civil and System Engineering, Johns Hopkins University</div></div>',
+        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, Centrum Intelliphysics Lab (Somdatta Goswami),</div><div>Civil and System Engineering, Johns Hopkins University</div></div>',
         unsafe_allow_html=True
     )
 
