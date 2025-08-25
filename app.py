@@ -88,6 +88,7 @@ st.markdown("""
   --text:#3C2E1E; --muted:#8B7355; --border:#D4A574;
   --accent:#B8956A; --accent-2:#A0845C;
   --accent-hover:#8B7355; --callout-bg:#F0E6D2;
+  --claude-purple:#a47aff;
 }
 
 /* Apply Cambria globally, including code blocks */
@@ -149,22 +150,22 @@ h3{font-size:1.4rem !important}
 }
 .stButton > button:hover{ background:var(--accent-hover); border-color:var(--accent); transform:translateY(-1px); color:white; }
 
-/* Focus Area Selectbox - Lighter shade within yellowish-brown palette */
+/* Focus Area Selectbox - Responsive to theme */
 .stSelectbox > div > div > select{
-  background:#FBF8F1 !important; color:var(--text) !important; 
-  border:1px solid #E6D4B7 !important;
+  background:var(--panel-2) !important; color:var(--text) !important; 
+  border:1px solid var(--border) !important;
 }
 .stSelectbox > div > div > select:focus{
-  border-color:var(--accent-2) !important; box-shadow:0 0 0 3px rgba(180, 149, 106, 0.15) !important;
+  border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(180, 149, 106, 0.15) !important;
 }
 
-/* Ask ARIA button - Lighter tone complementing the color scheme */
+/* Ask ARIA button - Responsive to theme */
 .stForm .stButton > button{
-  background:#E6D4B7 !important; color:var(--text) !important; 
-  border:1px solid #D4A574 !important; font-weight:700 !important;
+  background:var(--accent-2) !important; color:var(--text) !important; 
+  border:1px solid var(--border) !important; font-weight:700 !important;
 }
 .stForm .stButton > button:hover{
-  background:var(--accent) !important; color:white !important; border-color:var(--accent) !important;
+  background:var(--accent-hover) !important; color:white !important; border-color:var(--accent) !important;
   transform:translateY(-1px) !important;
 }
 
@@ -196,10 +197,14 @@ h3{font-size:1.4rem !important}
 /* Messages */
 .chat-message{
   padding:1.1rem 1.2rem; border-radius:12px; margin:1rem 0; border:1px solid var(--border);
-  background:var(--panel); box-shadow:0 1px 6px rgba(0,0,0,.18);
+  background:var(--panel); box-shadow:0 1px 6px rgba(0,0,0,.18); color:var(--text);
 }
-.student-message{ background:#11151c; border-left:4px solid var(--accent); }
-.ta-message{ background:#17121a; border-left:4px solid #a47aff; }
+.student-message{ 
+  background:var(--panel-2); border-left:4px solid var(--accent); 
+}
+.ta-message{ 
+  background:var(--panel); border-left:4px solid var(--claude-purple); 
+}
 
 /* Feedback buttons */
 .feedback-container{
@@ -271,11 +276,45 @@ pre{
     --text:#F5F1E8; --muted:#B8956A; --border:#5D4A37;
     --accent:#D4A574; --accent-2:#E6B885;
     --accent-hover:#F0C896; --callout-bg:#3C2E1E;
+    --claude-purple:#a47aff;
   }
   .stApp{ background:var(--bg); color:var(--text); }
   .main .block-container{ background:var(--bg); }
-  .stButton > button{ background:var(--panel-2); }
+  .stButton > button{ background:var(--panel-2); color:var(--text); }
   .aria-callout{ background:var(--callout-bg); }
+  .chat-message{ background:var(--panel); color:var(--text); }
+  .student-message{ background:var(--panel-2); }
+  .ta-message{ background:var(--panel); }
+  
+  /* Ensure all text elements are visible in dark mode */
+  h1, h2, h3, h4, h5, h6, p, div, span, label, li, small, em, strong {
+    color: var(--text) !important;
+  }
+  
+  /* Sidebar styling in dark mode */
+  [data-testid="stSidebar"] {
+    background: var(--panel) !important;
+    color: var(--text) !important;
+  }
+  [data-testid="stSidebar"] * {
+    color: var(--text) !important;
+  }
+  
+  /* Form elements in dark mode */
+  .stTextInput > div > div > input,
+  .stTextArea > div > div > textarea,
+  .stSelectbox > div > div > select {
+    background: var(--panel-2) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+  }
+  
+  /* Feedback buttons in dark mode */
+  .feedback-button {
+    background: var(--panel-2) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+  }
 }
 </style>
 """, unsafe_allow_html=True)
