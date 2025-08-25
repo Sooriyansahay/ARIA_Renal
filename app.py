@@ -191,6 +191,7 @@ h3{font-size:1.4rem !important}
   box-shadow:0 0 0 3px rgba(180, 149, 106, 0.25) !important;
   outline:none !important;
 }
+
 /* Custom dropdown arrow */
 .stSelectbox > div > div {
   position:relative !important;
@@ -206,28 +207,75 @@ h3{font-size:1.4rem !important}
   font-size:0.8rem !important;
 }
 
+/* Dropdown menu options styling */
+.stSelectbox > div > div > select option {
+  background:var(--panel) !important;
+  color:var(--text) !important;
+  padding:8px 12px !important;
+  font-weight:500 !important;
+  border:none !important;
+}
+.stSelectbox > div > div > select option:hover,
+.stSelectbox > div > div > select option:focus,
+.stSelectbox > div > div > select option:checked {
+  background:var(--accent) !important;
+  color:white !important;
+}
+
+/* Streamlit selectbox widget specific styling */
+[data-baseweb="select"] {
+  background:var(--panel-2) !important;
+}
+[data-baseweb="select"] > div {
+  background:var(--panel-2) !important;
+  color:var(--text) !important;
+  border:2px solid var(--border) !important;
+  border-radius:8px !important;
+}
+[data-baseweb="popover"] {
+  background:var(--panel) !important;
+  border:1px solid var(--border) !important;
+  border-radius:8px !important;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15) !important;
+}
+[data-baseweb="menu"] {
+  background:var(--panel) !important;
+}
+[data-baseweb="menu"] li {
+  background:var(--panel) !important;
+  color:var(--text) !important;
+  padding:8px 16px !important;
+}
+[data-baseweb="menu"] li:hover {
+  background:var(--accent) !important;
+  color:white !important;
+}
+
 /* Ask ARIA button - Enhanced visibility and contrast */
 .stForm .stButton > button{
   background:var(--accent) !important; 
   color:white !important; 
-  border:2px solid var(--accent) !important; 
-  font-weight:700 !important;
-  font-size:1rem !important;
-  border-radius:8px !important;
-  padding:0.6rem 1.2rem !important;
-  box-shadow:0 2px 4px rgba(0,0,0,0.1) !important;
+  border:3px solid var(--accent) !important; 
+  font-weight:800 !important;
+  font-size:1.1rem !important;
+  border-radius:10px !important;
+  padding:0.8rem 1.5rem !important;
+  box-shadow:0 3px 6px rgba(0,0,0,0.15) !important;
   transition:all 0.2s ease !important;
+  text-transform:uppercase !important;
+  letter-spacing:0.5px !important;
+  min-height:48px !important;
 }
 .stForm .stButton > button:hover{
   background:var(--accent-hover) !important; 
   color:white !important; 
   border-color:var(--accent-hover) !important;
-  transform:translateY(-2px) !important;
-  box-shadow:0 4px 8px rgba(0,0,0,0.2) !important;
+  transform:translateY(-3px) !important;
+  box-shadow:0 6px 12px rgba(0,0,0,0.25) !important;
 }
 .stForm .stButton > button:active{
-  transform:translateY(0px) !important;
-  box-shadow:0 1px 2px rgba(0,0,0,0.1) !important;
+  transform:translateY(-1px) !important;
+  box-shadow:0 2px 4px rgba(0,0,0,0.15) !important;
 }
 
 /* Darken placeholder text for better contrast */
@@ -397,7 +445,7 @@ pre{
   .stForm .stButton > button {
     background: var(--accent) !important;
     color: white !important;
-    border: 2px solid var(--accent) !important;
+    border: 3px solid var(--accent) !important;
   }
   
   /* Feedback buttons in dark mode */
@@ -407,9 +455,35 @@ pre{
     border: 1px solid var(--border) !important;
   }
   
-  /* Selectbox dropdown arrow in dark mode */
+  /* Selectbox dropdown and options in dark mode */
   .stSelectbox > div > div::after {
     color: var(--text) !important;
+  }
+  
+  /* Streamlit selectbox widget dark mode overrides */
+  [data-baseweb="select"] {
+    background: var(--panel-2) !important;
+  }
+  [data-baseweb="select"] > div {
+    background: var(--panel-2) !important;
+    color: var(--text) !important;
+    border: 2px solid var(--border) !important;
+  }
+  [data-baseweb="popover"] {
+    background: var(--panel) !important;
+    border: 2px solid var(--border) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  }
+  [data-baseweb="menu"] {
+    background: var(--panel) !important;
+  }
+  [data-baseweb="menu"] li {
+    background: var(--panel) !important;
+    color: var(--text) !important;
+  }
+  [data-baseweb="menu"] li:hover {
+    background: var(--accent) !important;
+    color: white !important;
   }
   
   /* Ensure proper contrast for labels */
