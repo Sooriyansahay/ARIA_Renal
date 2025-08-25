@@ -26,7 +26,7 @@ except Exception:
 
 # Page configuration
 st.set_page_config(
-    page_title="ARIA: Statics and Mechanics of Materials TA",
+    page_title="ARIA: Statics and Mechanics of Materials (EN.560.201) TA",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -80,58 +80,23 @@ button[data-testid="collapsedControl"]:focus{ outline: 2px solid #6aa6ff; outlin
 </style>
 """, unsafe_allow_html=True)
 
-# Design CSS with CMU Serif everywhere
+# Design CSS with Cambria font and yellowish-brown color scheme
 st.markdown("""
 <style>
 :root{
-  --bg:#0c0c0d; --panel:#141416; --panel-2:#101113;
-  --text:#e9e7e4; --muted:#b9b6b0; --border:#26272b;
-  --accent:#6aa6ff; --accent-2:#9bbcff;
+  --bg:#F5F1E8; --panel:#FEFCF7; --panel-2:#F9F5EC;
+  --text:#3C2E1E; --muted:#8B7355; --border:#D4A574;
+  --accent:#B8956A; --accent-2:#A0845C;
+  --accent-hover:#8B7355; --callout-bg:#F0E6D2;
 }
 
-/* CMU Serif webfont declarations.
-   If the files are present in ./fonts they will be used.
-   Otherwise the local installed face will be used. */
-@font-face{
-  font-family:"CMU Serif";
-  src: local("CMU Serif"), local("CMUSerif"),
-       url("./fonts/cmunrm.woff2") format("woff2"),
-       url("./fonts/cmunrm.woff") format("woff"),
-       url("./fonts/cmunrm.ttf") format("truetype");
-  font-weight:400; font-style:normal; font-display:swap;
-}
-@font-face{
-  font-family:"CMU Serif";
-  src: local("CMU Serif Bold"), local("CMUSerif-Bold"),
-       url("./fonts/cmunbx.woff2") format("woff2"),
-       url("./fonts/cmunbx.woff") format("woff"),
-       url("./fonts/cmunbx.ttf") format("truetype");
-  font-weight:700; font-style:normal; font-display:swap;
-}
-@font-face{
-  font-family:"CMU Serif";
-  src: local("CMU Serif Italic"), local("CMUSerif-Italic"),
-       url("./fonts/cmunti.woff2") format("woff2"),
-       url("./fonts/cmunti.woff") format("woff"),
-       url("./fonts/cmunti.ttf") format("truetype");
-  font-weight:400; font-style:italic; font-display:swap;
-}
-@font-face{
-  font-family:"CMU Serif";
-  src: local("CMU Serif Bold Italic"), local("CMUSerif-BoldItalic"),
-       url("./fonts/cmunbi.woff2") format("woff2"),
-       url("./fonts/cmunbi.woff") format("woff"),
-       url("./fonts/cmunbi.ttf") format("truetype");
-  font-weight:700; font-style:italic; font-display:swap;
-}
-
-/* Apply CMU Serif globally, including code blocks */
+/* Apply Cambria globally, including code blocks */
 html, body, .stApp, .main, .block-container,
 h1,h2,h3,h4,h5,h6,
 p,div,span,label,li,small,em,strong,
 button, input, textarea, select,
 code, pre, kbd, samp {
-  font-family: "CMU Serif", serif !important;
+  font-family: "Cambria", "Times New Roman", serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text);
@@ -184,14 +149,21 @@ h3{font-size:1.4rem !important}
 }
 .stButton > button:hover{ background:#1b1d22; border-color:#30323a; transform:translateY(-1px); }
 
-/* Single rail callout */
+/* Single rail callout with yellowish-brown styling */
 .aria-callout{
-  position:relative; background:linear-gradient(135deg,#0f254a 0%,#0e1f3e 100%);
-  border-radius:14px; padding:1.1rem 1.25rem; box-shadow:0 8px 24px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+  position:relative; background:var(--callout-bg);
+  border-radius:14px; padding:1.5rem 1.25rem; box-shadow:0 4px 12px rgba(180, 149, 106, 0.15), inset 0 0 0 1px rgba(180, 149, 106, 0.2);
+  text-align: center; border: 1px solid var(--border);
 }
 .aria-callout::before{
   content:""; position:absolute; left:0; top:0; bottom:0; width:6px;
   background:var(--accent); border-top-left-radius:14px; border-bottom-left-radius:14px;
+}
+.aria-callout .welcome-main {
+  font-size: 1.1rem; line-height: 1.4; margin-bottom: 0.75rem; color: var(--text);
+}
+.aria-callout .welcome-sub {
+  font-size: 1rem; color: var(--muted); font-style: italic;
 }
 
 /* Messages */
@@ -247,15 +219,18 @@ pre{
   overflow-x:auto !important;
 }
 
-/* Light preference */
-@media (prefers-color-scheme: light){
+/* Dark mode preference - maintain yellowish-brown theme */
+@media (prefers-color-scheme: dark){
   :root{
-    --bg:#faf9f7; --panel:#ffffff; --panel-2:#f7f7f9; --text:#2b2a28; --muted:#5d5b57; --border:#e6e4df;
-    --accent:#3147c4; --accent-2:#5164de;
+    --bg:#2A1F15; --panel:#3C2E1E; --panel-2:#342619;
+    --text:#F5F1E8; --muted:#B8956A; --border:#5D4A37;
+    --accent:#D4A574; --accent-2:#E6B885;
+    --accent-hover:#F0C896; --callout-bg:#3C2E1E;
   }
   .stApp{ background:var(--bg); color:var(--text); }
   .main .block-container{ background:var(--bg); }
   .stButton > button{ background:var(--panel-2); }
+  .aria-callout{ background:var(--callout-bg); }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -433,7 +408,7 @@ def main():
                 return
     
     st.markdown(
-        '<h1 class="app-title">ARIA: Statics and Mechanics of Materials TA</h1>',
+        '<h1 class="app-title">ARIA: Statics and Mechanics of Materials (EN.560.201) TA</h1>',
         unsafe_allow_html=True
     )
     
@@ -441,7 +416,8 @@ def main():
         st.markdown(
             """
             <div class="aria-callout">
-              I am ARIA, your teaching assistant for Statics and Mechanics of Materials. I will guide you through problem solving steps and help you understand key concepts. How can I help you today
+              <div class="welcome-main">I am ARIA, your teaching assistant for Statics and Mechanics of Materials. I will guide you through problem solving steps and help you understand key concepts.</div>
+              <div class="welcome-sub">How can I help you today?</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -655,7 +631,7 @@ def main():
     
     st.divider()
     st.markdown(
-        '<p class="app-footer">Built by Dibakar Roy Sarkar and Yue Luo, Centrum IntelliPhysics Lab</p>',
+        '<div class="app-footer"><div>Dibakar Roy Sarkar and Yue Luo, Centrum Intelliphysics Lab (Somdatta Goswami),</div><div>Civil and System Engineering, Johns Hopkins University</div></div>',
         unsafe_allow_html=True
     )
 
