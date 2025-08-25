@@ -147,7 +147,34 @@ h3{font-size:1.4rem !important}
   border-radius:12px; padding:.7rem 1.1rem; font-weight:700;
   transition:transform .08s ease, background .15s ease, border .15s ease;
 }
-.stButton > button:hover{ background:#1b1d22; border-color:#30323a; transform:translateY(-1px); }
+.stButton > button:hover{ background:var(--accent-hover); border-color:var(--accent); transform:translateY(-1px); color:white; }
+
+/* Focus Area Selectbox - Light yellowish-brown styling */
+.stSelectbox > div > div > select{
+  background:var(--callout-bg) !important; color:var(--text) !important; 
+  border:1px solid var(--accent) !important;
+}
+.stSelectbox > div > div > select:focus{
+  border-color:var(--accent-2) !important; box-shadow:0 0 0 3px rgba(180, 149, 106, 0.2) !important;
+}
+
+/* Ask ARIA button - Complementary styling */
+.stForm .stButton > button{
+  background:var(--accent) !important; color:white !important; 
+  border:1px solid var(--accent) !important; font-weight:700 !important;
+}
+.stForm .stButton > button:hover{
+  background:var(--accent-2) !important; border-color:var(--accent-2) !important;
+  transform:translateY(-1px) !important;
+}
+
+/* Darken placeholder text for better contrast */
+.stTextArea > div > div > textarea::placeholder{
+  color:var(--text) !important; opacity:0.7 !important;
+}
+.stTextArea > div > div > textarea{
+  color:var(--text) !important;
+}
 
 /* Single rail callout with yellowish-brown styling */
 .aria-callout{
@@ -217,6 +244,24 @@ pre{
   border-radius:10px !important;
   padding:1rem !important;
   overflow-x:auto !important;
+}
+
+/* Navigation bar icons - Light colors for better visibility */
+[data-testid="stHeader"] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
+[data-testid="stHeader"] button {
+  color: #F5F1E8 !important;
+}
+[data-testid="stHeader"] svg {
+  fill: #F5F1E8 !important;
+  color: #F5F1E8 !important;
+}
+[data-testid="stHeader"] [data-testid="stHeaderActionElements"] button {
+  color: #F5F1E8 !important;
+}
+[data-testid="stHeader"] [data-testid="stHeaderActionElements"] svg {
+  fill: #F5F1E8 !important;
 }
 
 /* Dark mode preference - maintain yellowish-brown theme */
@@ -402,7 +447,6 @@ def main():
             if ta_system:
                 st.session_state.ta_system = ta_system
                 st.session_state.system_initialized = True
-                st.success("TA system ready")
             else:
                 st.error("Failed to initialize TA system. Check the API key.")
                 return
@@ -430,26 +474,7 @@ def main():
         else:
             st.error("System Not Ready")
         
-        # Supabase Database Status
-        st.subheader("Database Status")
-        if supabase_config.is_connected():
-            st.success("✅ Supabase Connected")
-            st.caption("Feedback data will be stored in Supabase database")
-        else:
-            st.warning("⚠️ Supabase Not Connected")
-            st.caption("Feedback data will be stored locally in JSON files")
-            with st.expander("How to configure Supabase"):
-                st.markdown("""
-                1. Create a Supabase project at [supabase.com](https://supabase.com)
-                2. Go to Settings > API in your dashboard
-                3. Copy your Project URL and anon key
-                4. Add them to `.streamlit/secrets.toml`:
-                ```toml
-                SUPABASE_URL = "https://your-project-ref.supabase.co"
-                SUPABASE_ANON_KEY = "your_anon_key_here"
-                ```
-                5. Restart the application
-                """)
+
         
         st.subheader("Focus Area")
         topics = get_course_topics()
