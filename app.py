@@ -233,52 +233,54 @@ h3{font-size:1.4rem !important}
   border-radius:8px !important;
 }
 
-/* Dropdown popover container - Maximum contrast and visibility */
+/* Clean dropdown popover container - Single border design */
 [data-baseweb="popover"],
 [data-baseweb="popover"] > div,
 [data-baseweb="popover"] ul {
   background: #FFFFFF !important;
-  border: 3px solid var(--accent) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
   z-index: 99999 !important;
   max-height: 300px !important;
   overflow-y: auto !important;
+  padding: 0 !important;
 }
 
-/* Dropdown menu container - Force white background */
+/* Clean dropdown menu container */
 [data-baseweb="menu"],
 [data-baseweb="menu"] > div,
 [data-baseweb="menu"] ul {
-  background: #FFFFFF !important;
-  border-radius: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
   padding: 8px !important;
   margin: 0 !important;
 }
 
-/* Individual menu items - High contrast black text on white */
+/* Clean menu items - No individual borders */
 [data-baseweb="menu"] li,
 [data-baseweb="menu"] li > div,
 [data-baseweb="menu"] li span,
 [data-baseweb="menu"] [role="option"],
 [data-baseweb="menu"] [role="option"] > div,
 [data-baseweb="menu"] [role="option"] span {
-  background: #FFFFFF !important;
+  background: transparent !important;
   color: #2C1810 !important;
   padding: 12px 16px !important;
-  margin: 2px 0 !important;
-  border-radius: 6px !important;
-  font-weight: 600 !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
   font-size: 1rem !important;
-  border: 2px solid #E6D4B7 !important;
-  transition: all 0.2s ease !important;
+  border: none !important;
+  transition: all 0.15s ease !important;
   line-height: 1.4 !important;
   min-height: 44px !important;
   display: flex !important;
   align-items: center !important;
 }
 
-/* Menu item hover state - Strong accent color */
+/* Clean menu item hover state */
 [data-baseweb="menu"] li:hover,
 [data-baseweb="menu"] li:hover > div,
 [data-baseweb="menu"] li:hover span,
@@ -287,12 +289,11 @@ h3{font-size:1.4rem !important}
 [data-baseweb="menu"] [role="option"]:hover span {
   background: var(--accent) !important;
   color: #FFFFFF !important;
-  border-color: var(--accent) !important;
-  transform: translateX(4px) !important;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Menu item selected/active state */
+/* Clean menu item selected/active state */
 [data-baseweb="menu"] li[aria-selected="true"],
 [data-baseweb="menu"] li[aria-selected="true"] > div,
 [data-baseweb="menu"] li[aria-selected="true"] span,
@@ -301,35 +302,36 @@ h3{font-size:1.4rem !important}
 [data-baseweb="menu"] [role="option"][aria-selected="true"] span {
   background: var(--accent-2) !important;
   color: #2C1810 !important;
-  border-color: var(--accent) !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
 }
 
-/* Additional comprehensive fallback styling */
+/* Clean fallback styling for compatibility */
 .stSelectbox [role="listbox"],
 .stSelectbox [role="listbox"] > div {
   background: #FFFFFF !important;
-  border: 2px solid var(--accent) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
   z-index: 99999 !important;
   position: relative !important;
+  padding: 8px !important;
 }
 
 .stSelectbox [role="option"],
 .stSelectbox [role="option"] > div,
 .stSelectbox [role="option"] span {
-  background: #FFFFFF !important;
+  background: transparent !important;
   color: #2C1810 !important;
-  padding: 10px 16px !important;
-  border-radius: 4px !important;
-  margin: 1px 0 !important;
-  font-weight: 600 !important;
-  border: 1px solid #E6D4B7 !important;
-  min-height: 40px !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  margin: 0 !important;
+  font-weight: 500 !important;
+  border: none !important;
+  min-height: 44px !important;
   display: flex !important;
   align-items: center !important;
+  transition: all 0.15s ease !important;
 }
 
 .stSelectbox [role="option"]:hover,
@@ -340,7 +342,6 @@ h3{font-size:1.4rem !important}
 .stSelectbox [role="option"][aria-selected="true"] span {
   background: var(--accent) !important;
   color: #FFFFFF !important;
-  border-color: var(--accent) !important;
 }
 
 /* Comprehensive text visibility enforcement */
@@ -373,7 +374,7 @@ h3{font-size:1.4rem !important}
   opacity: 1 !important;
 }
 
-/* Responsive design for mobile devices */
+/* Clean responsive design for mobile devices */
 @media (max-width: 768px) {
   [data-baseweb="popover"],
   [data-baseweb="popover"] > div,
@@ -381,21 +382,50 @@ h3{font-size:1.4rem !important}
     max-width: calc(100vw - 32px) !important;
     left: 16px !important;
     right: 16px !important;
-    border-radius: 12px !important;
+    border-radius: 16px !important;
   }
   
   [data-baseweb="menu"] li,
   [data-baseweb="menu"] [role="option"] {
-    padding: 14px 20px !important;
+    padding: 16px 20px !important;
     font-size: 1.1rem !important;
-    min-height: 48px !important;
-    border-width: 1px !important;
+    min-height: 52px !important;
+    border-radius: 10px !important;
   }
   
   .stSelectbox > div > div > select {
     font-size: 1.1rem !important;
-    padding: 0.7rem 1rem !important;
+    padding: 0.8rem 1rem !important;
   }
+}
+
+/* Visual hierarchy improvements */
+[data-baseweb="menu"] li:first-child,
+[data-baseweb="menu"] [role="option"]:first-child {
+  margin-top: 4px !important;
+}
+
+[data-baseweb="menu"] li:last-child,
+[data-baseweb="menu"] [role="option"]:last-child {
+  margin-bottom: 4px !important;
+}
+
+/* Subtle separator for better readability */
+[data-baseweb="menu"] li:not(:last-child)::after,
+[data-baseweb="menu"] [role="option"]:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background: rgba(0,0,0,0.05);
+  pointer-events: none;
+}
+
+[data-baseweb="menu"] li:hover::after,
+[data-baseweb="menu"] [role="option"]:hover::after {
+  display: none;
 }
 
 /* High contrast mode support */
@@ -700,33 +730,34 @@ pre{
     border: 2px solid var(--border) !important;
   }
   
-  /* Dark mode dropdown - Force dark theme colors */
+  /* Clean dark mode dropdown styling */
   [data-baseweb="popover"],
   [data-baseweb="popover"] > div,
   [data-baseweb="popover"] ul {
     background: var(--panel) !important;
-    border: 3px solid var(--accent) !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5) !important;
   }
   
   /* Dark mode dropdown menu */
   [data-baseweb="menu"],
   [data-baseweb="menu"] > div,
   [data-baseweb="menu"] ul {
-    background: var(--panel) !important;
+    background: transparent !important;
+    border: none !important;
   }
   
-  /* Dark mode menu items - High contrast */
+  /* Clean dark mode menu items */
   [data-baseweb="menu"] li,
   [data-baseweb="menu"] li > div,
   [data-baseweb="menu"] li span,
   [data-baseweb="menu"] [role="option"],
   [data-baseweb="menu"] [role="option"] > div,
   [data-baseweb="menu"] [role="option"] span {
-    background: var(--panel-2) !important;
+    background: transparent !important;
     color: var(--text) !important;
-    border: 2px solid var(--border) !important;
-    font-weight: 600 !important;
+    border: none !important;
+    font-weight: 500 !important;
   }
   
   /* Dark mode hover and focus states */
@@ -744,7 +775,6 @@ pre{
   [data-baseweb="menu"] [role="option"]:focus span {
     background: var(--accent) !important;
     color: white !important;
-    border-color: var(--accent) !important;
   }
   
   /* Dark mode selected states */
@@ -756,21 +786,28 @@ pre{
   [data-baseweb="menu"] [role="option"][aria-selected="true"] span {
     background: var(--accent-2) !important;
     color: var(--text) !important;
-    border-color: var(--accent) !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
   }
   
-  /* Dark mode fallback styling */
+  /* Clean dark mode fallback styling */
   .stSelectbox [role="listbox"],
   .stSelectbox [role="listbox"] > div {
     background: var(--panel) !important;
+    border: 1px solid var(--border) !important;
   }
   
   .stSelectbox [role="option"],
   .stSelectbox [role="option"] > div,
   .stSelectbox [role="option"] span {
-    background: var(--panel-2) !important;
+    background: transparent !important;
     color: var(--text) !important;
+    border: none !important;
+  }
+  
+  /* Dark mode separator styling */
+  [data-baseweb="menu"] li:not(:last-child)::after,
+  [data-baseweb="menu"] [role="option"]:not(:last-child)::after {
+    background: rgba(255,255,255,0.1) !important;
   }
   
   /* Ensure proper contrast for labels */
