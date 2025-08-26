@@ -10,6 +10,7 @@ from functools import lru_cache
 import hashlib
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import torch
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,9 +18,12 @@ logger = logging.getLogger(__name__)
 class StaticsMechanicsRAG:
     def __init__(self, base_path: str, model_name: str = "all-MiniLM-L6-v2"):
         self.base_path = Path(base_path)
-        self.model = SentenceTransformer(model_name)
+        self.model = None
         self.embeddings_data = None
         self.is_initialized = False
+        
+        # Initialize SentenceTransformer with proper device handling
+        self._initialize_model(model_name)
         
         # Initialize pickle-based storage with error handling
         try:
@@ -59,10 +63,65 @@ class StaticsMechanicsRAG:
         self._query_cache = {}
         self._cache_size_limit = 1000
     
+    def _initialize_model(self, model_name: str):
+        """Initialize SentenceTransformer model with proper device handling and error recovery"""
+        try:
+            # Check if CUDA is available and set device
+            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            logger.info(f"Initializing SentenceTransformer on device: {device}")
+            
+            # Initialize model with device specification
+            self.model = SentenceTransformer(model_name, device=device)
+            
+            # Handle potential meta tensor issues
+            if hasattr(self.model, '_modules'):
+                for name, module in self.model._modules.items():
+                    if module is not None and hasattr(module, 'to'):
+                        try:
+                            # Use to_empty() for meta tensors, regular to() for others
+                            if hasattr(module, 'weight') and module.weight.is_meta:
+                                logger.info(f"Using to_empty() for meta tensor in module: {name}")
+                                module = module.to_empty(device=device)
+                            else:
+                                module = module.to(device)
+                        except Exception as e:
+                            logger.warning(f"Could not move module {name} to device {device}: {e}")
+                            # Fallback: try to_empty() if regular to() fails
+                            try:
+                                module = module.to_empty(device=device)
+                                logger.info(f"Successfully used to_empty() for module: {name}")
+                            except Exception as e2:
+                                logger.error(f"Failed to move module {name} with to_empty(): {e2}")
+            
+            logger.info("SentenceTransformer model initialized successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize SentenceTransformer model: {e}")
+            logger.warning("Attempting fallback initialization...")
+            
+            # Fallback: try CPU-only initialization
+            try:
+                self.model = SentenceTransformer(model_name, device='cpu')
+                logger.info("Fallback CPU initialization successful")
+            except Exception as e2:
+                logger.error(f"Fallback initialization also failed: {e2}")
+                logger.warning("Model initialization failed completely - will use fallback content only")
+                self.model = None
+    
     @lru_cache(maxsize=500)
     def _get_query_embedding(self, query: str) -> List[float]:
-        """Cached query embedding generation"""
-        return self.model.encode([query])[0].tolist()
+        """Cached query embedding generation with error handling"""
+        if self.model is None:
+            logger.warning("Model not available, returning dummy embedding")
+            # Return a dummy embedding vector of appropriate size
+            return [0.0] * 384  # all-MiniLM-L6-v2 has 384 dimensions
+        
+        try:
+            return self.model.encode([query])[0].tolist()
+        except Exception as e:
+            logger.error(f"Error generating embedding: {e}")
+            # Return dummy embedding as fallback
+            return [0.0] * 384
     
     def retrieve_relevant_content(
         self, 
@@ -73,9 +132,12 @@ class StaticsMechanicsRAG:
     ) -> List[Dict[str, Any]]:
         """Retrieve relevant content with optional filtering"""
         
-        # If storage is not initialized or no data, return fallback content
-        if not self.is_initialized or not self.embeddings_data or len(self.embeddings_data.get('documents', [])) == 0:
-            logger.warning("Vector storage not available, returning fallback content")
+        # If storage is not initialized, no data, or model is not available, return fallback content
+        if (not self.is_initialized or 
+            not self.embeddings_data or 
+            len(self.embeddings_data.get('documents', [])) == 0 or 
+            self.model is None):
+            logger.warning("Vector storage or model not available, returning fallback content")
             return self._get_fallback_content(query, content_type)
         
         try:

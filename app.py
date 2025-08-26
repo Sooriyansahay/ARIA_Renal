@@ -832,12 +832,46 @@ if "last_question_count" not in st.session_state:
     st.session_state.last_question_count = 0
 
 def initialize_ta_system():
+    """Initialize TA system with comprehensive error handling and validation"""
     try:
+        # Validate API key
+        if not OPENAI_API_KEY or OPENAI_API_KEY.strip() == "":
+            st.error("OpenAI API key is empty or not provided. Please check your configuration.")
+            return None
+        
+        if not OPENAI_API_KEY.startswith("sk-"):
+            st.error("Invalid OpenAI API key format. API key should start with 'sk-'.")
+            return None
+        
+        # Initialize TA system
         base_path = str(Path(__file__).parent)
+        st.info("Initializing ARIA TA system...")
+        
         ta_system = StaticsMechanicsTA(base_path, OPENAI_API_KEY)
+        
+        # Test basic functionality
+        if hasattr(ta_system, 'rag') and ta_system.rag:
+            st.success("TA system initialized successfully!")
+        else:
+            st.warning("TA system initialized but RAG component may have issues. Fallback mode will be used.")
+        
         return ta_system
+        
     except Exception as e:
-        st.error(f"Failed to initialize TA system: {e}")
+        error_msg = str(e)
+        
+        # Provide specific error messages for common issues
+        if "Cannot copy out of meta tensor" in error_msg:
+            st.error("PyTorch model loading error detected. The system will attempt to use fallback mode.")
+        elif "API key" in error_msg.lower() or "authentication" in error_msg.lower():
+            st.error(f"API key validation failed: {error_msg}")
+        elif "torch" in error_msg.lower() or "cuda" in error_msg.lower():
+            st.error(f"PyTorch/CUDA error: {error_msg}. Attempting CPU fallback.")
+        else:
+            st.error(f"Failed to initialize TA system: {error_msg}")
+        
+        # Log the full error for debugging
+        st.write(f"Debug info: {error_msg}")
         return None
 
 @st.cache_data(ttl=3600)
