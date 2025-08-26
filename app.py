@@ -84,29 +84,29 @@ button[data-testid="collapsedControl"]:focus{ outline: 2px solid #6aa6ff; outlin
 st.markdown("""
 <style>
 :root{
-  --bg:#F5F1E8; --panel:#FEFCF7; --panel-2:#F9F5EC;
-  --text:#3C2E1E; --muted:#8B7355; --border:#D4A574;
-  --accent:#B8956A; --accent-2:#A0845C;
-  --accent-hover:#8B7355; --callout-bg:#F0E6D2;
-  --claude-purple:#a47aff;
+  --bg:#F5F1E8 !important; --panel:#FEFCF7 !important; --panel-2:#F9F5EC !important;
+  --text:#3C2E1E !important; --muted:#8B7355 !important; --border:#D4A574 !important;
+  --accent:#B8956A !important; --accent-2:#A0845C;
+  --accent-hover:#8B7355 !important; --callout-bg:#F0E6D2 !important;
+  --claude-purple:#a47aff !important;
   
-  /* Claude-inspired button colors for light mode */
-  --claude-btn-primary:#2D2D2D;
-  --claude-btn-primary-hover:#1A1A1A;
-  --claude-btn-primary-active:#000000;
-  --claude-btn-text:#FFFFFF;
-  --claude-btn-border:#2D2D2D;
-  --claude-btn-focus:#4A90E2;
+  /* Light brownish-yellow button colors for light mode */
+  --claude-btn-primary:#E6C896 !important;
+  --claude-btn-primary-hover:#D4A574 !important;
+  --claude-btn-primary-active:#B8956A !important;
+  --claude-btn-text:#2C1810 !important;
+  --claude-btn-border:#E6C896 !important;
+  --claude-btn-focus:#8B7355 !important;
 }
 
-/* Dark mode Claude colors - Enhanced visibility */
+/* Light brownish-yellow button colors for dark mode */
 [data-theme="dark"] {
-  --claude-btn-primary:#F5F1E8;
-  --claude-btn-primary-hover:#FFFFFF;
-  --claude-btn-primary-active:#E8E3D3;
-  --claude-btn-text:#1A1A1A;
-  --claude-btn-border:#F5F1E8;
-  --claude-btn-focus:#FF8C42;
+  --claude-btn-primary:#F0C896 !important;
+  --claude-btn-primary-hover:#F5D4A6 !important;
+  --claude-btn-primary-active:#E6C896 !important;
+  --claude-btn-text:#2C1810 !important;
+  --claude-btn-border:#F0C896 !important;
+  --claude-btn-focus:#D4A574 !important;
 }
 
 /* Apply Cambria globally, including code blocks */
@@ -116,8 +116,8 @@ p,div,span,label,li,small,em,strong,
 button, input, textarea, select,
 code, pre, kbd, samp {
   font-family: "Cambria", "Times New Roman", serif !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
   color: var(--text);
 }
 
@@ -814,13 +814,13 @@ pre{
     --accent-hover:#F0C896; --callout-bg:#3C2E1E;
     --claude-purple:#a47aff;
     
-    /* Enhanced Claude button colors for dark mode */
-    --claude-btn-primary:#F5F1E8;
-    --claude-btn-primary-hover:#FFFFFF;
-    --claude-btn-primary-active:#E8E3D3;
-    --claude-btn-text:#1A1A1A;
-    --claude-btn-border:#F5F1E8;
-    --claude-btn-focus:#FF8C42;
+    /* Light brownish-yellow button colors for dark mode */
+    --claude-btn-primary:#F0C896;
+    --claude-btn-primary-hover:#F5D4A6;
+    --claude-btn-primary-active:#E6C896;
+    --claude-btn-text:#2C1810;
+    --claude-btn-border:#F0C896;
+    --claude-btn-focus:#D4A574;
   }
   .stApp{ background:var(--bg); color:var(--text); }
   .main .block-container{ background:var(--bg); }
