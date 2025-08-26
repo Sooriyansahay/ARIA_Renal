@@ -628,17 +628,17 @@ h3{font-size:1.4rem !important}
   display: block !important;
 }
 
-/* Ask ARIA button - Match Clear Conversation button styling with lighter shade */
+/* Ask ARIA button - Fixed colors to prevent theme overrides */
 .stForm .stButton > button{
-  background: #C4AA7A !important; /* Lighter shade of accent-2 (#A0845C) */
-  color: var(--text) !important;
-  border: 2px solid #D4A574 !important; /* Lighter shade of accent (#B8956A) */
-  font-weight: normal !important;
-  font-size: inherit !important;
-  border-radius: 4px !important;
-  padding: 0.375rem 0.75rem !important;
-  box-shadow: none !important;
-  transition: all 0.15s ease !important;
+  background: #E6B885 !important;
+  color: #2C1810 !important;
+  border: 2px solid #D4A574 !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  border-radius: 8px !important;
+  padding: 0.7rem 1.1rem !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  transition: all 0.2s ease !important;
   text-transform: none !important;
   letter-spacing: normal !important;
   min-height: auto !important;
@@ -647,29 +647,29 @@ h3{font-size:1.4rem !important}
   overflow: visible !important;
 }
 
-/* Hover state matching Clear Conversation button */
+/* Hover state with fixed colors */
 .stForm .stButton > button:hover{
-  background: #D4A574 !important; /* Lighter shade of accent (#B8956A) */ 
+  background: #D4A574 !important;
   color: white !important;
   border-color: #D4A574 !important;
-  transform: none !important;
-  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
 }
 
-/* Focus state matching Clear Conversation button */
+/* Focus state with fixed colors */
 .stForm .stButton > button:focus{
   outline: none !important;
   outline-offset: 0 !important;
   background: #D4A574 !important;
   color: white !important;
   border-color: #D4A574 !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
 }
 
-/* Active state matching Clear Conversation button */
+/* Active state with fixed colors */
 .stForm .stButton > button:active{
-  transform: none !important;
-  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
   background: #D4A574 !important;
   color: white !important;
 }
