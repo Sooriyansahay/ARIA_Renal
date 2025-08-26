@@ -664,12 +664,16 @@ h3{font-size:1.4rem !important}
   box-shadow: none !important;
 }
 
-/* Darken placeholder text for better contrast */
+/* Enhanced text area contrast for better visibility */
 .stTextArea > div > div > textarea::placeholder{
-  color:var(--text) !important; opacity:0.7 !important;
+  color:#2C1810 !important; opacity:0.8 !important;
+  font-weight:500 !important;
 }
 .stTextArea > div > div > textarea{
-  color:var(--text) !important;
+  color:#2C1810 !important;
+  font-weight:500 !important;
+  background:#FFFFFF !important;
+  border:2px solid var(--border) !important;
 }
 
 /* Single rail callout with yellowish-brown styling */
@@ -818,6 +822,14 @@ pre{
     background: var(--panel-2) !important;
     color: var(--text) !important;
     border: 2px solid var(--border) !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Enhanced text area placeholder in dark mode */
+  .stTextArea > div > div > textarea::placeholder {
+    color: var(--text) !important;
+    opacity: 0.9 !important;
+    font-weight: 500 !important;
   }
   
   /* Clean selectbox in dark mode */
