@@ -90,23 +90,23 @@ st.markdown("""
   --accent-hover:#8B7355 !important; --callout-bg:#F0E6D2 !important;
   --claude-purple:#a47aff !important;
   
-  /* Light brownish-yellow button colors for light mode */
-  --claude-btn-primary:#E6C896 !important;
-  --claude-btn-primary-hover:#D4A574 !important;
-  --claude-btn-primary-active:#B8956A !important;
-  --claude-btn-text:#2C1810 !important;
-  --claude-btn-border:#E6C896 !important;
+  /* Override button colors - #D68C45 for all modes */
+  --claude-btn-primary:#D68C45 !important;
+  --claude-btn-primary-hover:#C17B3A !important;
+  --claude-btn-primary-active:#A66A30 !important;
+  --claude-btn-text:#FFFFFF !important;
+  --claude-btn-border:#D68C45 !important;
   --claude-btn-focus:#8B7355 !important;
 }
 
-/* Light brownish-yellow button colors for dark mode */
+/* Override button colors - #D68C45 for dark mode */
 [data-theme="dark"] {
-  --claude-btn-primary:#F0C896 !important;
-  --claude-btn-primary-hover:#F5D4A6 !important;
-  --claude-btn-primary-active:#E6C896 !important;
-  --claude-btn-text:#2C1810 !important;
-  --claude-btn-border:#F0C896 !important;
-  --claude-btn-focus:#D4A574 !important;
+  --claude-btn-primary:#D68C45 !important;
+  --claude-btn-primary-hover:#C17B3A !important;
+  --claude-btn-primary-active:#A66A30 !important;
+  --claude-btn-text:#FFFFFF !important;
+  --claude-btn-border:#D68C45 !important;
+  --claude-btn-focus:#8B7355 !important;
 }
 
 /* Apply Cambria globally, including code blocks */
@@ -527,21 +527,21 @@ h3{font-size:1.4rem !important}
     font-weight: 700 !important;
   }
   
-  /* High contrast Ask ARIA button */
+  /* Override Ask ARIA button with #D68C45 color */
   .stForm .stButton > button {
     border-width: 4px !important;
     font-weight: 800 !important;
-    background:var(--accent-2) !important;
-    color:var(--text) !important;
-    border-color: #FFFFFF !important;
+    background: #D68C45 !important;
+    color: #FFFFFF !important;
+    border-color: #D68C45 !important;
   }
   
   .stForm .stButton > button:hover,
   .stForm .stButton > button:focus {
-    background: #FFFFFF !important;
-    color: #D68C45 !important;
-    border-color: #000000 !important;
-    outline: 4px solid #000000 !important;
+    background: #C17B3A !important;
+    color: #FFFFFF !important;
+    border-color: #C17B3A !important;
+    outline: 4px solid #A66A30 !important;
     outline-offset: 2px !important;
   }
 }
@@ -814,13 +814,13 @@ pre{
     --accent-hover:#F0C896; --callout-bg:#3C2E1E;
     --claude-purple:#a47aff;
     
-    /* Light brownish-yellow button colors for dark mode */
-    --claude-btn-primary:#F0C896;
-    --claude-btn-primary-hover:#F5D4A6;
-    --claude-btn-primary-active:#E6C896;
-    --claude-btn-text:#2C1810;
-    --claude-btn-border:#F0C896;
-    --claude-btn-focus:#D4A574;
+    /* Override button colors - #D68C45 for dark mode */
+    --claude-btn-primary:#D68C45;
+    --claude-btn-primary-hover:#C17B3A;
+    --claude-btn-primary-active:#A66A30;
+    --claude-btn-text:#FFFFFF;
+    --claude-btn-border:#D68C45;
+    --claude-btn-focus:#8B7355;
   }
   .stApp{ background:var(--bg); color:var(--text); }
   .main .block-container{ background:var(--bg); }
@@ -1417,7 +1417,7 @@ def main():
     
     st.divider()
     st.markdown(
-        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, © Centrum Intelliphysics Lab (PI: Somdatta Goswami),</div><div>Civil and System Engineering, Johns Hopkins University</div></div>',
+        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, PI: Somdatta Goswami,</div><div> © Centrum Intelliphysics, Civil and System Engineering, Johns Hopkins University</div></div>',
         unsafe_allow_html=True
     )
 
