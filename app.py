@@ -1068,7 +1068,7 @@ p, div, span, label, li, small, em, strong,
 
 /* keep your custom title size */
 h1.app-title{
-  font-size: clamp(2.6rem, 2.8vw + 2rem, 3.6rem) !important;
+  font-size: clamp(2.2rem, 2.4vw + 1.8rem, 3.2rem) !important;
 }
 
 /* ARIA text styling in title - maintains visual consistency */
@@ -1263,7 +1263,7 @@ def main():
                 return
     
     st.markdown(
-        '<h1 class="app-title"><em>ARIA</em>: Teaching Assistant for </div><div> Statics and Mechanics of Materials (EN.560.201)</h1>',
+        '<h1 class="app-title"><em>ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</h1>',
         unsafe_allow_html=True
     )
     
