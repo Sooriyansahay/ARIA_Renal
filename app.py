@@ -734,13 +734,13 @@ h3{font-size:1.4rem !important}
   font-size:0.9rem; color:var(--text); margin-right:0.5rem; font-weight:600;
 }
 .feedback-button{
-  background:var(--panel-2) !important; 
+  background:#FFFFFF !important; 
   border:2px solid var(--border) !important; 
   border-radius:8px !important;
   padding:0.5rem 1rem !important; 
   cursor:pointer !important; 
   transition:all 0.2s ease !important;
-  color:var(--text) !important; 
+  color:#2C1810 !important; 
   font-size:0.85rem !important; 
   display:flex !important; 
   align-items:center !important; 
@@ -748,12 +748,14 @@ h3{font-size:1.4rem !important}
   min-width:80px !important; 
   white-space:nowrap !important;
   font-weight:600 !important;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1) !important;
 }
 .feedback-button:hover{
-  background:var(--accent-2) !important; 
+  background:#F0E6D2 !important; 
   border-color:var(--accent) !important; 
-  color:var(--text) !important;
+  color:#2C1810 !important;
   transform:translateY(-1px) !important;
+  box-shadow:0 4px 8px rgba(0,0,0,0.15) !important;
 }
 .feedback-button.selected{
   background:var(--accent) !important; 
@@ -879,9 +881,17 @@ pre{
   
   /* Feedback buttons in dark mode */
   .feedback-button {
-    background: var(--panel-2) !important;
-    color: var(--text) !important;
-    border: 1px solid var(--border) !important;
+    background: #F5F1E8 !important;
+    color: #2C1810 !important;
+    border: 2px solid var(--border) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  }
+  
+  .feedback-button:hover {
+    background: #E6D7C3 !important;
+    color: #2C1810 !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25) !important;
   }
   
   /* Selectbox dropdown and options in dark mode */
