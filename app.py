@@ -131,15 +131,34 @@ h3{font-size:1.4rem !important}
 
 /* Inputs */
 .stTextInput > div > div > input,
-.stTextArea > div > div > textarea,
-.stSelectbox > div > div > select{
+.stTextArea > div > div > textarea{
   background:var(--panel-2); color:var(--text) !important; border:1px solid var(--border) !important;
   border-radius:12px; padding:.75rem .9rem; transition:border .15s ease, box-shadow .15s ease;
 }
+
+/* Clean selectbox button - No styling */
+.stSelectbox > div > div > select{
+  background: transparent !important; 
+  color: var(--text) !important; 
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 0 !important; 
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
 .stTextInput > div > div > input:focus,
-.stTextArea > div > div > textarea:focus,
-.stSelectbox > div > div > select:focus{
+.stTextArea > div > div > textarea:focus{
   border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(106,166,255,.18) !important; outline:none;
+}
+
+/* Clean selectbox focus - No styling */
+.stSelectbox > div > div > select:focus{
+  border: none !important; 
+  box-shadow: none !important; 
+  outline: none !important;
 }
 
 /* General Buttons - Enhanced visibility */
@@ -173,38 +192,32 @@ h3{font-size:1.4rem !important}
   color:white !important;
 }
 
-/* Focus Area Selectbox - Enhanced visibility for both themes */
+/* Focus Area Selectbox - Clean, borderless design */
 .stSelectbox > div > div > select{
-  background:var(--panel-2) !important; 
-  color:var(--text) !important; 
-  border:2px solid var(--border) !important;
-  border-radius:8px !important;
-  font-weight:600 !important;
-  font-size:1rem !important;
-  padding:0.5rem 0.75rem !important;
-  -webkit-appearance:none !important;
-  -moz-appearance:none !important;
-  appearance:none !important;
+  background: transparent !important; 
+  color: var(--text) !important; 
+  border: none !important;
+  border-radius: 0 !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+  padding: 0.5rem 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  box-shadow: none !important;
 }
 .stSelectbox > div > div > select:focus{
-  border-color:var(--accent) !important; 
-  box-shadow:0 0 0 3px rgba(180, 149, 106, 0.25) !important;
-  outline:none !important;
+  border: none !important; 
+  box-shadow: none !important;
+  outline: none !important;
 }
 
-/* Custom dropdown arrow */
+/* Remove custom dropdown arrow */
 .stSelectbox > div > div {
-  position:relative !important;
+  position: relative !important;
 }
 .stSelectbox > div > div::after {
-  content:'▼' !important;
-  position:absolute !important;
-  right:12px !important;
-  top:50% !important;
-  transform:translateY(-50%) !important;
-  pointer-events:none !important;
-  color:var(--text) !important;
-  font-size:0.8rem !important;
+  display: none !important;
 }
 
 /* Dropdown menu options styling */
@@ -222,15 +235,18 @@ h3{font-size:1.4rem !important}
   color:white !important;
 }
 
-/* Streamlit selectbox widget specific styling - Enhanced visibility */
+/* Clean selectbox widget styling - No borders or backgrounds */
 [data-baseweb="select"] {
-  background:var(--panel-2) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 [data-baseweb="select"] > div {
-  background:var(--panel-2) !important;
-  color:var(--text) !important;
-  border:2px solid var(--border) !important;
-  border-radius:8px !important;
+  background: transparent !important;
+  color: var(--text) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* Clean dropdown popover container - Single border design */
@@ -395,7 +411,7 @@ h3{font-size:1.4rem !important}
   
   .stSelectbox > div > div > select {
     font-size: 1.1rem !important;
-    padding: 0.8rem 1rem !important;
+    padding: 0.6rem 0 !important;
   }
 }
 
@@ -468,12 +484,12 @@ h3{font-size:1.4rem !important}
   border-color: var(--accent) !important;
 }
 
-/* Ensure focus is visible during keyboard navigation */
+/* Clean focus styling - minimal visual indication */
 [data-baseweb="select"]:focus-within,
 .stSelectbox > div > div > select:focus {
-  outline: 3px solid var(--accent) !important;
-  outline-offset: 2px !important;
-  border-color: var(--accent) !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Screen reader and accessibility improvements */
@@ -688,11 +704,17 @@ pre{
   
   /* Form elements in dark mode */
   .stTextInput > div > div > input,
-  .stTextArea > div > div > textarea,
-  .stSelectbox > div > div > select {
+  .stTextArea > div > div > textarea {
     background: var(--panel-2) !important;
     color: var(--text) !important;
     border: 2px solid var(--border) !important;
+  }
+  
+  /* Clean selectbox in dark mode */
+  .stSelectbox > div > div > select {
+    background: transparent !important;
+    color: var(--text) !important;
+    border: none !important;
   }
   
   /* Enhanced button styling for dark mode */
@@ -720,14 +742,17 @@ pre{
     color: var(--text) !important;
   }
   
-  /* Streamlit selectbox widget dark mode overrides - Enhanced visibility */
+  /* Clean selectbox widget in dark mode - No styling */
   [data-baseweb="select"] {
-    background: var(--panel-2) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
   [data-baseweb="select"] > div {
-    background: var(--panel-2) !important;
+    background: transparent !important;
     color: var(--text) !important;
-    border: 2px solid var(--border) !important;
+    border: none !important;
+    box-shadow: none !important;
   }
   
   /* Clean dark mode dropdown styling */
