@@ -89,6 +89,24 @@ st.markdown("""
   --accent:#B8956A; --accent-2:#A0845C;
   --accent-hover:#8B7355; --callout-bg:#F0E6D2;
   --claude-purple:#a47aff;
+  
+  /* Claude-inspired button colors for light mode */
+  --claude-btn-primary:#2D2D2D;
+  --claude-btn-primary-hover:#1A1A1A;
+  --claude-btn-primary-active:#000000;
+  --claude-btn-text:#FFFFFF;
+  --claude-btn-border:#2D2D2D;
+  --claude-btn-focus:#4A90E2;
+}
+
+/* Dark mode Claude colors */
+[data-theme="dark"] {
+  --claude-btn-primary:#E8E3D3;
+  --claude-btn-primary-hover:#F5F5F5;
+  --claude-btn-primary-active:#FFFFFF;
+  --claude-btn-text:#2D2D2D;
+  --claude-btn-border:#E8E3D3;
+  --claude-btn-focus:#6FA8DC;
 }
 
 /* Apply Cambria globally, including code blocks */
@@ -612,9 +630,9 @@ h3{font-size:1.4rem !important}
 
 /* Ask ARIA button - WCAG compliant accessibility and enhanced visibility */
 .stForm .stButton > button{
-  background: #B8956A !important; 
-  color: #FFFFFF !important; 
-  border: 3px solid #B8956A !important; 
+  background: var(--claude-btn-primary) !important; 
+  color: var(--claude-btn-text) !important; 
+  border: 3px solid var(--claude-btn-border) !important; 
   font-weight: 700 !important;
   font-size: 1.1rem !important;
   border-radius: 10px !important;
@@ -631,27 +649,29 @@ h3{font-size:1.4rem !important}
 
 /* Enhanced hover state for better user feedback */
 .stForm .stButton > button:hover{
-  background: #8B7355 !important; 
-  color: #FFFFFF !important; 
-  border-color: #8B7355 !important;
+  background: var(--claude-btn-primary-hover) !important; 
+  color: var(--claude-btn-text) !important; 
+  border-color: var(--claude-btn-primary-hover) !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
 }
 
 /* Clear focus state for keyboard accessibility (WCAG 2.1 compliant) */
 .stForm .stButton > button:focus{
-  outline: 3px solid #F0C896 !important;
+  outline: 3px solid var(--claude-btn-focus) !important;
   outline-offset: 3px !important;
-  background: #8B7355 !important;
-  border-color: #8B7355 !important;
-  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #F0C896, 0 4px 8px rgba(0,0,0,0.2) !important;
+  background: var(--claude-btn-primary-hover) !important;
+  color: var(--claude-btn-text) !important;
+  border-color: var(--claude-btn-primary-hover) !important;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 5px var(--claude-btn-focus), 0 4px 8px rgba(0,0,0,0.2) !important;
 }
 
 /* Active state for click feedback */
 .stForm .stButton > button:active{
   transform: translateY(0px) !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-  background: #6B5C44 !important;
+  background: var(--claude-btn-primary-active) !important;
+  color: var(--claude-btn-text) !important;
 }
 
 /* Disabled state with proper contrast */
@@ -847,31 +867,7 @@ pre{
   }
   
   /* Enhanced Ask ARIA button for dark mode with WCAG compliance */
-  .stForm .stButton > button {
-    background: #D4A574 !important;
-    color: #2A1F15 !important;
-    border: 3px solid #D4A574 !important;
-  }
-  
-  .stForm .stButton > button:hover {
-    background: #F0C896 !important;
-    color: #2A1F15 !important;
-    border-color: #F0C896 !important;
-  }
-  
-  .stForm .stButton > button:focus {
-    outline: 3px solid #F0C896 !important;
-    outline-offset: 3px !important;
-    background: #F0C896 !important;
-    color: #2A1F15 !important;
-    border-color: #F0C896 !important;
-    box-shadow: 0 0 0 2px #2A1F15, 0 0 0 5px #F0C896, 0 4px 8px rgba(0,0,0,0.4) !important;
-  }
-  
-  .stForm .stButton > button:active {
-    background: #E6B885 !important;
-    color: #2A1F15 !important;
-  }
+  /* Claude button colors automatically handled by CSS variables in dark mode */
   
   /* Feedback buttons in dark mode */
   .feedback-button {
