@@ -233,80 +233,252 @@ h3{font-size:1.4rem !important}
   border-radius:8px !important;
 }
 
-/* Dropdown popover container - High contrast background */
-[data-baseweb="popover"] {
-  background:var(--bg) !important;
-  border:3px solid var(--accent) !important;
-  border-radius:10px !important;
-  box-shadow:0 6px 20px rgba(0,0,0,0.3) !important;
-  z-index:9999 !important;
+/* Dropdown popover container - Maximum contrast and visibility */
+[data-baseweb="popover"],
+[data-baseweb="popover"] > div,
+[data-baseweb="popover"] ul {
+  background: #FFFFFF !important;
+  border: 3px solid var(--accent) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+  z-index: 99999 !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
 }
 
-/* Dropdown menu container */
-[data-baseweb="menu"] {
-  background:var(--bg) !important;
-  border-radius:8px !important;
-  padding:4px !important;
+/* Dropdown menu container - Force white background */
+[data-baseweb="menu"],
+[data-baseweb="menu"] > div,
+[data-baseweb="menu"] ul {
+  background: #FFFFFF !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  margin: 0 !important;
 }
 
-/* Individual menu items - High contrast */
-[data-baseweb="menu"] li {
-  background:var(--panel-2) !important;
-  color:var(--text) !important;
-  padding:12px 16px !important;
-  margin:2px 0 !important;
-  border-radius:6px !important;
-  font-weight:600 !important;
-  font-size:1rem !important;
-  border:1px solid var(--border) !important;
-  transition:all 0.2s ease !important;
+/* Individual menu items - High contrast black text on white */
+[data-baseweb="menu"] li,
+[data-baseweb="menu"] li > div,
+[data-baseweb="menu"] li span,
+[data-baseweb="menu"] [role="option"],
+[data-baseweb="menu"] [role="option"] > div,
+[data-baseweb="menu"] [role="option"] span {
+  background: #FFFFFF !important;
+  color: #2C1810 !important;
+  padding: 12px 16px !important;
+  margin: 2px 0 !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  border: 2px solid #E6D4B7 !important;
+  transition: all 0.2s ease !important;
+  line-height: 1.4 !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
-/* Menu item hover state */
-[data-baseweb="menu"] li:hover {
-  background:var(--accent) !important;
-  color:white !important;
-  border-color:var(--accent) !important;
-  transform:translateX(4px) !important;
-  box-shadow:0 2px 6px rgba(0,0,0,0.15) !important;
+/* Menu item hover state - Strong accent color */
+[data-baseweb="menu"] li:hover,
+[data-baseweb="menu"] li:hover > div,
+[data-baseweb="menu"] li:hover span,
+[data-baseweb="menu"] [role="option"]:hover,
+[data-baseweb="menu"] [role="option"]:hover > div,
+[data-baseweb="menu"] [role="option"]:hover span {
+  background: var(--accent) !important;
+  color: #FFFFFF !important;
+  border-color: var(--accent) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2) !important;
 }
 
-/* Menu item selected state */
-[data-baseweb="menu"] li[aria-selected="true"] {
-  background:var(--accent-2) !important;
-  color:var(--text) !important;
-  border-color:var(--accent) !important;
-  font-weight:700 !important;
+/* Menu item selected/active state */
+[data-baseweb="menu"] li[aria-selected="true"],
+[data-baseweb="menu"] li[aria-selected="true"] > div,
+[data-baseweb="menu"] li[aria-selected="true"] span,
+[data-baseweb="menu"] [role="option"][aria-selected="true"],
+[data-baseweb="menu"] [role="option"][aria-selected="true"] > div,
+[data-baseweb="menu"] [role="option"][aria-selected="true"] span {
+  background: var(--accent-2) !important;
+  color: #2C1810 !important;
+  border-color: var(--accent) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
 }
 
-/* Additional fallback styling for dropdown visibility */
-.stSelectbox [role="listbox"] {
-  background:var(--bg) !important;
-  border:2px solid var(--accent) !important;
-  border-radius:8px !important;
+/* Additional comprehensive fallback styling */
+.stSelectbox [role="listbox"],
+.stSelectbox [role="listbox"] > div {
+  background: #FFFFFF !important;
+  border: 2px solid var(--accent) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
+  z-index: 99999 !important;
+  position: relative !important;
 }
 
-.stSelectbox [role="option"] {
-  background:var(--panel-2) !important;
-  color:var(--text) !important;
-  padding:8px 16px !important;
-  border-radius:4px !important;
-  margin:2px !important;
-  font-weight:600 !important;
+.stSelectbox [role="option"],
+.stSelectbox [role="option"] > div,
+.stSelectbox [role="option"] span {
+  background: #FFFFFF !important;
+  color: #2C1810 !important;
+  padding: 10px 16px !important;
+  border-radius: 4px !important;
+  margin: 1px 0 !important;
+  font-weight: 600 !important;
+  border: 1px solid #E6D4B7 !important;
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .stSelectbox [role="option"]:hover,
-.stSelectbox [role="option"][aria-selected="true"] {
-  background:var(--accent) !important;
-  color:white !important;
+.stSelectbox [role="option"]:hover > div,
+.stSelectbox [role="option"]:hover span,
+.stSelectbox [role="option"][aria-selected="true"],
+.stSelectbox [role="option"][aria-selected="true"] > div,
+.stSelectbox [role="option"][aria-selected="true"] span {
+  background: var(--accent) !important;
+  color: #FFFFFF !important;
+  border-color: var(--accent) !important;
 }
 
-/* Force text visibility in all dropdown states */
-.stSelectbox * {
-  color:var(--text) !important;
+/* Comprehensive text visibility enforcement */
+.stSelectbox [data-baseweb] *,
+.stSelectbox [role="option"] *,
+.stSelectbox [role="listbox"] * {
+  color: inherit !important;
 }
-.stSelectbox [role="option"] * {
-  color:inherit !important;
+
+/* Positioning and layout fixes */
+[data-baseweb="popover"] {
+  position: fixed !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 99999 !important;
+}
+
+/* Ensure dropdown appears below the selectbox */
+.stSelectbox > div > div[data-baseweb="select"] {
+  position: relative !important;
+}
+
+/* Force dropdown to be visible and properly positioned */
+.stSelectbox [aria-expanded="true"] + [data-baseweb="popover"],
+.stSelectbox [aria-expanded="true"] ~ [data-baseweb="popover"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+  [data-baseweb="popover"],
+  [data-baseweb="popover"] > div,
+  [data-baseweb="popover"] ul {
+    max-width: calc(100vw - 32px) !important;
+    left: 16px !important;
+    right: 16px !important;
+    border-radius: 12px !important;
+  }
+  
+  [data-baseweb="menu"] li,
+  [data-baseweb="menu"] [role="option"] {
+    padding: 14px 20px !important;
+    font-size: 1.1rem !important;
+    min-height: 48px !important;
+    border-width: 1px !important;
+  }
+  
+  .stSelectbox > div > div > select {
+    font-size: 1.1rem !important;
+    padding: 0.7rem 1rem !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  [data-baseweb="popover"],
+  [data-baseweb="menu"] {
+    border-width: 4px !important;
+  }
+  
+  [data-baseweb="menu"] li,
+  [data-baseweb="menu"] [role="option"] {
+    border-width: 2px !important;
+    font-weight: 700 !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-baseweb="menu"] li,
+  [data-baseweb="menu"] [role="option"],
+  .stSelectbox [role="option"] {
+    transition: none !important;
+    transform: none !important;
+  }
+  
+  [data-baseweb="menu"] li:hover,
+  [data-baseweb="menu"] [role="option"]:hover {
+    transform: none !important;
+  }
+}
+
+/* Accessibility enhancements for keyboard navigation */
+[data-baseweb="menu"] li:focus,
+[data-baseweb="menu"] [role="option"]:focus,
+.stSelectbox [role="option"]:focus {
+  outline: 3px solid var(--accent) !important;
+  outline-offset: 2px !important;
+  background: var(--accent-2) !important;
+  color: #2C1810 !important;
+  border-color: var(--accent) !important;
+}
+
+/* Ensure focus is visible during keyboard navigation */
+[data-baseweb="select"]:focus-within,
+.stSelectbox > div > div > select:focus {
+  outline: 3px solid var(--accent) !important;
+  outline-offset: 2px !important;
+  border-color: var(--accent) !important;
+}
+
+/* Screen reader and accessibility improvements */
+[data-baseweb="menu"] li,
+[data-baseweb="menu"] [role="option"] {
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Ensure proper contrast ratios for WCAG compliance */
+[data-baseweb="menu"] li,
+[data-baseweb="menu"] [role="option"],
+.stSelectbox [role="option"] {
+  color: #2C1810 !important;
+  background: #FFFFFF !important;
+}
+
+[data-baseweb="menu"] li:hover,
+[data-baseweb="menu"] li:focus,
+[data-baseweb="menu"] [role="option"]:hover,
+[data-baseweb="menu"] [role="option"]:focus,
+.stSelectbox [role="option"]:hover,
+.stSelectbox [role="option"]:focus {
+  color: #FFFFFF !important;
+  background: var(--accent) !important;
+}
+
+/* Force visibility for screen readers */
+[data-baseweb="popover"][aria-hidden="true"] {
+  display: none !important;
+}
+
+[data-baseweb="popover"][aria-hidden="false"] {
+  display: block !important;
 }
 
 /* Ask ARIA button - Enhanced visibility and contrast */
@@ -528,38 +700,77 @@ pre{
     border: 2px solid var(--border) !important;
   }
   
-  /* Dark mode dropdown popover - High contrast */
-  [data-baseweb="popover"] {
-    background: var(--bg) !important;
+  /* Dark mode dropdown - Force dark theme colors */
+  [data-baseweb="popover"],
+  [data-baseweb="popover"] > div,
+  [data-baseweb="popover"] ul {
+    background: var(--panel) !important;
     border: 3px solid var(--accent) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
   }
   
   /* Dark mode dropdown menu */
-  [data-baseweb="menu"] {
-    background: var(--bg) !important;
+  [data-baseweb="menu"],
+  [data-baseweb="menu"] > div,
+  [data-baseweb="menu"] ul {
+    background: var(--panel) !important;
   }
   
-  /* Dark mode menu items - Maximum contrast */
-  [data-baseweb="menu"] li {
+  /* Dark mode menu items - High contrast */
+  [data-baseweb="menu"] li,
+  [data-baseweb="menu"] li > div,
+  [data-baseweb="menu"] li span,
+  [data-baseweb="menu"] [role="option"],
+  [data-baseweb="menu"] [role="option"] > div,
+  [data-baseweb="menu"] [role="option"] span {
     background: var(--panel-2) !important;
     color: var(--text) !important;
-    border: 1px solid var(--border) !important;
+    border: 2px solid var(--border) !important;
     font-weight: 600 !important;
   }
   
-  /* Dark mode hover and selected states */
-  [data-baseweb="menu"] li:hover {
+  /* Dark mode hover and focus states */
+  [data-baseweb="menu"] li:hover,
+  [data-baseweb="menu"] li:hover > div,
+  [data-baseweb="menu"] li:hover span,
+  [data-baseweb="menu"] li:focus,
+  [data-baseweb="menu"] li:focus > div,
+  [data-baseweb="menu"] li:focus span,
+  [data-baseweb="menu"] [role="option"]:hover,
+  [data-baseweb="menu"] [role="option"]:hover > div,
+  [data-baseweb="menu"] [role="option"]:hover span,
+  [data-baseweb="menu"] [role="option"]:focus,
+  [data-baseweb="menu"] [role="option"]:focus > div,
+  [data-baseweb="menu"] [role="option"]:focus span {
     background: var(--accent) !important;
     color: white !important;
     border-color: var(--accent) !important;
   }
   
-  [data-baseweb="menu"] li[aria-selected="true"] {
+  /* Dark mode selected states */
+  [data-baseweb="menu"] li[aria-selected="true"],
+  [data-baseweb="menu"] li[aria-selected="true"] > div,
+  [data-baseweb="menu"] li[aria-selected="true"] span,
+  [data-baseweb="menu"] [role="option"][aria-selected="true"],
+  [data-baseweb="menu"] [role="option"][aria-selected="true"] > div,
+  [data-baseweb="menu"] [role="option"][aria-selected="true"] span {
     background: var(--accent-2) !important;
     color: var(--text) !important;
     border-color: var(--accent) !important;
     font-weight: 700 !important;
+  }
+  
+  /* Dark mode fallback styling */
+  .stSelectbox [role="listbox"],
+  .stSelectbox [role="listbox"] > div {
+    background: var(--panel) !important;
+  }
+  
+  .stSelectbox [role="option"],
+  .stSelectbox [role="option"] > div,
+  .stSelectbox [role="option"] span {
+    background: var(--panel-2) !important;
+    color: var(--text) !important;
   }
   
   /* Ensure proper contrast for labels */
@@ -744,7 +955,7 @@ def main():
                 return
     
     st.markdown(
-    '<span class="app-title"><em>ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</span>',
+        '<h1 class="app-title"><em style="font-size: inherit;">ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</h1>',
         unsafe_allow_html=True
     )
     
