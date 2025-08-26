@@ -539,7 +539,7 @@ h3{font-size:1.4rem !important}
   .stForm .stButton > button:hover,
   .stForm .stButton > button:focus {
     background: #FFFFFF !important;
-    color: #000000 !important;
+    color: #D68C45 !important;
     border-color: #000000 !important;
     outline: 4px solid #000000 !important;
     outline-offset: 2px !important;
