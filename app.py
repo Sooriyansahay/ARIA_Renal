@@ -531,8 +531,8 @@ h3{font-size:1.4rem !important}
   .stForm .stButton > button {
     border-width: 4px !important;
     font-weight: 800 !important;
-    background: #D68C45 !important;
-    color: #FFFFFF !important;
+    background:var(--accent-2) !important;
+    color:var(--text) !important;
     border-color: #FFFFFF !important;
   }
   
