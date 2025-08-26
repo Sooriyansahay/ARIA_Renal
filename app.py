@@ -430,6 +430,41 @@ h3{font-size:1.4rem !important}
     font-size: 1.1rem !important;
     padding: 0.6rem 0 !important;
   }
+  
+  /* Enhanced Ask ARIA button for mobile */
+  .stForm .stButton > button {
+    padding: 1rem 2rem !important;
+    font-size: 1.2rem !important;
+    min-height: 56px !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Mobile focus state adjustments */
+  .stForm .stButton > button:focus {
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #F0C896, 0 4px 12px rgba(0,0,0,0.25) !important;
+  }
+}
+
+/* Tablet and medium screen optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .stForm .stButton > button {
+    padding: 0.95rem 1.7rem !important;
+    font-size: 1.05rem !important;
+    min-height: 50px !important;
+  }
+}
+
+/* Large screen enhancements */
+@media (min-width: 1200px) {
+  .stForm .stButton > button {
+    padding: 1rem 2rem !important;
+    font-size: 1.15rem !important;
+    min-height: 54px !important;
+  }
 }
 
 /* Visual hierarchy improvements */
@@ -473,6 +508,24 @@ h3{font-size:1.4rem !important}
     border-width: 2px !important;
     font-weight: 700 !important;
   }
+  
+  /* High contrast Ask ARIA button */
+  .stForm .stButton > button {
+    border-width: 4px !important;
+    font-weight: 800 !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+  }
+  
+  .stForm .stButton > button:hover,
+  .stForm .stButton > button:focus {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+    outline: 4px solid #000000 !important;
+    outline-offset: 2px !important;
+  }
 }
 
 /* Reduced motion support */
@@ -487,6 +540,19 @@ h3{font-size:1.4rem !important}
   [data-baseweb="menu"] li:hover,
   [data-baseweb="menu"] [role="option"]:hover {
     transform: none !important;
+  }
+  
+  /* Reduced motion for Ask ARIA button */
+  .stForm .stButton > button {
+    transition: none !important;
+    transform: none !important;
+  }
+  
+  .stForm .stButton > button:hover,
+  .stForm .stButton > button:focus,
+  .stForm .stButton > button:active {
+    transform: none !important;
+    transition: none !important;
   }
 }
 
@@ -544,31 +610,58 @@ h3{font-size:1.4rem !important}
   display: block !important;
 }
 
-/* Ask ARIA button - Enhanced visibility and contrast */
+/* Ask ARIA button - WCAG compliant accessibility and enhanced visibility */
 .stForm .stButton > button{
-  background:var(--accent) !important; 
-  color:white !important; 
-  border:3px solid var(--accent) !important; 
-  font-weight:800 !important;
-  font-size:1.1rem !important;
-  border-radius:10px !important;
-  padding:0.8rem 1.5rem !important;
-  box-shadow:0 3px 6px rgba(0,0,0,0.15) !important;
-  transition:all 0.2s ease !important;
-  text-transform:uppercase !important;
-  letter-spacing:0.5px !important;
-  min-height:48px !important;
+  background: #B8956A !important; 
+  color: #FFFFFF !important; 
+  border: 3px solid #B8956A !important; 
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  border-radius: 10px !important;
+  padding: 0.9rem 1.8rem !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+  transition: all 0.15s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  min-height: 52px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
+
+/* Enhanced hover state for better user feedback */
 .stForm .stButton > button:hover{
-  background:var(--accent-hover) !important; 
-  color:white !important; 
-  border-color:var(--accent-hover) !important;
-  transform:translateY(-3px) !important;
-  box-shadow:0 6px 12px rgba(0,0,0,0.25) !important;
+  background: #8B7355 !important; 
+  color: #FFFFFF !important; 
+  border-color: #8B7355 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
 }
+
+/* Clear focus state for keyboard accessibility (WCAG 2.1 compliant) */
+.stForm .stButton > button:focus{
+  outline: 3px solid #F0C896 !important;
+  outline-offset: 3px !important;
+  background: #8B7355 !important;
+  border-color: #8B7355 !important;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #F0C896, 0 4px 8px rgba(0,0,0,0.2) !important;
+}
+
+/* Active state for click feedback */
 .stForm .stButton > button:active{
-  transform:translateY(-1px) !important;
-  box-shadow:0 2px 4px rgba(0,0,0,0.15) !important;
+  transform: translateY(0px) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  background: #6B5C44 !important;
+}
+
+/* Disabled state with proper contrast */
+.stForm .stButton > button:disabled{
+  background: #D4D4D4 !important;
+  color: #757575 !important;
+  border-color: #D4D4D4 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* Darken placeholder text for better contrast */
@@ -741,10 +834,31 @@ pre{
     border: 2px solid var(--border) !important;
   }
   
+  /* Enhanced Ask ARIA button for dark mode with WCAG compliance */
   .stForm .stButton > button {
-    background: var(--accent) !important;
-    color: white !important;
-    border: 3px solid var(--accent) !important;
+    background: #D4A574 !important;
+    color: #2A1F15 !important;
+    border: 3px solid #D4A574 !important;
+  }
+  
+  .stForm .stButton > button:hover {
+    background: #F0C896 !important;
+    color: #2A1F15 !important;
+    border-color: #F0C896 !important;
+  }
+  
+  .stForm .stButton > button:focus {
+    outline: 3px solid #F0C896 !important;
+    outline-offset: 3px !important;
+    background: #F0C896 !important;
+    color: #2A1F15 !important;
+    border-color: #F0C896 !important;
+    box-shadow: 0 0 0 2px #2A1F15, 0 0 0 5px #F0C896, 0 4px 8px rgba(0,0,0,0.4) !important;
+  }
+  
+  .stForm .stButton > button:active {
+    background: #E6B885 !important;
+    color: #2A1F15 !important;
   }
   
   /* Feedback buttons in dark mode */
