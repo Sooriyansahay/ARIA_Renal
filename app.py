@@ -99,14 +99,14 @@ st.markdown("""
   --claude-btn-focus:#4A90E2;
 }
 
-/* Dark mode Claude colors */
+/* Dark mode Claude colors - Enhanced visibility */
 [data-theme="dark"] {
-  --claude-btn-primary:#E8E3D3;
-  --claude-btn-primary-hover:#F5F5F5;
-  --claude-btn-primary-active:#FFFFFF;
-  --claude-btn-text:#2D2D2D;
-  --claude-btn-border:#E8E3D3;
-  --claude-btn-focus:#6FA8DC;
+  --claude-btn-primary:#F5F1E8;
+  --claude-btn-primary-hover:#FFFFFF;
+  --claude-btn-primary-active:#E8E3D3;
+  --claude-btn-text:#1A1A1A;
+  --claude-btn-border:#F5F1E8;
+  --claude-btn-focus:#FF8C42;
 }
 
 /* Apply Cambria globally, including code blocks */
@@ -813,6 +813,14 @@ pre{
     --accent:#D4A574; --accent-2:#E6B885;
     --accent-hover:#F0C896; --callout-bg:#3C2E1E;
     --claude-purple:#a47aff;
+    
+    /* Enhanced Claude button colors for dark mode */
+    --claude-btn-primary:#F5F1E8;
+    --claude-btn-primary-hover:#FFFFFF;
+    --claude-btn-primary-active:#E8E3D3;
+    --claude-btn-text:#1A1A1A;
+    --claude-btn-border:#F5F1E8;
+    --claude-btn-focus:#FF8C42;
   }
   .stApp{ background:var(--bg); color:var(--text); }
   .main .block-container{ background:var(--bg); }
