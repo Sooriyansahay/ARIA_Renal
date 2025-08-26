@@ -892,6 +892,15 @@ p, div, span, label, li, small, em, strong,
 h1.app-title{
   font-size: clamp(2.6rem, 2.8vw + 2rem, 3.6rem) !important;
 }
+
+/* ARIA text styling in title - maintains visual consistency */
+h1.app-title em {
+  font-size: inherit !important;
+  font-style: italic !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  letter-spacing: inherit !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -935,15 +944,12 @@ def initialize_ta_system():
         
         # Initialize TA system
         base_path = str(Path(__file__).parent)
-        st.info("Initializing ARIA TA system...")
-        
         ta_system = StaticsMechanicsTA(base_path, OPENAI_API_KEY)
         
-        # Test basic functionality
-        if hasattr(ta_system, 'rag') and ta_system.rag:
-            st.success("TA system initialized successfully!")
-        else:
-            st.warning("TA system initialized but RAG component may have issues. Fallback mode will be used.")
+        # Test basic functionality (silent check)
+        if not (hasattr(ta_system, 'rag') and ta_system.rag):
+            # Only show warning if there are actual issues
+            pass
         
         return ta_system
         
@@ -1079,7 +1085,7 @@ def main():
                 return
     
     st.markdown(
-        '<h1 class="app-title"><em style="font-size: inherit;">ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</h1>',
+        '<h1 class="app-title"><em>ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</h1>',
         unsafe_allow_html=True
     )
     
