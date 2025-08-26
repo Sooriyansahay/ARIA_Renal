@@ -832,17 +832,17 @@ pre{
   background-color: rgba(0, 0, 0, 0.9) !important;
 }
 [data-testid="stHeader"] button {
-  color: #F5F1E8 !important;
+  color: #FFFFFF !important;
 }
 [data-testid="stHeader"] svg {
-  fill: #F5F1E8 !important;
-  color: #F5F1E8 !important;
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
 }
 [data-testid="stHeader"] [data-testid="stHeaderActionElements"] button {
-  color: white !important;
+  color: #FFFFFF !important;
 }
 [data-testid="stHeader"] [data-testid="stHeaderActionElements"] svg {
-  fill: white !important;
+  fill: #FFFFFF !important;
 }
 
 /* Dark mode preference - maintain yellowish-brown theme */
