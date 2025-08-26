@@ -250,9 +250,7 @@ h3{font-size:1.4rem !important}
 }
 
 /* Clean dropdown popover container - Single border design */
-[data-baseweb="popover"],
-[data-baseweb="popover"] > div,
-[data-baseweb="popover"] ul {
+[data-baseweb="popover"] {
   background: #FFFFFF !important;
   border: 1px solid var(--border) !important;
   border-radius: 12px !important;
@@ -261,6 +259,17 @@ h3{font-size:1.4rem !important}
   max-height: 300px !important;
   overflow-y: auto !important;
   padding: 0 !important;
+}
+
+/* Remove borders from child elements */
+[data-baseweb="popover"] > div,
+[data-baseweb="popover"] ul {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Clean dropdown menu container */
@@ -322,9 +331,8 @@ h3{font-size:1.4rem !important}
   box-shadow: none !important;
 }
 
-/* Clean fallback styling for compatibility */
-.stSelectbox [role="listbox"],
-.stSelectbox [role="listbox"] > div {
+/* Clean fallback styling for compatibility - single border */
+.stSelectbox [role="listbox"] {
   background: #FFFFFF !important;
   border: 1px solid var(--border) !important;
   border-radius: 12px !important;
@@ -332,6 +340,15 @@ h3{font-size:1.4rem !important}
   z-index: 99999 !important;
   position: relative !important;
   padding: 8px !important;
+}
+
+/* Remove borders from fallback child elements */
+.stSelectbox [role="listbox"] > div {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .stSelectbox [role="option"],
@@ -755,13 +772,19 @@ pre{
     box-shadow: none !important;
   }
   
-  /* Clean dark mode dropdown styling */
-  [data-baseweb="popover"],
-  [data-baseweb="popover"] > div,
-  [data-baseweb="popover"] ul {
+  /* Clean dark mode dropdown styling - single border */
+  [data-baseweb="popover"] {
     background: var(--panel) !important;
     border: 1px solid var(--border) !important;
     box-shadow: 0 6px 20px rgba(0,0,0,0.5) !important;
+  }
+  
+  /* Remove borders from child elements in dark mode */
+  [data-baseweb="popover"] > div,
+  [data-baseweb="popover"] ul {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
   
   /* Dark mode dropdown menu */
@@ -814,11 +837,16 @@ pre{
     font-weight: 600 !important;
   }
   
-  /* Clean dark mode fallback styling */
-  .stSelectbox [role="listbox"],
-  .stSelectbox [role="listbox"] > div {
+  /* Clean dark mode fallback styling - single border */
+  .stSelectbox [role="listbox"] {
     background: var(--panel) !important;
     border: 1px solid var(--border) !important;
+  }
+  
+  /* Remove borders from fallback child elements in dark mode */
+  .stSelectbox [role="listbox"] > div {
+    background: transparent !important;
+    border: none !important;
   }
   
   .stSelectbox [role="option"],
