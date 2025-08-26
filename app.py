@@ -527,7 +527,7 @@ h3{font-size:1.4rem !important}
     font-weight: 700 !important;
   }
   
-  /* Override Ask ARIA button with #D68C45 color */
+  /* Override Ask ARIA button with enhanced contrast */
   .stForm .stButton > button {
     border-width: 4px !important;
     font-weight: 800 !important;
@@ -630,9 +630,9 @@ h3{font-size:1.4rem !important}
 
 /* Ask ARIA button - WCAG compliant accessibility and enhanced visibility */
 .stForm .stButton > button{
-  background: var(--claude-btn-primary) !important; 
-  color: var(--claude-btn-text) !important; 
-  border: 3px solid var(--claude-btn-border) !important; 
+  background: #D68C45 !important; 
+  color: #FFFFFF !important; 
+  border: 3px solid #D68C45 !important; 
   font-weight: 700 !important;
   font-size: 1.1rem !important;
   border-radius: 10px !important;
@@ -649,29 +649,29 @@ h3{font-size:1.4rem !important}
 
 /* Enhanced hover state for better user feedback */
 .stForm .stButton > button:hover{
-  background: var(--claude-btn-primary-hover) !important; 
-  color: var(--claude-btn-text) !important; 
-  border-color: var(--claude-btn-primary-hover) !important;
+  background: #C17B3A !important; 
+  color: #FFFFFF !important; 
+  border-color: #C17B3A !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
 }
 
 /* Clear focus state for keyboard accessibility (WCAG 2.1 compliant) */
 .stForm .stButton > button:focus{
-  outline: 3px solid var(--claude-btn-focus) !important;
+  outline: 3px solid #8B7355 !important;
   outline-offset: 3px !important;
-  background: var(--claude-btn-primary-hover) !important;
-  color: var(--claude-btn-text) !important;
-  border-color: var(--claude-btn-primary-hover) !important;
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 5px var(--claude-btn-focus), 0 4px 8px rgba(0,0,0,0.2) !important;
+  background: #C17B3A !important;
+  color: #FFFFFF !important;
+  border-color: #C17B3A !important;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #8B7355, 0 4px 8px rgba(0,0,0,0.2) !important;
 }
 
 /* Active state for click feedback */
 .stForm .stButton > button:active{
   transform: translateY(0px) !important;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-  background: var(--claude-btn-primary-active) !important;
-  color: var(--claude-btn-text) !important;
+  background: #A66A30 !important;
+  color: #FFFFFF !important;
 }
 
 /* Disabled state with proper contrast */
