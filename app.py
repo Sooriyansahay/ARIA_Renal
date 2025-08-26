@@ -628,7 +628,7 @@ h3{font-size:1.4rem !important}
   display: block !important;
 }
 
-/* Ask ARIA button - Fixed colors to prevent theme overrides */
+/* Ask ARIA button - Theme-adaptive colors for optimal contrast */
 .stForm .stButton > button{
   background: #E6B885 !important;
   color: #2C1810 !important;
@@ -647,7 +647,7 @@ h3{font-size:1.4rem !important}
   overflow: visible !important;
 }
 
-/* Hover state with fixed colors */
+/* Hover state with theme-adaptive colors */
 .stForm .stButton > button:hover{
   background: #D4A574 !important;
   color: white !important;
@@ -656,7 +656,7 @@ h3{font-size:1.4rem !important}
   box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
 }
 
-/* Focus state with fixed colors */
+/* Focus state with theme-adaptive colors */
 .stForm .stButton > button:focus{
   outline: none !important;
   outline-offset: 0 !important;
@@ -666,12 +666,29 @@ h3{font-size:1.4rem !important}
   box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
 }
 
-/* Active state with fixed colors */
+/* Active state with theme-adaptive colors */
 .stForm .stButton > button:active{
   transform: translateY(-1px) !important;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
   background: #D4A574 !important;
   color: white !important;
+}
+
+/* Dark mode adaptation for Ask ARIA button */
+@media (prefers-color-scheme: dark) {
+  .stForm .stButton > button {
+    background: #8B6914 !important;
+    color: #F5F1E8 !important;
+    border-color: #A67C00 !important;
+  }
+  
+  .stForm .stButton > button:hover,
+  .stForm .stButton > button:focus,
+  .stForm .stButton > button:active {
+    background: #A67C00 !important;
+    color: #FFFFFF !important;
+    border-color: #A67C00 !important;
+  }
 }
 
 /* Disabled state with proper contrast */
@@ -735,7 +752,7 @@ h3{font-size:1.4rem !important}
 }
 .feedback-button{
   background:#FFFFFF !important; 
-  border:2px solid var(--border) !important; 
+  border:2px solid #D4A574 !important; 
   border-radius:8px !important;
   padding:0.5rem 1rem !important; 
   cursor:pointer !important; 
@@ -752,14 +769,14 @@ h3{font-size:1.4rem !important}
 }
 .feedback-button:hover{
   background:#F0E6D2 !important; 
-  border-color:var(--accent) !important; 
+  border-color:#D4A574 !important; 
   color:#2C1810 !important;
   transform:translateY(-1px) !important;
   box-shadow:0 4px 8px rgba(0,0,0,0.15) !important;
 }
 .feedback-button.selected{
-  background:var(--accent) !important; 
-  border-color:var(--accent) !important; 
+  background:#D4A574 !important; 
+  border-color:#D4A574 !important; 
   color:white !important;
   transform:scale(1.05) !important;
 }
@@ -770,6 +787,27 @@ h3{font-size:1.4rem !important}
 .feedback-button.selected.partial{
   background:#ffa500 !important; 
   border-color:#ffa500 !important;
+}
+
+/* Dark mode adaptation for feedback buttons */
+@media (prefers-color-scheme: dark) {
+  .feedback-button {
+    background: #3C2E1E !important;
+    color: #F5F1E8 !important;
+    border-color: #8B6914 !important;
+  }
+  
+  .feedback-button:hover {
+    background: #4A3626 !important;
+    color: #F5F1E8 !important;
+    border-color: #A67C00 !important;
+  }
+  
+  .feedback-button.selected {
+    background: #8B6914 !important;
+    color: #FFFFFF !important;
+    border-color: #8B6914 !important;
+  }
 }
 
 /* Footer centered */
@@ -1225,7 +1263,7 @@ def main():
                 return
     
     st.markdown(
-        '<h1 class="app-title"><em>ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</h1>',
+        '<h1 class="app-title"><em>ARIA</em>: Teaching Assistant for </div><div> Statics and Mechanics of Materials (EN.560.201)</h1>',
         unsafe_allow_html=True
     )
     
