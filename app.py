@@ -527,22 +527,22 @@ h3{font-size:1.4rem !important}
     font-weight: 700 !important;
   }
   
-  /* Override Ask ARIA button with enhanced contrast */
+  /* Ask ARIA button matching Clear Conversation in high contrast */
   .stForm .stButton > button {
-    border-width: 4px !important;
-    font-weight: 800 !important;
-    background: #D68C45 !important;
-    color: #FFFFFF !important;
-    border-color: #D68C45 !important;
+    border-width: 2px !important;
+    font-weight: normal !important;
+    background: #C4AA7A !important;
+    color: var(--text) !important;
+    border-color: #D4A574 !important;
   }
   
   .stForm .stButton > button:hover,
   .stForm .stButton > button:focus {
-    background: #C17B3A !important;
-    color: #FFFFFF !important;
-    border-color: #C17B3A !important;
-    outline: 4px solid #A66A30 !important;
-    outline-offset: 2px !important;
+    background: #D4A574 !important;
+    color: white !important;
+    border-color: #D4A574 !important;
+    outline: none !important;
+    outline-offset: 0 !important;
   }
 }
 
@@ -628,50 +628,50 @@ h3{font-size:1.4rem !important}
   display: block !important;
 }
 
-/* Ask ARIA button - WCAG compliant accessibility and enhanced visibility */
+/* Ask ARIA button - Match Clear Conversation button styling with lighter shade */
 .stForm .stButton > button{
-  background: #D68C45 !important; 
-  color: #FFFFFF !important; 
-  border: 3px solid #D68C45 !important; 
-  font-weight: 700 !important;
-  font-size: 1.1rem !important;
-  border-radius: 10px !important;
-  padding: 0.9rem 1.8rem !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+  background: #C4AA7A !important; /* Lighter shade of accent-2 (#A0845C) */
+  color: var(--text) !important;
+  border: 2px solid #D4A574 !important; /* Lighter shade of accent (#B8956A) */
+  font-weight: normal !important;
+  font-size: inherit !important;
+  border-radius: 4px !important;
+  padding: 0.375rem 0.75rem !important;
+  box-shadow: none !important;
   transition: all 0.15s ease !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  min-height: 52px !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  min-height: auto !important;
   cursor: pointer !important;
   position: relative !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
-/* Enhanced hover state for better user feedback */
+/* Hover state matching Clear Conversation button */
 .stForm .stButton > button:hover{
-  background: #C17B3A !important; 
-  color: #FFFFFF !important; 
-  border-color: #C17B3A !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
+  background: #D4A574 !important; /* Lighter shade of accent (#B8956A) */ 
+  color: white !important;
+  border-color: #D4A574 !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Clear focus state for keyboard accessibility (WCAG 2.1 compliant) */
+/* Focus state matching Clear Conversation button */
 .stForm .stButton > button:focus{
-  outline: 3px solid #8B7355 !important;
-  outline-offset: 3px !important;
-  background: #C17B3A !important;
-  color: #FFFFFF !important;
-  border-color: #C17B3A !important;
-  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #8B7355, 0 4px 8px rgba(0,0,0,0.2) !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  background: #D4A574 !important;
+  color: white !important;
+  border-color: #D4A574 !important;
+  box-shadow: none !important;
 }
 
-/* Active state for click feedback */
+/* Active state matching Clear Conversation button */
 .stForm .stButton > button:active{
-  transform: translateY(0px) !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-  background: #A66A30 !important;
-  color: #FFFFFF !important;
+  transform: none !important;
+  box-shadow: none !important;
+  background: #D4A574 !important;
+  color: white !important;
 }
 
 /* Disabled state with proper contrast */
