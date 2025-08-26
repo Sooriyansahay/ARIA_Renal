@@ -26,7 +26,7 @@ except Exception:
 
 # Page configuration
 st.set_page_config(
-    page_title="ARIA: Statics and Mechanics of Materials (EN.560.201) TA",
+    page_title="ARIA: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -668,7 +668,7 @@ def main():
                 return
     
     st.markdown(
-        '<h1 class="app-title">ARIA: Statics and Mechanics of Materials (EN.560.201) TA</h1>',
+        '<h1 class="app-title"><em>ARIA</em>: Statics and Mechanics of Materials (EN.560.201) TA</h1>',
         unsafe_allow_html=True
     )
     
@@ -870,7 +870,7 @@ def main():
     
     st.divider()
     st.markdown(
-        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, Centrum Intelliphysics Lab (Somdatta Goswami),</div><div>Civil and System Engineering, Johns Hopkins University</div></div>',
+        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, © Centrum Intelliphysics Lab (PI: Somdatta Goswami),</div><div>Civil and System Engineering, Johns Hopkins University</div></div>',
         unsafe_allow_html=True
     )
 
