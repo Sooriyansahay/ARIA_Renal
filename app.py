@@ -222,7 +222,7 @@ h3{font-size:1.4rem !important}
   color:white !important;
 }
 
-/* Streamlit selectbox widget specific styling */
+/* Streamlit selectbox widget specific styling - Enhanced visibility */
 [data-baseweb="select"] {
   background:var(--panel-2) !important;
 }
@@ -232,23 +232,81 @@ h3{font-size:1.4rem !important}
   border:2px solid var(--border) !important;
   border-radius:8px !important;
 }
+
+/* Dropdown popover container - High contrast background */
 [data-baseweb="popover"] {
-  background:var(--panel) !important;
-  border:1px solid var(--border) !important;
-  border-radius:8px !important;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15) !important;
+  background:var(--bg) !important;
+  border:3px solid var(--accent) !important;
+  border-radius:10px !important;
+  box-shadow:0 6px 20px rgba(0,0,0,0.3) !important;
+  z-index:9999 !important;
 }
+
+/* Dropdown menu container */
 [data-baseweb="menu"] {
-  background:var(--panel) !important;
+  background:var(--bg) !important;
+  border-radius:8px !important;
+  padding:4px !important;
 }
+
+/* Individual menu items - High contrast */
 [data-baseweb="menu"] li {
-  background:var(--panel) !important;
+  background:var(--panel-2) !important;
   color:var(--text) !important;
-  padding:8px 16px !important;
+  padding:12px 16px !important;
+  margin:2px 0 !important;
+  border-radius:6px !important;
+  font-weight:600 !important;
+  font-size:1rem !important;
+  border:1px solid var(--border) !important;
+  transition:all 0.2s ease !important;
 }
+
+/* Menu item hover state */
 [data-baseweb="menu"] li:hover {
   background:var(--accent) !important;
   color:white !important;
+  border-color:var(--accent) !important;
+  transform:translateX(4px) !important;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15) !important;
+}
+
+/* Menu item selected state */
+[data-baseweb="menu"] li[aria-selected="true"] {
+  background:var(--accent-2) !important;
+  color:var(--text) !important;
+  border-color:var(--accent) !important;
+  font-weight:700 !important;
+}
+
+/* Additional fallback styling for dropdown visibility */
+.stSelectbox [role="listbox"] {
+  background:var(--bg) !important;
+  border:2px solid var(--accent) !important;
+  border-radius:8px !important;
+}
+
+.stSelectbox [role="option"] {
+  background:var(--panel-2) !important;
+  color:var(--text) !important;
+  padding:8px 16px !important;
+  border-radius:4px !important;
+  margin:2px !important;
+  font-weight:600 !important;
+}
+
+.stSelectbox [role="option"]:hover,
+.stSelectbox [role="option"][aria-selected="true"] {
+  background:var(--accent) !important;
+  color:white !important;
+}
+
+/* Force text visibility in all dropdown states */
+.stSelectbox * {
+  color:var(--text) !important;
+}
+.stSelectbox [role="option"] * {
+  color:inherit !important;
 }
 
 /* Ask ARIA button - Enhanced visibility and contrast */
@@ -460,7 +518,7 @@ pre{
     color: var(--text) !important;
   }
   
-  /* Streamlit selectbox widget dark mode overrides */
+  /* Streamlit selectbox widget dark mode overrides - Enhanced visibility */
   [data-baseweb="select"] {
     background: var(--panel-2) !important;
   }
@@ -469,21 +527,39 @@ pre{
     color: var(--text) !important;
     border: 2px solid var(--border) !important;
   }
+  
+  /* Dark mode dropdown popover - High contrast */
   [data-baseweb="popover"] {
-    background: var(--panel) !important;
-    border: 2px solid var(--border) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    background: var(--bg) !important;
+    border: 3px solid var(--accent) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
   }
+  
+  /* Dark mode dropdown menu */
   [data-baseweb="menu"] {
-    background: var(--panel) !important;
+    background: var(--bg) !important;
   }
+  
+  /* Dark mode menu items - Maximum contrast */
   [data-baseweb="menu"] li {
-    background: var(--panel) !important;
+    background: var(--panel-2) !important;
     color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    font-weight: 600 !important;
   }
+  
+  /* Dark mode hover and selected states */
   [data-baseweb="menu"] li:hover {
     background: var(--accent) !important;
     color: white !important;
+    border-color: var(--accent) !important;
+  }
+  
+  [data-baseweb="menu"] li[aria-selected="true"] {
+    background: var(--accent-2) !important;
+    color: var(--text) !important;
+    border-color: var(--accent) !important;
+    font-weight: 700 !important;
   }
   
   /* Ensure proper contrast for labels */
@@ -668,7 +744,7 @@ def main():
                 return
     
     st.markdown(
-        '<h1 class="app-title"><em>ARIA</em>: Statics and Mechanics of Materials (EN.560.201) TA</h1>',
+    '<span class="app-title"><em>ARIA</em>: Teaching Assistant for Statics and Mechanics of Materials (EN.560.201)</span>',
         unsafe_allow_html=True
     )
     
