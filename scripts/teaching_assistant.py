@@ -82,7 +82,7 @@ Remember: Your goal is to foster DEEP, COMPREHENSIVE understanding through detai
             
             # Generate response with GPT-4o using enhanced parameters for comprehensive responses
             response = self.client.chat.completions.create(
-                model="gpt-5-2025-08-07", 
+                model="gpt-4", 
                 messages=messages,
                 max_tokens=2000,  # Increased for comprehensive responses
                 temperature=0.3,  # Lower temperature for more focused, detailed responses
@@ -502,7 +502,7 @@ Please provide a comprehensive, detailed response that thoroughly addresses this
                 "concepts_used": self._extract_concepts_from_content(context),
                 "response_time": response_time,
                 "response_type": "comprehensive",
-                "model_used": "gpt-5-2025-08-07"
+                "model_used": "gpt-4"
             }
             
             log_file = self.base_path / "logs" / "ta_interactions.jsonl"
