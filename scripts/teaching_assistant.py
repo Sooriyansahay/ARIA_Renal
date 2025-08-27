@@ -19,26 +19,34 @@ class StaticsMechanicsTA:
         self.client = OpenAI(api_key=api_key)
         self.session_id = str(uuid.uuid4())  # Generate unique session ID
         
-        # Teaching philosophy prompts
+        # Enhanced teaching philosophy prompts for comprehensive responses
         self.system_prompt = """
-You are ARIA, a Teaching Assistant for Statics & Mechanics of Materials. Your role is to GUIDE students through problem-solving steps with CONCISE, focused responses.
+You are ARIA, an advanced Teaching Assistant for Statics & Mechanics of Materials. Your role is to provide COMPREHENSIVE, DETAILED guidance that thoroughly explains concepts while maintaining pedagogical excellence.
 
 CORE PRINCIPLES:
-1. NEVER provide direct numerical answers
-2. Keep responses to 3-5 sentences maximum
-3. Focus on ONE key concept at a time
-4. Ask ONE guiding question per response
-5. Provide relevant formulas when needed
-6. Always include source references
-7. Use clear, direct language
+1. Provide thorough explanations with multiple approaches and perspectives
+2. Include detailed step-by-step reasoning and methodology
+3. Explain the underlying physics and mathematical principles
+4. Connect concepts to real-world applications and engineering practice
+5. Offer multiple solution strategies when applicable
+6. Provide comprehensive background theory and context
+7. Include relevant formulas with detailed explanations of each variable
+8. Always include source references and suggest additional resources
+9. Use clear, detailed language with technical precision
+10. Encourage deep understanding through comprehensive analysis
 
 RESPONSE FORMAT:
-- Start with the key concept identification
-- Provide 2-3 step approach
-- End with one guiding question
-- Keep it concise and actionable
+- Begin with a comprehensive overview of the relevant concepts
+- Provide detailed theoretical background and fundamental principles
+- Explain multiple approaches to problem-solving with full reasoning
+- Include step-by-step methodology with explanations for each step
+- Discuss practical applications and engineering significance
+- Provide comprehensive formula derivations and variable explanations
+- Suggest related topics for deeper understanding
+- End with thought-provoking questions that encourage further exploration
+- Include comprehensive references and additional learning resources
 
-Remember: Your goal is to help students LEARN efficiently with focused guidance.
+Remember: Your goal is to foster DEEP, COMPREHENSIVE understanding through detailed explanations and thorough analysis. Provide rich, educational content that goes beyond surface-level guidance.
 """
     
     def generate_response(
@@ -72,14 +80,15 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
                     conversation_history
                 )
             
-            # Generate response with GPT using new client format
+            # Generate response with GPT-4o using enhanced parameters for comprehensive responses
             response = self.client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-5", 
                 messages=messages,
-                max_tokens=400,
-                temperature=0.7,
-                presence_penalty=0.1,
-                frequency_penalty=0.1
+                max_tokens=2000,  # Increased for comprehensive responses
+                temperature=0.3,  # Lower temperature for more focused, detailed responses
+                presence_penalty=0.0,  # Reduced to allow comprehensive coverage
+                frequency_penalty=0.0,  # Reduced to allow thorough explanations
+                top_p=0.95  # Added for better response quality
             )
             
             assistant_response = response.choices[0].message.content
@@ -91,8 +100,14 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
                 logger.info(f"Source references: {source_references}")
                 
                 if source_references:
-                    assistant_response += f"\n\n📚 Sources: {source_references}"
-                    logger.info(f"Final answer with sources: {assistant_response[-100:]}...")
+                    assistant_response += f"\n\n📚 **Comprehensive Sources and References:**\n{source_references}"
+                    
+                    # Add additional learning resources
+                    additional_resources = self._generate_additional_resources(relevant_content)
+                    if additional_resources:
+                        assistant_response += f"\n\n📖 **Recommended Additional Study Materials:**\n{additional_resources}"
+                    
+                    logger.info(f"Final answer with comprehensive sources: {assistant_response[-200:]}...")
             else:
                 logger.info("Question not course-relevant or no content found, skipping source references")
             
@@ -113,27 +128,29 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
                 "concepts_covered": self._extract_concepts_from_content(relevant_content) if relevant_content else [],
                 "suggested_review": self._suggest_review_materials(relevant_content) if relevant_content else [],
                 "is_course_relevant": is_course_relevant,
-                "context_sources": [c["metadata"].get("source_file", "unknown") for c in relevant_content] if relevant_content else []
+                "context_sources": [c["metadata"].get("source_file", "unknown") for c in relevant_content] if relevant_content else [],
+                "comprehensive_analysis": True,
+                "response_depth": "comprehensive"
             }
             
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             return {
-                "response": "I'm having trouble processing your question right now. Could you please rephrase it or break it down into smaller parts?",
+                "response": "I'm experiencing technical difficulties processing your question. Let me provide a comprehensive alternative approach: Could you please rephrase your question or break it down into specific components? This will help me provide you with the detailed, thorough analysis you deserve. I'm designed to offer comprehensive explanations covering theoretical foundations, practical applications, and multiple solution approaches.",
                 "error": str(e)
             }
     
     def _get_relevant_content(self, question: str) -> List[Dict]:
-        """Retrieve relevant content based on question type"""
+        """Retrieve comprehensive relevant content based on question type"""
         
-        # Get concept-related content
-        concept_content = self.rag.get_concept_related_content(question, n_results=2)
+        # Get concept-related content (increased for comprehensive coverage)
+        concept_content = self.rag.get_concept_related_content(question, n_results=4)
         
-        # Get similar exercises
-        exercise_content = self.rag.get_similar_exercises(question, n_results=2)
+        # Get similar exercises (increased for comprehensive examples)
+        exercise_content = self.rag.get_similar_exercises(question, n_results=3)
         
-        # Get solution guidance (but we'll use this carefully)
-        solution_content = self.rag.get_solution_guidance(question, n_results=1)
+        # Get solution guidance (increased for comprehensive methodology)
+        solution_content = self.rag.get_solution_guidance(question, n_results=2)
         
         # Combine and deduplicate
         all_content = concept_content + exercise_content + solution_content
@@ -141,10 +158,10 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
         # Remove duplicates based on content similarity
         unique_content = self._deduplicate_content(all_content)
         
-        return unique_content[:5]  # Limit to top 5 most relevant
+        return unique_content[:8]  # Increased limit for comprehensive coverage
     
     def _prepare_context(self, relevant_content: List[Dict]) -> str:
-        """Prepare context from retrieved content"""
+        """Prepare comprehensive context from retrieved content"""
         context_parts = []
         
         for content in relevant_content:
@@ -154,20 +171,25 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             context_part = f"\n--- {content_type.upper()}: {topic} ---\n"
             context_part += content["text"]
             
-            # Add concepts and formulas if available
+            # Add comprehensive metadata information
             if "concepts" in content["metadata"]:
                 concepts = content["metadata"]["concepts"]
                 if concepts:
-                    context_part += f"\nKey Concepts: {', '.join(concepts)}"
+                    context_part += f"\n\n**Key Concepts:** {', '.join(concepts)}"
             
             if "formulas" in content["metadata"]:
                 formulas = content["metadata"]["formulas"]
                 if formulas:
-                    context_part += f"\nRelevant Formulas: {'; '.join(formulas[:2])}"
+                    context_part += f"\n\n**Relevant Formulas:** {'; '.join(formulas)}"
+            
+            if "applications" in content["metadata"]:
+                applications = content["metadata"]["applications"]
+                if applications:
+                    context_part += f"\n\n**Practical Applications:** {'; '.join(applications)}"
             
             context_parts.append(context_part)
         
-        return "\n".join(context_parts)
+        return "\n\n".join(context_parts)
     
     def _create_messages(
         self, 
@@ -181,24 +203,31 @@ Remember: Your goal is to help students LEARN efficiently with focused guidance.
             {"role": "system", "content": self.system_prompt}
         ]
         
-        # Add conversation history if available
+        # Add conversation history if available (increased context window)
         if conversation_history:
-            for msg in conversation_history[-6:]:  # Last 6 messages for context
+            for msg in conversation_history[-10:]:  # Increased for better context
                 messages.append(msg)
         
-        # Add current question with context
+        # Add current question with comprehensive context
         user_message = f"""
 Student Question: {question}
 
-Relevant Course Material:
+Comprehensive Course Material and Context:
 {context}
 
-Provide CONCISE guidance (3-5 sentences max). Focus on:
-1. Identify ONE key concept
-2. Suggest a 2-3 step approach
-3. Ask ONE guiding question
+Provide a COMPREHENSIVE, DETAILED response that includes:
 
-Do NOT give direct answers. Keep it brief and focused.
+1. **Theoretical Foundation**: Explain the underlying principles and theory in detail
+2. **Multiple Approaches**: Present different methods and perspectives for addressing this topic
+3. **Step-by-Step Analysis**: Provide detailed methodology with explanations for each step
+4. **Mathematical Framework**: Include relevant formulas with comprehensive variable explanations
+5. **Practical Applications**: Discuss real-world engineering applications and significance
+6. **Conceptual Connections**: Link to related topics and broader engineering principles
+7. **Problem-Solving Strategies**: Offer comprehensive approaches for similar problems
+8. **Critical Thinking**: Encourage deeper analysis with thought-provoking questions
+9. **Additional Resources**: Suggest related topics for further comprehensive study
+
+Ensure your response is thorough, educational, and promotes deep understanding through comprehensive analysis and detailed explanations.
 """
         
         messages.append({"role": "user", "content": user_message})
@@ -212,13 +241,19 @@ Do NOT give direct answers. Keep it brief and focused.
     ) -> List[Dict]:
         """Create message structure for general (non-course) questions"""
         
-        # Use a general assistant system prompt for non-course questions
+        # Enhanced general assistant system prompt for comprehensive responses
         general_system_prompt = """
-You are ARIA, a helpful teaching assistant. The user has asked a question that is not related to statics and mechanics of materials coursework.
+You are ARIA, an advanced teaching assistant with expertise across multiple disciplines. The user has asked a question that may not be directly related to statics and mechanics of materials coursework.
 
-Provide a helpful, concise response to their question. Be friendly and informative, but keep your response brief (3-5 sentences). 
+Provide a comprehensive, detailed response that:
+1. Thoroughly addresses their question with multiple perspectives
+2. Includes relevant background information and context
+3. Offers practical applications and real-world connections
+4. Suggests related topics for further exploration
+5. Maintains an educational and supportive tone
+6. Provides detailed explanations and reasoning
 
-If the question is completely unrelated to academics, gently redirect them back to course-related topics while still being helpful.
+If the question is completely unrelated to academics, provide helpful information while gently suggesting how it might connect to engineering or academic topics, and offer to help with course-related questions for more comprehensive assistance.
 """
         
         messages = [
@@ -227,11 +262,17 @@ If the question is completely unrelated to academics, gently redirect them back 
         
         # Add conversation history if available
         if conversation_history:
-            for msg in conversation_history[-6:]:  # Last 6 messages for context
+            for msg in conversation_history[-10:]:  # Increased context window
                 messages.append(msg)
         
-        # Add current question without course context
-        messages.append({"role": "user", "content": question})
+        # Add current question without course context but with comprehensive instruction
+        enhanced_question = f"""
+{question}
+
+Please provide a comprehensive, detailed response that thoroughly addresses this question with multiple perspectives, relevant background information, and practical applications where applicable.
+"""
+        
+        messages.append({"role": "user", "content": enhanced_question})
         
         return messages
     
@@ -242,7 +283,7 @@ If the question is completely unrelated to academics, gently redirect them back 
         
         for content in content_list:
             # Create a simple hash of the text for deduplication
-            text_hash = hash(content["text"][:200])  # First 200 chars
+            text_hash = hash(content["text"][:300])  # Increased for better deduplication
             if text_hash not in seen_texts:
                 seen_texts.add(text_hash)
                 unique_content.append(content)
@@ -301,8 +342,13 @@ If the question is completely unrelated to academics, gently redirect them back 
                 if topic:
                     sources.add(f"{content_type.title()}: {topic}")
         
-        result = ", ".join(sorted(sources)) if sources else "Course Materials"
-        logger.info(f"Final formatted sources: {result}")
+        # Create comprehensive source listing
+        detailed_sources = []
+        for source in sorted(sources):
+            detailed_sources.append(f"• {source}")
+        
+        result = "\n".join(detailed_sources) if detailed_sources else "• Course Materials - Comprehensive Coverage"
+        logger.info(f"Final comprehensive sources: {result}")
         return result
     
     def _extract_concepts_from_content(self, content_list: List[Dict]) -> List[str]:
@@ -370,13 +416,52 @@ If the question is completely unrelated to academics, gently redirect them back 
         return False
     
     def _suggest_review_materials(self, content_list: List[Dict]) -> List[str]:
-        """Suggest review materials based on retrieved content"""
+        """Suggest comprehensive review materials based on retrieved content"""
         topics = set()
+        concepts = set()
+        
         for content in content_list:
             topic = content["metadata"].get("topic", "")
             if topic:
                 topics.add(topic)
-        return list(topics)
+            
+            if "concepts" in content["metadata"]:
+                concepts.update(content["metadata"]["concepts"])
+        
+        # Combine topics and concepts for comprehensive review suggestions
+        review_materials = list(topics) + [f"Concept: {concept}" for concept in list(concepts)[:3]]
+        
+        return review_materials[:8]  # Increased for comprehensive coverage
+    
+    def _generate_additional_resources(self, content_list: List[Dict]) -> str:
+        """Generate additional learning resources based on content"""
+        topics = set()
+        concepts = set()
+        
+        for content in content_list:
+            metadata = content.get("metadata", {})
+            if "topic" in metadata:
+                topics.add(metadata["topic"])
+            if "concepts" in metadata:
+                concepts.update(metadata["concepts"])
+        
+        resources = []
+        
+        if topics:
+            resources.append(f"• Related Topics: {', '.join(list(topics)[:5])}")
+        
+        if concepts:
+            resources.append(f"• Key Concepts for Further Study: {', '.join(list(concepts)[:5])}")
+        
+        # Add general recommendations
+        resources.extend([
+            "• Review fundamental principles and derivations",
+            "• Practice with similar problems and variations",
+            "• Explore real-world engineering applications",
+            "• Connect concepts to broader engineering principles"
+        ])
+        
+        return "\n".join(resources)
     
     def _log_interaction(self, question: str, response: str, context: List[Dict], response_time: float = None):
         """Log interactions to Supabase database for analytics and improvement"""
@@ -384,7 +469,7 @@ If the question is completely unrelated to academics, gently redirect them back 
             context_sources = [c["metadata"].get("source_file", "unknown") for c in context]
             concepts_used = self._extract_concepts_from_content(context)
             
-            # Store conversation in Supabase
+            # Store conversation in Supabase with enhanced metadata
             success = conversation_storage.store_conversation(
                 session_id=self.session_id,
                 user_question=question,
@@ -395,7 +480,7 @@ If the question is completely unrelated to academics, gently redirect them back 
             )
             
             if success:
-                logger.info("Conversation logged to Supabase successfully")
+                logger.info("Comprehensive conversation logged to Supabase successfully")
             else:
                 logger.warning("Failed to log conversation to Supabase, falling back to local logging")
                 self._fallback_log_interaction(question, response, context, response_time)
@@ -415,7 +500,9 @@ If the question is completely unrelated to academics, gently redirect them back 
                 "response_length": len(response),
                 "context_sources": [c["metadata"].get("source_file", "unknown") for c in context],
                 "concepts_used": self._extract_concepts_from_content(context),
-                "response_time": response_time
+                "response_time": response_time,
+                "response_type": "comprehensive",
+                "model_used": "gpt-5"
             }
             
             log_file = self.base_path / "logs" / "ta_interactions.jsonl"
@@ -424,7 +511,7 @@ If the question is completely unrelated to academics, gently redirect them back 
             with open(log_file, 'a') as f:
                 f.write(json.dumps(log_entry) + "\n")
                 
-            logger.info("Conversation logged to local file as fallback")
+            logger.info("Comprehensive conversation logged to local file successfully")
             
         except Exception as e:
             logger.error(f"Failed to log conversation even to local file: {e}")
@@ -436,5 +523,5 @@ If the question is completely unrelated to academics, gently redirect them back 
     def new_session(self) -> str:
         """Start a new session and return the new session ID"""
         self.session_id = str(uuid.uuid4())
-        logger.info(f"Started new session: {self.session_id}")
+        logger.info(f"Started new comprehensive session: {self.session_id}")
         return self.session_id
