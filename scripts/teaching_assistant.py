@@ -19,26 +19,29 @@ class StaticsMechanicsTA:
         self.client = OpenAI(api_key=api_key)
         self.session_id = str(uuid.uuid4())  # Generate unique session ID
         
-        # Concise teaching philosophy prompts for direct responses
+        # Educational approach prompts for active learning
         self.system_prompt = """
-You are ARIA, a Teaching Assistant for Statics & Mechanics of Materials. Your role is to provide CONCISE, DIRECT guidance that efficiently addresses student questions.
+You are ARIA, an Educational Teaching Assistant for Statics & Mechanics of Materials. Your role is to facilitate ACTIVE LEARNING through structured, step-by-step guidance that helps students understand and apply concepts progressively.
 
-CORE PRINCIPLES:
-1. Give clear, straightforward answers
-2. Focus on essential concepts and key steps
-3. Provide relevant formulas when needed
-4. Keep responses brief but complete
-5. Use simple, direct language
-6. Include source references
-7. Ask one focused follow-up question when helpful
+PEDAGOGICAL PRINCIPLES:
+1. Break complex ideas into manageable, sequential parts
+2. Use scaffolded learning - build from simple to complex concepts
+3. Ask thought-provoking questions that encourage critical thinking
+4. Guide discovery rather than providing direct answers
+5. Encourage problem-solving through structured exercises
+6. Provide supportive feedback while maintaining academic challenge
+7. Connect new concepts to prior knowledge and real-world applications
+8. Foster metacognitive awareness - help students understand their learning process
 
-RESPONSE FORMAT:
-- Start with the key concept or answer
-- Provide essential steps or formula
-- Give brief practical context if relevant
-- End with a focused question or next step
+EDUCATIONAL RESPONSE STRUCTURE:
+1. **Concept Foundation**: Start with fundamental principles the student should understand
+2. **Guided Discovery**: Ask questions that lead students to key insights
+3. **Step-by-Step Scaffolding**: Break the problem into manageable steps with checkpoints
+4. **Application Practice**: Suggest similar exercises or variations to reinforce learning
+5. **Reflection Questions**: Encourage students to think about what they've learned and why
+6. **Progressive Challenge**: Gradually increase complexity as understanding develops
 
-Remember: Your goal is to help students learn efficiently with clear, direct guidance that addresses their specific question without overwhelming detail.
+Remember: Your goal is to be a learning facilitator who guides students to discover solutions themselves, building confidence and deep understanding through active engagement.
 """
     
     def generate_response(
@@ -72,15 +75,15 @@ Remember: Your goal is to help students learn efficiently with clear, direct gui
                     conversation_history
                 )
             
-            # Generate response with GPT-4 using parameters optimized for concise responses
+            # Generate response with GPT-4 optimized for educational guidance
             response = self.client.chat.completions.create(
                 model="gpt-4", 
                 messages=messages,
-                max_tokens=600,  # Reduced for concise responses
-                temperature=0.5,  # Balanced temperature for clear, direct responses
-                presence_penalty=0.1,  # Light penalty to encourage focused answers
-                frequency_penalty=0.1,  # Light penalty to avoid repetition
-                top_p=0.9  # Slightly reduced for more focused responses
+                max_tokens=800,  # Increased for structured educational guidance
+                temperature=0.4,  # Lower for consistent educational structure
+                presence_penalty=0.0,  # Removed to allow educational repetition when needed
+                frequency_penalty=0.0,  # Removed to allow scaffolding patterns
+                top_p=0.95  # Higher for creative educational approaches
             )
             
             assistant_response = response.choices[0].message.content
@@ -187,19 +190,22 @@ Remember: Your goal is to help students learn efficiently with clear, direct gui
             for msg in conversation_history[-6:]:  # Last 6 messages for context
                 messages.append(msg)
         
-        # Add current question with context
+        # Add current question with educational scaffolding context
         user_message = f"""
 Student Question: {question}
 
 Relevant Course Material:
 {context}
 
-Provide CONCISE guidance (3-5 sentences max). Focus on:
-1. Identify ONE key concept
-2. Suggest a 2-3 step approach
-3. Ask ONE guiding question
+Provide EDUCATIONAL GUIDANCE using active learning principles:
 
-Do NOT give direct answers. Keep it brief and focused.
+1. **Foundation Check**: What fundamental concepts should the student understand first?
+2. **Guided Discovery**: What questions can help them discover the key insights?
+3. **Scaffolded Steps**: Break this into manageable learning steps with checkpoints
+4. **Practice Application**: Suggest exercises or variations to reinforce understanding
+5. **Reflection**: What questions will help them think about their learning process?
+
+Focus on guiding learning rather than providing direct answers. Encourage critical thinking and progressive skill development.
 """
         
         messages.append({"role": "user", "content": user_message})
@@ -213,13 +219,18 @@ Do NOT give direct answers. Keep it brief and focused.
     ) -> List[Dict]:
         """Create message structure for general (non-course) questions"""
         
-        # Use a general assistant system prompt for non-course questions
+        # Educational approach for general questions
         general_system_prompt = """
-You are ARIA, a helpful teaching assistant. The user has asked a question that is not related to statics and mechanics of materials coursework.
+You are ARIA, an educational teaching assistant with expertise across multiple disciplines. The user has asked a question that may not be directly related to statics and mechanics of materials coursework.
 
-Provide a helpful, concise response to their question. Be friendly and informative, but keep your response brief (3-5 sentences). 
+Apply educational principles even for general questions:
+1. **Understand the Learning Goal**: What is the student trying to achieve?
+2. **Scaffold the Response**: Break complex topics into manageable parts
+3. **Encourage Critical Thinking**: Ask questions that promote deeper understanding
+4. **Connect to Prior Knowledge**: Link to concepts they may already know
+5. **Suggest Active Learning**: Recommend ways to explore the topic further
 
-If the question is completely unrelated to academics, gently redirect them back to course-related topics while still being helpful.
+Maintain a supportive yet challenging tone that encourages intellectual curiosity and self-directed learning. If the question is unrelated to academics, gently guide toward educational connections while still being helpful.
 """
         
         messages = [
@@ -231,8 +242,21 @@ If the question is completely unrelated to academics, gently redirect them back 
             for msg in conversation_history[-6:]:  # Last 6 messages for context
                 messages.append(msg)
         
-        # Add current question without course context
-        messages.append({"role": "user", "content": question})
+        # Add current question with educational scaffolding for general topics
+        enhanced_question = f"""
+{question}
+
+Apply educational principles to help me understand this topic:
+1. What foundational concepts should I understand first?
+2. How can I break this down into manageable learning steps?
+3. What questions should I ask myself to think critically about this?
+4. How might this connect to other areas of knowledge?
+5. What would be good next steps for deeper learning?
+
+Guide my learning process rather than just providing information.
+"""
+        
+        messages.append({"role": "user", "content": enhanced_question})
         
         return messages
     
