@@ -1465,7 +1465,7 @@ def main():
     
     st.divider()
     st.markdown(
-        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, PI: Somdatta Goswami,</div><div> © Centrum Intelliphysics, Civil and System Engineering, Johns Hopkins University</div></div>',
+        '<div class="app-footer"><div>Built by Dibakar Roy Sarkar and Yue Luo, Somdatta Goswami (PI),</div><div> © Centrum Intelliphysics, Civil and System Engineering, Johns Hopkins University</div></div>',
         unsafe_allow_html=True
     )
 
