@@ -95,7 +95,11 @@ Remember: You are a strict academic tutor focused exclusively on statics and mec
             
             # Enhanced validation and error handling for source addition
             try:
-                if is_course_relevant and relevant_content:
+                # CRITICAL: Never add sources if the response indicates the question is not relevant
+                if assistant_response and "This question is not relevant to the course" in assistant_response:
+                    logger.info("Response indicates question is not course-relevant - explicitly skipping all source references")
+                
+                elif is_course_relevant and relevant_content:
                     # Validate that relevant_content is properly formatted
                     if not isinstance(relevant_content, list):
                         logger.error(f"Invalid relevant_content type: {type(relevant_content)}")
@@ -115,14 +119,18 @@ Remember: You are a strict academic tutor focused exclusively on statics and mec
                         
                         # Additional validation of source references format
                         if source_references and isinstance(source_references, str) and source_references.strip():
-                            # Enhanced source display format
-                            if ";" in source_references:
-                                # Multiple sources - format as detailed list
-                                assistant_response += f"\n\n📚 **Sources Referenced:**\n{source_references}"
+                            # Double-check that response is still course-relevant before adding sources
+                            if "This question is not relevant to the course" not in assistant_response:
+                                # Enhanced source display format
+                                if ";" in source_references:
+                                    # Multiple sources - format as detailed list
+                                    assistant_response += f"\n\n📚 **Sources Referenced:**\n{source_references}"
+                                else:
+                                    # Single source - format inline
+                                    assistant_response += f"\n\n📚 **Source:** {source_references}"
+                                logger.info(f"Enhanced sources successfully added to response")
                             else:
-                                # Single source - format inline
-                                assistant_response += f"\n\n📚 **Source:** {source_references}"
-                            logger.info(f"Enhanced sources successfully added to response")
+                                logger.info("Response contains 'not relevant' message - sources explicitly excluded")
                         else:
                             logger.warning("Source references formatting failed or returned empty")
                     else:
