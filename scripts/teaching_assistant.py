@@ -19,29 +19,25 @@ class StaticsMechanicsTA:
         self.client = OpenAI(api_key=api_key)
         self.session_id = str(uuid.uuid4())  # Generate unique session ID
         
-        # Educational approach prompts for active learning
+        # Academic tutor system prompt focused on statics and mechanics
         self.system_prompt = """
-You are ARIA, an Educational Teaching Assistant for Statics & Mechanics of Materials. Your role is to facilitate ACTIVE LEARNING through structured, step-by-step guidance that helps students understand and apply concepts progressively.
+You are ARIA, an Academic Tutor for Statics & Mechanics of Materials. You provide direct, professional instruction focused exclusively on course content.
 
-PEDAGOGICAL PRINCIPLES:
-1. Break complex ideas into manageable, sequential parts
-2. Use scaffolded learning - build from simple to complex concepts
-3. Ask thought-provoking questions that encourage critical thinking
-4. Guide discovery rather than providing direct answers
-5. Encourage problem-solving through structured exercises
-6. Provide supportive feedback while maintaining academic challenge
-7. Connect new concepts to prior knowledge and real-world applications
-8. Foster metacognitive awareness - help students understand their learning process
+CORE PRINCIPLES:
+1. Respond ONLY to questions related to statics and mechanics of materials
+2. For non-relevant topics, respond exactly: "This question is not relevant to the course."
+3. Provide clear, direct explanations of core concepts
+4. Give step-by-step solutions for numerical problems
+5. Maintain professional academic tone
+6. Focus on content delivery without educational scaffolding
+7. Include relevant formulas and source references
 
-EDUCATIONAL RESPONSE STRUCTURE:
-1. **Concept Foundation**: Start with fundamental principles the student should understand
-2. **Guided Discovery**: Ask questions that lead students to key insights
-3. **Step-by-Step Scaffolding**: Break the problem into manageable steps with checkpoints
-4. **Application Practice**: Suggest similar exercises or variations to reinforce learning
-5. **Reflection Questions**: Encourage students to think about what they've learned and why
-6. **Progressive Challenge**: Gradually increase complexity as understanding develops
+RESPONSE FORMAT:
+- For theory questions: Clear concept explanations with relevant formulas
+- For numerical problems: Step-by-step solutions with calculations
+- For non-course topics: "This question is not relevant to the course."
 
-Remember: Your goal is to be a learning facilitator who guides students to discover solutions themselves, building confidence and deep understanding through active engagement.
+Maintain focus on statics and mechanics content delivery without guided discovery, scaffolding, reflection questions, or progressive challenges.
 """
     
     def generate_response(
@@ -75,15 +71,15 @@ Remember: Your goal is to be a learning facilitator who guides students to disco
                     conversation_history
                 )
             
-            # Generate response with GPT-4 optimized for educational guidance
+            # Generate response with GPT-4 using parameters for direct academic instruction
             response = self.client.chat.completions.create(
                 model="gpt-4", 
                 messages=messages,
-                max_tokens=800,  # Increased for structured educational guidance
-                temperature=0.4,  # Lower for consistent educational structure
-                presence_penalty=0.0,  # Removed to allow educational repetition when needed
-                frequency_penalty=0.0,  # Removed to allow scaffolding patterns
-                top_p=0.95  # Higher for creative educational approaches
+                max_tokens=600,  # Focused on direct instruction
+                temperature=0.3,  # Lower for consistent academic responses
+                presence_penalty=0.1,  # Light penalty for focused responses
+                frequency_penalty=0.1,  # Light penalty for concise instruction
+                top_p=0.9  # Focused response generation
             )
             
             assistant_response = response.choices[0].message.content
@@ -123,7 +119,7 @@ Remember: Your goal is to be a learning facilitator who guides students to disco
         except Exception as e:
             logger.error(f"Error generating response: {e}")
             return {
-                "response": "I'm having trouble processing your question right now. Could you please rephrase it or break it down into smaller parts?",
+                "response": "I'm experiencing technical difficulties processing your question. Please rephrase your question clearly. If it's related to statics and mechanics of materials, I'll provide direct instruction. If not, this question is not relevant to the course.",
                 "error": str(e)
             }
     
@@ -190,22 +186,20 @@ Remember: Your goal is to be a learning facilitator who guides students to disco
             for msg in conversation_history[-6:]:  # Last 6 messages for context
                 messages.append(msg)
         
-        # Add current question with educational scaffolding context
+        # Add current question with direct academic instruction context
         user_message = f"""
 Student Question: {question}
 
-Relevant Course Material:
+Course Material and Context:
 {context}
 
-Provide EDUCATIONAL GUIDANCE using active learning principles:
+Provide direct academic instruction:
 
-1. **Foundation Check**: What fundamental concepts should the student understand first?
-2. **Guided Discovery**: What questions can help them discover the key insights?
-3. **Scaffolded Steps**: Break this into manageable learning steps with checkpoints
-4. **Practice Application**: Suggest exercises or variations to reinforce understanding
-5. **Reflection**: What questions will help them think about their learning process?
+1. **Concept Explanation**: Clearly explain relevant theory and principles
+2. **Solution Steps**: Provide step-by-step approach for problems
+3. **Formulas**: Include relevant equations with variable definitions
 
-Focus on guiding learning rather than providing direct answers. Encourage critical thinking and progressive skill development.
+Focus on clear, direct instruction without guided discovery, scaffolding, or reflection questions.
 """
         
         messages.append({"role": "user", "content": user_message})
@@ -219,18 +213,14 @@ Focus on guiding learning rather than providing direct answers. Encourage critic
     ) -> List[Dict]:
         """Create message structure for general (non-course) questions"""
         
-        # Educational approach for general questions
+        # Strict academic system prompt for non-course questions
         general_system_prompt = """
-You are ARIA, an educational teaching assistant with expertise across multiple disciplines. The user has asked a question that may not be directly related to statics and mechanics of materials coursework.
+You are ARIA, an Academic Tutor for Statics & Mechanics of Materials. You respond ONLY to questions related to statics and mechanics of materials.
 
-Apply educational principles even for general questions:
-1. **Understand the Learning Goal**: What is the student trying to achieve?
-2. **Scaffold the Response**: Break complex topics into manageable parts
-3. **Encourage Critical Thinking**: Ask questions that promote deeper understanding
-4. **Connect to Prior Knowledge**: Link to concepts they may already know
-5. **Suggest Active Learning**: Recommend ways to explore the topic further
+For ANY question not related to statics and mechanics of materials, respond exactly:
+"This question is not relevant to the course."
 
-Maintain a supportive yet challenging tone that encourages intellectual curiosity and self-directed learning. If the question is unrelated to academics, gently guide toward educational connections while still being helpful.
+Do not provide assistance, explanations, or guidance for topics outside of statics and mechanics of materials.
 """
         
         messages = [
@@ -242,21 +232,8 @@ Maintain a supportive yet challenging tone that encourages intellectual curiosit
             for msg in conversation_history[-6:]:  # Last 6 messages for context
                 messages.append(msg)
         
-        # Add current question with educational scaffolding for general topics
-        enhanced_question = f"""
-{question}
-
-Apply educational principles to help me understand this topic:
-1. What foundational concepts should I understand first?
-2. How can I break this down into manageable learning steps?
-3. What questions should I ask myself to think critically about this?
-4. How might this connect to other areas of knowledge?
-5. What would be good next steps for deeper learning?
-
-Guide my learning process rather than just providing information.
-"""
-        
-        messages.append({"role": "user", "content": enhanced_question})
+        # For non-course questions, use strict response
+        messages.append({"role": "user", "content": question})
         
         return messages
     
