@@ -58,8 +58,8 @@ Remember: You are a strict academic tutor focused exclusively on statics and mec
         start_time = datetime.now()
         
         try:
-            # Check if question is relevant to course materials
-            is_course_relevant = self._is_question_course_relevant(student_question)
+            # Check if question is relevant to course materials with validation
+            is_course_relevant = self._validate_and_check_course_relevance(student_question)
             logger.info(f"Question relevance to course materials: {is_course_relevant}")
             
             if is_course_relevant:
@@ -93,16 +93,50 @@ Remember: You are a strict academic tutor focused exclusively on statics and mec
             assistant_response = response.choices[0].message.content
             logger.info(f"Generated answer length: {len(assistant_response)}")
             
-            # Only add source references if question is relevant to course materials
-            if is_course_relevant and relevant_content:
-                source_references = self._format_source_references(relevant_content)
-                logger.info(f"Source references: {source_references}")
-                
-                if source_references:
-                    assistant_response += f"\n\n📚 Sources: {source_references}"
-                    logger.info(f"Final answer with sources: {assistant_response[-100:]}...")
-            else:
-                logger.info("Question not course-relevant or no content found, skipping source references")
+            # Enhanced validation and error handling for source addition
+            try:
+                if is_course_relevant and relevant_content:
+                    # Validate that relevant_content is properly formatted
+                    if not isinstance(relevant_content, list):
+                        logger.error(f"Invalid relevant_content type: {type(relevant_content)}")
+                        relevant_content = []
+                    
+                    # Filter out invalid content entries
+                    valid_content = []
+                    for content in relevant_content:
+                        if isinstance(content, dict) and "metadata" in content:
+                            valid_content.append(content)
+                        else:
+                            logger.warning(f"Skipping invalid content entry: {type(content)}")
+                    
+                    if valid_content:
+                        source_references = self._format_source_references(valid_content)
+                        logger.info(f"Source references generated: {source_references}")
+                        
+                        # Additional validation of source references format
+                        if source_references and isinstance(source_references, str) and source_references.strip():
+                            assistant_response += f"\n\n📚 Sources: {source_references}"
+                            logger.info(f"Sources successfully added to response")
+                        else:
+                            logger.warning("Source references formatting failed or returned empty")
+                    else:
+                        logger.warning("No valid content entries found for source generation")
+                        
+                elif is_course_relevant and not relevant_content:
+                    logger.info("Question is course-relevant but no content retrieved - skipping sources")
+                    
+                elif not is_course_relevant and relevant_content:
+                    # This shouldn't happen, but handle gracefully
+                    logger.warning("Content retrieved for non-course question - validation logic may need review")
+                    # Explicitly skip sources for non-course questions
+                    
+                else:
+                    logger.info("Question not course-relevant and no content found - correctly skipping source references")
+                    
+            except Exception as source_error:
+                logger.error(f"Error in source reference processing: {source_error}")
+                # Continue without sources rather than failing the entire response
+                logger.info("Continuing without source references due to error")
             
             # Calculate response time
             response_time = (datetime.now() - start_time).total_seconds()
@@ -266,60 +300,111 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
         return unique_content
     
     def _format_source_references(self, content_list: List[Dict]) -> str:
-        """Format source references from retrieved content"""
-        sources = set()
+        """Format source references from retrieved content with enhanced validation"""
         
-        # Debug logging
-        logger.info(f"Formatting sources for {len(content_list)} content items")
-        
-        for i, content in enumerate(content_list):
-            metadata = content.get("metadata", {})
-            logger.info(f"Content {i} metadata keys: {list(metadata.keys())}")
+        try:
+            # Input validation
+            if not content_list or not isinstance(content_list, list):
+                logger.warning(f"Invalid content_list for source formatting: {type(content_list)}")
+                return ""
             
-            # Try multiple possible source field names
-            source_file = (
-                metadata.get("source_file") or 
-                metadata.get("source") or 
-                metadata.get("filename") or 
-                metadata.get("file_name") or
-                content.get("source", "")
-            )
+            sources = set()
+            valid_sources_found = 0
             
-            logger.info(f"Content {i} source_file: {source_file}")
+            # Debug logging
+            logger.info(f"Formatting sources for {len(content_list)} content items")
             
-            if source_file:
-                # Extract just the filename from the full path
-                import os
-                filename = os.path.basename(source_file)
-                
-                # Clean up the source file name for better readability
-                clean_source = filename.replace(".json", "").replace(".pdf", "").replace("_", " ").replace("-", " ")
-                
-                # Convert to title case and clean up specific patterns
-                clean_source = clean_source.title()
-                
-                # Handle specific course material patterns
-                if "Beams Bending Members" in clean_source:
-                    clean_source = "Beams: Flexural Stresses and Strains"
-                elif "Axial Force Members" in clean_source:
-                    clean_source = "Axial Loading: Stress and Strain"
-                elif "Torsion Members" in clean_source:
-                    clean_source = "Torsion: Shear Stress and Angle of Twist"
-                elif "Extracted" in clean_source:
-                    # Remove "Extracted" suffix and clean up
-                    clean_source = clean_source.replace(" Extracted", "")
+            for i, content in enumerate(content_list):
+                try:
+                    if not isinstance(content, dict):
+                        logger.warning(f"Skipping non-dict content item {i}: {type(content)}")
+                        continue
+                        
+                    metadata = content.get("metadata", {})
+                    if not isinstance(metadata, dict):
+                        logger.warning(f"Content {i} has invalid metadata: {type(metadata)}")
+                        continue
+                        
+                    logger.debug(f"Content {i} metadata keys: {list(metadata.keys())}")
                     
-                sources.add(clean_source)
+                    # Try multiple possible source field names with validation
+                    source_file = None
+                    for field_name in ["source_file", "source", "filename", "file_name"]:
+                        field_value = metadata.get(field_name) or content.get(field_name, "")
+                        if field_value and isinstance(field_value, str) and field_value.strip():
+                            source_file = field_value.strip()
+                            break
+                    
+                    logger.debug(f"Content {i} source_file: {source_file}")
+                    
+                    if source_file:
+                        # Extract just the filename from the full path
+                        import os
+                        filename = os.path.basename(source_file)
+                        
+                        # Validate filename
+                        if not filename or len(filename) < 1:
+                            logger.warning(f"Invalid filename extracted from {source_file}")
+                            continue
+                        
+                        # Clean up the source file name for better readability
+                        clean_source = filename.replace(".json", "").replace(".pdf", "").replace("_", " ").replace("-", " ")
+                        
+                        # Convert to title case and clean up specific patterns
+                        clean_source = clean_source.title().strip()
+                        
+                        # Validate clean_source
+                        if not clean_source or len(clean_source) < 2:
+                            logger.warning(f"Source name too short after cleaning: '{clean_source}'")
+                            continue
+                        
+                        # Handle specific course material patterns
+                        if "Beam Bending Members" in clean_source:
+                            clean_source = "Beams: Flexural Stresses and Strains"
+                        elif "Axial Force Members" in clean_source:
+                            clean_source = "Axial Loading: Stress and Strain"
+                        elif "Torsion Members" in clean_source:
+                            clean_source = "Torsion: Shear Stress and Angle of Twist"
+                        elif "Extracted" in clean_source:
+                            # Remove "Extracted" suffix and clean up
+                            clean_source = clean_source.replace(" Extracted", "").strip()
+                            
+                        if clean_source and len(clean_source) >= 2:
+                            sources.add(clean_source)
+                            valid_sources_found += 1
+                            
+                    else:
+                        # Fallback: try to extract from topic or content_type
+                        topic = metadata.get("topic", "")
+                        content_type = metadata.get("content_type", "")
+                        
+                        if topic and isinstance(topic, str) and topic.strip():
+                            content_type_str = content_type.title() if isinstance(content_type, str) else "Content"
+                            fallback_source = f"{content_type_str}: {topic.strip()}"
+                            sources.add(fallback_source)
+                            valid_sources_found += 1
+                            
+                except Exception as item_error:
+                    logger.warning(f"Error processing content item {i}: {item_error}")
+                    continue
+            
+            # Generate final result with validation
+            if sources and valid_sources_found > 0:
+                result = ", ".join(sorted(sources))
+                # Final validation of result
+                if result and len(result) > 0:
+                    logger.info(f"Successfully formatted {valid_sources_found} sources: {result}")
+                    return result
+                else:
+                    logger.warning("Source formatting produced empty result")
+                    return ""
             else:
-                # Fallback: try to extract from topic or content_type
-                topic = metadata.get("topic", "")
-                content_type = metadata.get("content_type", "")
-                if topic:
-                    sources.add(f"{content_type.title()}: {topic}")
-        
-        result = ", ".join(sorted(sources)) if sources else "Course Materials"
-        logger.info(f"Final formatted sources: {result}")
-        return result
+                logger.info("No valid sources found, using fallback")
+                return ""
+                
+        except Exception as e:
+            logger.error(f"Error in _format_source_references: {e}")
+            return ""
     
     def _extract_concepts_from_content(self, content_list: List[Dict]) -> List[str]:
         """Extract unique concepts from retrieved content"""
@@ -330,60 +415,159 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
         return list(concepts)
     
     def _is_question_course_relevant(self, question: str) -> bool:
-        """Check if the question is relevant to statics and mechanics course materials"""
+        """Check if the question is relevant to statics and mechanics course materials with enhanced validation"""
         
-        # Convert question to lowercase for case-insensitive matching
-        question_lower = question.lower()
-        
-        # Define course-relevant keywords
-        statics_keywords = [
-            'static', 'statics', 'equilibrium', 'force', 'forces', 'moment', 'moments',
-            'torque', 'reaction', 'reactions', 'support', 'supports', 'free body diagram',
-            'fbd', 'beam', 'beams', 'truss', 'trusses', 'frame', 'frames', 'joint',
-            'joints', 'pin', 'roller', 'fixed', 'cantilever'
-        ]
-        
-        mechanics_keywords = [
-            'stress', 'strain', 'deformation', 'deflection', 'bending', 'shear',
-            'tension', 'compression', 'torsion', 'axial', 'flexural', 'elastic',
-            'modulus', 'material', 'materials', 'mechanics', 'strength', 'loading',
-            'load', 'loads', 'pressure', 'normal', 'tangential', 'principal',
-            'mohr', 'circle', 'yield', 'failure', 'safety', 'factor'
-        ]
-        
-        engineering_keywords = [
-            'engineering', 'structural', 'mechanical', 'civil', 'design',
-            'analysis', 'calculate', 'calculation', 'solve', 'problem',
-            'diagram', 'section', 'cross-section', 'area', 'inertia',
-            'centroid', 'geometry', 'coordinate', 'axis', 'axes'
-        ]
-        
-        # Combine all keywords
-        all_keywords = statics_keywords + mechanics_keywords + engineering_keywords
-        
-        # Check if any keyword is present in the question
-        for keyword in all_keywords:
-            if keyword in question_lower:
+        try:
+            # Input validation
+            if not question or not isinstance(question, str):
+                logger.warning(f"Invalid question input: {type(question)} - {question}")
+                return False
+            
+            # Clean and validate question
+            question_clean = question.strip()
+            if len(question_clean) < 3:  # Too short to be meaningful
+                logger.info("Question too short to determine relevance")
+                return False
+            
+            # Convert question to lowercase for case-insensitive matching
+            question_lower = question_clean.lower()
+            
+            # Define course-relevant keywords with enhanced coverage
+            statics_keywords = [
+                'static', 'statics', 'equilibrium', 'force', 'forces', 'moment', 'moments',
+                'torque', 'reaction', 'reactions', 'support', 'supports', 'free body diagram',
+                'fbd', 'beam', 'beams', 'truss', 'trusses', 'frame', 'frames', 'joint',
+                'joints', 'pin', 'roller', 'fixed', 'cantilever', 'distributed load',
+                'point load', 'resultant', 'equilibrium equations'
+            ]
+            
+            mechanics_keywords = [
+                'stress', 'strain', 'deformation', 'deflection', 'bending', 'shear',
+                'tension', 'compression', 'torsion', 'axial', 'flexural', 'elastic',
+                'modulus', 'material', 'materials', 'mechanics', 'strength', 'loading',
+                'load', 'loads', 'pressure', 'normal', 'tangential', 'principal',
+                'mohr', 'circle', 'yield', 'failure', 'safety', 'factor', 'hooke',
+                'poisson', 'bulk modulus', 'shear modulus'
+            ]
+            
+            engineering_keywords = [
+                'engineering', 'structural', 'mechanical', 'civil', 'design',
+                'analysis', 'calculate', 'calculation', 'solve', 'problem',
+                'diagram', 'section', 'cross-section', 'area', 'inertia',
+                'centroid', 'geometry', 'coordinate', 'axis', 'axes', 'member',
+                'element', 'structure', 'displacement', 'rotation'
+            ]
+            
+            # Combine all keywords
+            all_keywords = statics_keywords + mechanics_keywords + engineering_keywords
+            
+            # Enhanced keyword matching with word boundaries and context validation
+            import re
+            keyword_found = False
+            matched_keywords = []
+            
+            for keyword in all_keywords:
+                # Use word boundaries to avoid partial matches in unrelated words
+                pattern = r'\b' + re.escape(keyword) + r'\b'
+                if re.search(pattern, question_lower):
+                    matched_keywords.append(keyword)
+                    keyword_found = True
+            
+            # Additional context validation for potentially ambiguous keywords
+            if keyword_found:
+                # Check for context that suggests non-engineering usage
+                non_engineering_contexts = [
+                    'photography', 'photo', 'camera', 'sunbeam', 'light beam',
+                    'gym', 'workout', 'exercise', 'fitness', 'health', 'training',
+                    'cooking', 'recipe', 'food', 'kitchen',
+                    'weather', 'temperature', 'climate',
+                    'programming', 'software', 'code', 'computer',
+                    'music', 'art', 'biology', 'chemistry', 'physics' # except when combined with engineering
+                ]
+                
+                for context in non_engineering_contexts:
+                    if context in question_lower:
+                        logger.debug(f"Found non-engineering context '{context}' despite keyword matches: {matched_keywords}")
+                        # Only reject if the engineering keywords are likely coincidental
+                        coincidental_keywords = ['beam', 'force', 'load', 'stress', 'pressure', 'calculate']
+                        if any(kw in coincidental_keywords for kw in matched_keywords):
+                            logger.debug("Keywords appear to be coincidental in non-engineering context")
+                            return False
+                
+                logger.debug(f"Found course keywords: {matched_keywords}")
                 return True
+            
+            # Additional check for common engineering units and symbols
+            engineering_units = [
+                'kn', 'kip', 'lb', 'lbs', 'newton', 'newtons', 'n', 'pa', 'psi',
+                'mpa', 'gpa', 'kpa', 'mm', 'cm', 'm', 'ft', 'in', 'inch', 'inches',
+                'degree', 'degrees', 'radian', 'radians', 'kg', 'gram', 'ton',
+                'mm^2', 'cm^2', 'm^2', 'in^2', 'ft^2'  # Added area units
+            ]
+            
+            for unit in engineering_units:
+                pattern = r'\b' + re.escape(unit) + r'\b'
+                if re.search(pattern, question_lower):
+                    logger.debug(f"Found engineering unit: {unit}")
+                    return True
+            
+            # Check for mathematical expressions common in engineering
+            math_patterns = ['σ', 'τ', 'ε', 'δ', 'θ', 'φ', 'ω', 'α', 'β', 'γ', 'Δ', 'ρ']
+            for pattern in math_patterns:
+                if pattern in question:
+                    logger.debug(f"Found engineering symbol: {pattern}")
+                    return True
+            
+            # Check for common engineering formulas or expressions
+            formula_patterns = [
+                r'f\s*=\s*ma', r'σ\s*=\s*f/a', r'e\s*=\s*\d+\s*gpa',
+                r'\d+\s*kn', r'\d+\s*mpa', r'\d+\s*psi', r'\d+\s*lb',
+                r'moment.*about', r'sum.*forces', r'equilibrium.*equation'
+            ]
+            
+            for pattern in formula_patterns:
+                if re.search(pattern, question_lower):
+                    logger.debug(f"Found engineering formula pattern: {pattern}")
+                    return True
+            
+            logger.debug("No course-relevant indicators found in question")
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error in course relevance detection: {e}")
+            # Default to False for safety - no sources for uncertain cases
+            return False
+    
+    def _validate_and_check_course_relevance(self, question: str) -> bool:
+        """Wrapper method with additional validation for course relevance checking"""
         
-        # Additional check for common engineering units and symbols
-        engineering_units = [
-            'kn', 'kip', 'lb', 'lbs', 'newton', 'newtons', 'n', 'pa', 'psi',
-            'mpa', 'gpa', 'kpa', 'mm', 'cm', 'm', 'ft', 'in', 'inch', 'inches',
-            'degree', 'degrees', 'radian', 'radians', 'kg', 'gram', 'ton'
-        ]
-        
-        for unit in engineering_units:
-            if unit in question_lower:
-                return True
-        
-        # Check for mathematical expressions common in engineering
-        math_patterns = ['σ', 'τ', 'ε', 'δ', 'θ', 'φ', 'ω', 'α', 'β', 'γ']
-        for pattern in math_patterns:
-            if pattern in question:
-                return True
-        
-        return False
+        try:
+            # Pre-validation checks
+            if not question:
+                logger.warning("Empty question provided for relevance check")
+                return False
+                
+            if not isinstance(question, str):
+                logger.error(f"Question must be string, got {type(question)}: {question}")
+                return False
+                
+            question_stripped = question.strip()
+            if not question_stripped:
+                logger.warning("Question contains only whitespace")
+                return False
+            
+            # Perform the actual relevance check
+            is_relevant = self._is_question_course_relevant(question_stripped)
+            
+            # Log the decision for audit purposes
+            logger.info(f"Course relevance decision: {is_relevant} for question: '{question_stripped[:100]}{'...' if len(question_stripped) > 100 else ''}'")
+            
+            return is_relevant
+            
+        except Exception as e:
+            logger.error(f"Critical error in course relevance validation: {e}")
+            # Default to False to prevent sources being added incorrectly
+            return False
     
     def _suggest_review_materials(self, content_list: List[Dict]) -> List[str]:
         """Suggest review materials based on retrieved content"""
