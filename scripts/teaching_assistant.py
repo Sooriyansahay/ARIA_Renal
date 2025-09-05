@@ -299,8 +299,65 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
         
         return unique_content
     
+    def _validate_source_document(self, content: Dict, source_name: str) -> bool:
+        """Validate if a source document is correct and relevant for statics and mechanics"""
+        
+        try:
+            if not isinstance(content, dict) or not source_name:
+                return False
+            
+            metadata = content.get("metadata", {})
+            content_text = content.get("text", "")
+            
+            # Define valid course topics and keywords
+            valid_topics = [
+                "statics", "mechanics", "materials", "stress", "strain", "beam", "truss",
+                "equilibrium", "force", "moment", "torsion", "axial", "flexural", "shear",
+                "deformation", "deflection", "loading", "support", "reaction", "analysis",
+                "structural", "engineering", "mechanics of materials", "strength of materials"
+            ]
+            
+            # Check if source name contains valid course-related terms
+            source_lower = source_name.lower()
+            has_valid_topic = any(topic in source_lower for topic in valid_topics)
+            
+            # Check metadata for course relevance
+            topic = metadata.get("topic", "").lower()
+            content_type = metadata.get("content_type", "").lower()
+            
+            # Validate based on topic and content type
+            if topic and any(valid_topic in topic for valid_topic in valid_topics):
+                has_valid_topic = True
+            
+            # Check content text for course-related keywords (sample check)
+            if content_text and len(content_text) > 50:
+                text_lower = content_text[:500].lower()  # Check first 500 chars
+                text_has_valid_content = any(topic in text_lower for topic in valid_topics[:10])  # Check key topics
+                if text_has_valid_content:
+                    has_valid_topic = True
+            
+            # Exclude obviously incorrect sources
+            invalid_indicators = [
+                "cooking", "recipe", "photography", "music", "art", "biology", "chemistry",
+                "weather", "climate", "software", "programming", "fitness", "health",
+                "marketing", "business", "finance", "literature", "history", "geography"
+            ]
+            
+            has_invalid_content = any(indicator in source_lower for indicator in invalid_indicators)
+            
+            # Final validation decision
+            is_valid = has_valid_topic and not has_invalid_content
+            
+            logger.debug(f"Source validation for '{source_name}': valid_topic={has_valid_topic}, invalid_content={has_invalid_content}, result={is_valid}")
+            
+            return is_valid
+            
+        except Exception as e:
+            logger.warning(f"Error validating source '{source_name}': {e}")
+            return False
+    
     def _format_source_references(self, content_list: List[Dict]) -> str:
-        """Format source references from retrieved content with enhanced validation"""
+        """Format source references from retrieved content with enhanced validation and filtering"""
         
         try:
             # Input validation
@@ -368,10 +425,14 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
                         elif "Extracted" in clean_source:
                             # Remove "Extracted" suffix and clean up
                             clean_source = clean_source.replace(" Extracted", "").strip()
-                            
-                        if clean_source and len(clean_source) >= 2:
+                        
+                        # Validate source document before adding
+                        if clean_source and len(clean_source) >= 2 and self._validate_source_document(content, clean_source):
                             sources.add(clean_source)
                             valid_sources_found += 1
+                            logger.debug(f"Added valid source: {clean_source}")
+                        else:
+                            logger.debug(f"Rejected invalid source: {clean_source}")
                             
                     else:
                         # Fallback: try to extract from topic or content_type
@@ -381,25 +442,34 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
                         if topic and isinstance(topic, str) and topic.strip():
                             content_type_str = content_type.title() if isinstance(content_type, str) else "Content"
                             fallback_source = f"{content_type_str}: {topic.strip()}"
-                            sources.add(fallback_source)
-                            valid_sources_found += 1
+                            
+                            # Validate fallback source
+                            if self._validate_source_document(content, fallback_source):
+                                sources.add(fallback_source)
+                                valid_sources_found += 1
+                                logger.debug(f"Added valid fallback source: {fallback_source}")
+                            else:
+                                logger.debug(f"Rejected invalid fallback source: {fallback_source}")
                             
                 except Exception as item_error:
                     logger.warning(f"Error processing content item {i}: {item_error}")
                     continue
             
-            # Generate final result with validation
+            # Generate final result with validation - only show correct sources
             if sources and valid_sources_found > 0:
-                result = ", ".join(sorted(sources))
+                # Sort sources and ensure only correct ones are included
+                sorted_sources = sorted(sources)
+                result = ", ".join(sorted_sources)
+                
                 # Final validation of result
                 if result and len(result) > 0:
-                    logger.info(f"Successfully formatted {valid_sources_found} sources: {result}")
+                    logger.info(f"Successfully formatted {valid_sources_found} validated sources: {result}")
                     return result
                 else:
-                    logger.warning("Source formatting produced empty result")
+                    logger.warning("Source formatting produced empty result after validation")
                     return ""
             else:
-                logger.info("No valid sources found, using fallback")
+                logger.info("No valid sources found after validation")
                 return ""
                 
         except Exception as e:
