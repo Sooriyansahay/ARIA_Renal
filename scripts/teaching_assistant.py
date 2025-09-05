@@ -115,8 +115,14 @@ Remember: You are a strict academic tutor focused exclusively on statics and mec
                         
                         # Additional validation of source references format
                         if source_references and isinstance(source_references, str) and source_references.strip():
-                            assistant_response += f"\n\n📚 Sources: {source_references}"
-                            logger.info(f"Sources successfully added to response")
+                            # Enhanced source display format
+                            if ";" in source_references:
+                                # Multiple sources - format as detailed list
+                                assistant_response += f"\n\n📚 **Sources Referenced:**\n{source_references}"
+                            else:
+                                # Single source - format inline
+                                assistant_response += f"\n\n📚 **Source:** {source_references}"
+                            logger.info(f"Enhanced sources successfully added to response")
                         else:
                             logger.warning("Source references formatting failed or returned empty")
                     else:
@@ -356,8 +362,71 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
             logger.warning(f"Error validating source '{source_name}': {e}")
             return False
     
+    def _format_detailed_source_reference(self, content: Dict, clean_source: str) -> str:
+        """Create detailed source reference with PDF document and section information"""
+        
+        try:
+            metadata = content.get("metadata", {})
+            
+            # Get additional metadata for detailed attribution
+            page_number = metadata.get("page", metadata.get("page_number", ""))
+            section = metadata.get("section", metadata.get("chapter", ""))
+            topic = metadata.get("topic", "")
+            
+            # Build detailed reference
+            reference_parts = []
+            
+            # Start with the main source document
+            if clean_source:
+                reference_parts.append(clean_source)
+            
+            # Add section information if available
+            if section and isinstance(section, str) and section.strip():
+                section_clean = section.strip()
+                if not any(skip in section_clean.lower() for skip in ['unknown', 'none', 'n/a']):
+                    reference_parts.append(f"Section: {section_clean}")
+            
+            # Add page information if available
+            if page_number and str(page_number).strip():
+                page_str = str(page_number).strip()
+                if page_str.isdigit() or any(char.isdigit() for char in page_str):
+                    reference_parts.append(f"p. {page_str}")
+            
+            # Add topic for context if it's different from source name
+            if topic and isinstance(topic, str) and topic.strip():
+                topic_clean = topic.strip()
+                if topic_clean.lower() not in clean_source.lower() and len(topic_clean) > 3:
+                    reference_parts.append(f"({topic_clean})")
+            
+            # Combine parts with improved formatting
+            if len(reference_parts) > 1:
+                detailed_ref = reference_parts[0]
+                
+                # Separate topic (in parentheses) from other parts
+                topic_parts = [part for part in reference_parts[1:] if part.startswith("(")]
+                other_parts = [part for part in reference_parts[1:] if not part.startswith("(")]
+                
+                # Add non-topic parts first
+                if other_parts:
+                    detailed_ref += " - " + ", ".join(other_parts)
+                
+                # Add topic parts at the end
+                if topic_parts:
+                    if other_parts:
+                        detailed_ref += " " + " ".join(topic_parts)
+                    else:
+                        detailed_ref += " - " + " ".join(topic_parts)
+                
+                return detailed_ref
+            else:
+                return reference_parts[0] if reference_parts else clean_source
+                
+        except Exception as e:
+            logger.warning(f"Error creating detailed source reference: {e}")
+            return clean_source
+
     def _format_source_references(self, content_list: List[Dict]) -> str:
-        """Format source references from retrieved content with enhanced validation and filtering"""
+        """Format source references with enhanced PDF document attribution and section details"""
         
         try:
             # Input validation
@@ -365,11 +434,11 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
                 logger.warning(f"Invalid content_list for source formatting: {type(content_list)}")
                 return ""
             
-            sources = set()
+            detailed_sources = []
             valid_sources_found = 0
             
             # Debug logging
-            logger.info(f"Formatting sources for {len(content_list)} content items")
+            logger.info(f"Formatting detailed sources for {len(content_list)} content items")
             
             for i, content in enumerate(content_list):
                 try:
@@ -428,9 +497,11 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
                         
                         # Validate source document before adding
                         if clean_source and len(clean_source) >= 2 and self._validate_source_document(content, clean_source):
-                            sources.add(clean_source)
+                            # Create detailed source reference
+                            detailed_ref = self._format_detailed_source_reference(content, clean_source)
+                            detailed_sources.append(detailed_ref)
                             valid_sources_found += 1
-                            logger.debug(f"Added valid source: {clean_source}")
+                            logger.debug(f"Added valid detailed source: {detailed_ref}")
                         else:
                             logger.debug(f"Rejected invalid source: {clean_source}")
                             
@@ -445,9 +516,11 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
                             
                             # Validate fallback source
                             if self._validate_source_document(content, fallback_source):
-                                sources.add(fallback_source)
+                                # Create detailed reference for fallback too
+                                detailed_ref = self._format_detailed_source_reference(content, fallback_source)
+                                detailed_sources.append(detailed_ref)
                                 valid_sources_found += 1
-                                logger.debug(f"Added valid fallback source: {fallback_source}")
+                                logger.debug(f"Added valid detailed fallback source: {detailed_ref}")
                             else:
                                 logger.debug(f"Rejected invalid fallback source: {fallback_source}")
                             
@@ -455,15 +528,30 @@ Do not provide assistance, explanations, or guidance for topics outside of stati
                     logger.warning(f"Error processing content item {i}: {item_error}")
                     continue
             
-            # Generate final result with validation - only show correct sources
-            if sources and valid_sources_found > 0:
-                # Sort sources and ensure only correct ones are included
-                sorted_sources = sorted(sources)
-                result = ", ".join(sorted_sources)
+            # Generate final result with detailed attribution
+            if detailed_sources and valid_sources_found > 0:
+                # Remove duplicates while preserving order and detail
+                unique_sources = []
+                seen_base_sources = set()
+                
+                for detailed_source in detailed_sources:
+                    # Extract base source name for deduplication
+                    base_source = detailed_source.split(' - ')[0].split('(')[0].strip()
+                    if base_source not in seen_base_sources:
+                        seen_base_sources.add(base_source)
+                        unique_sources.append(detailed_source)
+                
+                # Format with enhanced presentation
+                if len(unique_sources) == 1:
+                    result = unique_sources[0]
+                else:
+                    # Use numbered list for multiple sources
+                    numbered_sources = [f"[{i+1}] {source}" for i, source in enumerate(unique_sources)]
+                    result = "; ".join(numbered_sources)
                 
                 # Final validation of result
                 if result and len(result) > 0:
-                    logger.info(f"Successfully formatted {valid_sources_found} validated sources: {result}")
+                    logger.info(f"Successfully formatted {valid_sources_found} detailed sources with attribution")
                     return result
                 else:
                     logger.warning("Source formatting produced empty result after validation")
