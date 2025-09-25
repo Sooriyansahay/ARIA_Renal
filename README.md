@@ -8,7 +8,7 @@
 
 ## 🌟 What is ARIA?
 
-**ARIA** (AI Reasoning & Interactive Assistant) is a cutting-edge AI teaching assistant specifically designed to transform how students learn **Statics & Mechanics of Materials**. Built with advanced RAG (Retrieval-Augmented Generation) technology, and powerful embedding tools, ARIA provides personalized, step-by-step guidance that adapts to each student's learning pace and style.
+**ARIA** (ADAPTIVE RETRIEVAL INTELLIGENCE ASSISTANT) is a cutting-edge AI teaching assistant specifically designed to transform how students learn **Statics & Mechanics of Materials**. Built with advanced RAG (Retrieval-Augmented Generation) technology, and powerful embedding tools, ARIA provides personalized, step-by-step guidance that adapts to each student's learning pace and style.
 
 ### 🎯 Why ARIA Was Built
 
