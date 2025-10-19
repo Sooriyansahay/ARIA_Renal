@@ -62,4 +62,8 @@ logs/
 
 # Temporary files
 *.tmp
-*.temp
+*.temp.env
+.env
+.streamlit/secrets.toml
+logs/
+__pycache__/
