@@ -69,7 +69,7 @@ class StaticsMechanicsTA:
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
-                max_tokens=300,
+                max_tokens=500,
                 temperature=0.2,
                 presence_penalty=0.0,
                 frequency_penalty=0.0,
