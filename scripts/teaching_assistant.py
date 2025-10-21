@@ -158,15 +158,8 @@ Provide a direct, source-grounded answer. If the context lacks the answer, state
 
 1. **Concept Explanation**: Summarize the renal physiology involved (e.g., filtration, reabsorption, secretion, RAAS) in concise, factual terms.
 2. **Key Factors / Steps**: List the main determinants or steps (e.g., pressures, transporters, nephron segments, hormones).
-3. **Equations / Calculations (LaTeX)**: Include relevant relations with variable definitions. Use LaTeX for all math.
-   - Inline: $\\text{{GFR}} = K_f\\,(P_{{GC}} - P_{{BS}} - \\pi_{{GC}})$
-   - Clearance: $C_x = \\dfrac{{U_x\\,V}}{{P_x}}$
-   - FENa: $\\mathrm{{FENa}}\\,(\\%) = 100\\times \\dfrac{{U_{{\\mathrm{{Na}}}} P_{{\\mathrm{{Cr}}}}}}{{P_{{\\mathrm{{Na}}}} U_{{\\mathrm{{Cr}}}}}}$
-   - Osmolar clearance: $C_{{\\mathrm{{osm}}}} = \\dfrac{{U_{{\\mathrm{{osm}}}} V}}{{P_{{\\mathrm{{osm}}}}}}$
-
-LaTeX rules:
-- Use $...$ for inline, $$...$$ for display equations.
-- Express variables and units in LaTeX (e.g., $\\text{{mL}}/\\text{{min}}$, $\\mathrm{{mmHg}}$).
+3. **Mechanisms**: Explicitly state the order and timing of the mechanisms (e.g, Myogenic Mechanism: Instantaneous, Tubuloglomerular Feedback (TGF): Slower (seconds to minutes), 
+RAAS: Slowest (minutes to hours, hormonal).).
 
 Citations:
 - End with 'Sources:' and list filenames or section titles of the used chunks.
