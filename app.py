@@ -40,7 +40,7 @@ st.markdown(
 )
 
 # ---------- HEADER ----------
-st.title("🩺 ARIA: Renal Physiology Tutor")
+st.title("🩺 PHRD 327: Renal System")
 st.markdown(
     """
     <p style='font-size:17px; color:#444;'>
